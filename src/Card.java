@@ -48,7 +48,7 @@ static void initialise() {
 	add(domaine); add(duche); add(province);
 	Card village = new Card("Village", Type.ACTION, 3,0,0,2,0,1);
 	add(village);
-	Card forgeron = new Card("Forgeron", Type.ACTION, 4,0,0,3,0,0 );
+	Card forgeron = new Card("Forgeron", Type.ACTION, 4,0,0,0,0,3 );
 	add(forgeron);
 	Card marche = new Card("Marche", Type.ACTION, 5,0,1,1,1,1);
 	add(marche);
