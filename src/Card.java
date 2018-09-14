@@ -52,6 +52,7 @@ static void initialise() {
 	add(forgeron);
 	Card marche = new Card("Marche", Type.ACTION, 5,0,1,1,1,1);
 	add(marche);
+	
 }
 
 

@@ -1,6 +1,8 @@
 import java.util.Arrays;
 //bite MDR
 public class Player {
+	
+public static final boolean urMomGay = true;
 public Shop theShop;
 public Deck deck;
 public Hand hand;
@@ -9,6 +11,8 @@ public Stack board;
 public int actionsRestantes = 1;
 public int achatsRestants = 1;
 public int remainingMoney;
+public boolean playSomething;
+public boolean buySomething;
 
 Player(Shop s){
 	theShop = s;
@@ -55,13 +59,13 @@ Card [] buyables() {
 	int p = 0;
 	if (achatsRestants == 0) {return new Card[0];}
 	for (int i = 0; i< Shop.nItems; i++) {
-		if (Shop.avalaible[i].peek().cost <= remainingMoney) {
+		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].NCartes>1) {
 			n++;
 		}
 	}
 	Card [] reponse = new Card[n];
 	for (int i = 0; i<Shop.nItems; i++) {
-		if (Shop.avalaible[i].peek().cost <= remainingMoney) {
+		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].NCartes>1) {
 			reponse[p] = Shop.avalaible[i].peek();
 			p++;
 		}
@@ -115,26 +119,57 @@ int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeu
 	return TOTAL;
 }
 
-///////////////////////////////////////
-public void tourDeJeu() {
-	
-	//doit choisir quelle carte action jouer methode Carte choose()
-	//boolean playSomething (qui est false lorsque choose renvoie null
-	//if (playSomething)play(c)
-	//on boucle ça je sais pas comment
-	// countGoldValue
-	//pareil que precedemmet avec l'achat
-	//on finit par newHand()
-	
-	
+int countVictoryPoints() {
+	//je compte dans la main, je melange la defausse dans le deck, puis je compte dans le deck
+	int TOTAL = 0;
+	for (int i = 0; i<hand.NCartes; i++) {
+		System.out.println(hand.cartes[i].name + " : " + hand.cartes[i].VP);
+		TOTAL += hand.cartes[i].VP;
+	}
+	defausseDansLaBibli();
+	for (int i = 0; i<deck.NCartes; i++) {
+		System.out.println(deck.cartes[i].name + " : " + deck.cartes[i].VP);
+		TOTAL += deck.cartes[i].VP;
+	}
+	return TOTAL;
 }
 
-Card laPlusChere() {//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
+///////////////////////////////////////
+public void reset() {
+	playSomething = true;
+	buySomething = true;
+	achatsRestants = 1;
+	actionsRestantes = 1;
+	remainingMoney = 0;
+}
+public void tourDeJeu() {
+	reset();
+	//playSomething = true; //on peut passer ça en fin de tour plutot en vrai
+	//doit choisir quelle carte action jouer methode Carte choose()
+	while(playSomething) {
+	Card c = choisitUneAction();
+	if (playSomething) {play(c);}
+	}
+	countGoldValue();
+	//pareil que precedemmet avec l'achat
+	//buySomething = true;
+	while(buySomething) {
+		Card c = laPlusChere();
+		if (buySomething) {buy(c);}
+	}
+	
+	newHand();
+}
+
+Card laPlusChere() {
+	//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
 	Card [] buyables = buyables();
 	int maxCost = 0;
+	buySomething = false;
 	Card reponse = Card.getCardByName("Cuivre");
 	for (int i = 0; i<buyables.length; i++) {
 		if (buyables[i].cost > maxCost) {
+			buySomething = true;
 			reponse = buyables[i];
 			maxCost = reponse.cost;
 		}
@@ -142,9 +177,24 @@ Card laPlusChere() {//un debut de fonction pour decider quoi faire, c'est debile
 	return reponse;
 }
 
-//Card choisitUneAction() {
-//	
-//}
+Card choisitUneAction() {
+	//fonction toute conne, si il a une carte qui donne des actions il la joue,
+	//s'il a pas de carte donnant des actions, il joue la premiere action q'uil voit
+	//si il n'a pas d'action il renvoie null et change le boolean playSomething to false
+	Card [] playables = playables();
+	for (int i = 0; i<playables.length; i++) {
+		if (playables[i].actions>0) {
+			playSomething = true;
+			return playables[i];
+		}
+	}
+	for (int i = 0; i<playables.length; i++) {
+		playSomething = true;
+		return playables[i];
+	}
+	playSomething = false;
+	return null;
+}
 
 public String toString() {
 
@@ -183,10 +233,12 @@ public static void main(String [] args) {
 	Player p = new Player(s);
 	p.deck.add(Card.cards[6]); p.deck.add(Card.cards[7]); p.deck.add(Card.cards[8]);
 	p.newHand();
-	p.countGoldValue();
-	System.out.println(Arrays.deepToString(p.buyables()));
-	System.out.println(p.theShop);
 	System.out.println(p);
-	System.out.println(p.theShop);
+	System.out.println(s);
+	for (int i = 0; i<10; i++) {
+	p.tourDeJeu();}
+	System.out.println(p);
+	System.out.println(s);	
+	System.out.println(p.countVictoryPoints());
 	}
 }
