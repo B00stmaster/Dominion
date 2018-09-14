@@ -50,7 +50,24 @@ Card [] playables() {
 	return reponse;	
 }
 
-
+Card [] buyables() {
+	int n = 0;
+	int p = 0;
+	if (achatsRestants == 0) {return new Card[0];}
+	for (int i = 0; i< Shop.nItems; i++) {
+		if (Shop.avalaible[i].peek().cost <= remainingMoney) {
+			n++;
+		}
+	}
+	Card [] reponse = new Card[n];
+	for (int i = 0; i<Shop.nItems; i++) {
+		if (Shop.avalaible[i].peek().cost <= remainingMoney) {
+			reponse[p] = Shop.avalaible[i].peek();
+			p++;
+		}
+	};
+	return reponse;	
+}
 
 void draw() {
 	if (deck.isEmpty()) {
@@ -98,6 +115,37 @@ int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeu
 	return TOTAL;
 }
 
+///////////////////////////////////////
+public void tourDeJeu() {
+	
+	//doit choisir quelle carte action jouer methode Carte choose()
+	//boolean playSomething (qui est false lorsque choose renvoie null
+	//if (playSomething)play(c)
+	//on boucle ça je sais pas comment
+	// countGoldValue
+	//pareil que precedemmet avec l'achat
+	//on finit par newHand()
+	
+	
+}
+
+Card laPlusChere() {//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
+	Card [] buyables = buyables();
+	int maxCost = 0;
+	Card reponse = Card.getCardByName("Cuivre");
+	for (int i = 0; i<buyables.length; i++) {
+		if (buyables[i].cost > maxCost) {
+			reponse = buyables[i];
+			maxCost = reponse.cost;
+		}
+	}
+	return reponse;
+}
+
+//Card choisitUneAction() {
+//	
+//}
+
 public String toString() {
 
 	
@@ -127,15 +175,18 @@ public String toString() {
 	
 	return s + "\n";
 }
+
+
 public static void main(String [] args) {
 	Card.initialise();
 	Shop s = new Shop();
 	Player p = new Player(s);
 	p.deck.add(Card.cards[6]); p.deck.add(Card.cards[7]); p.deck.add(Card.cards[8]);
 	p.newHand();
-	
+	p.countGoldValue();
+	System.out.println(Arrays.deepToString(p.buyables()));
+	System.out.println(p.theShop);
 	System.out.println(p);
-	System.out.println(Arrays.deepToString(p.playables()));
+	System.out.println(p.theShop);
 	}
-
 }
