@@ -2,7 +2,7 @@
 public class Shop {
 static final int SHOP_SIZE=100;
 static Stack [] avalaible = new Stack[SHOP_SIZE];
-static int nItems = 4; //pour pouvoir parcourir le shop sans avoir de null (?)
+static int nItems = 9; //pour pouvoir parcourir le shop sans avoir de null (?)
 
 Shop(){
 	Stack cuivres = new Stack("Cuivre", 50);
@@ -13,7 +13,20 @@ Shop(){
 	avalaible[2]=or;
 	Stack domaines = new Stack("Domaine", 30);
 	avalaible[3]=domaines;
+	Stack duches = new Stack("Duche", 30);
+	avalaible[4]=duches;
+	Stack provinces = new Stack("Province", 15);
+	avalaible[5]=provinces;
+	Stack villages = new Stack("Village", 10);
+	avalaible[6]=villages;
+	Stack forgerons = new Stack("Forgeron", 10);
+	avalaible[7]= forgerons;
+	Stack marches = new Stack("Marche", 10);
+	avalaible[8]=marches;
+
 }
+
+
 
 private Stack findStack(String name) {
 	for(int i=0;i<SHOP_SIZE;i++) {
