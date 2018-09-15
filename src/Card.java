@@ -84,4 +84,5 @@ public boolean equals(Object o) {
 	return ((Card) o).name.compareTo(this.name)==0;
 }
 
+
 }
