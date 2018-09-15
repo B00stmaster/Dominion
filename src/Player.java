@@ -134,7 +134,7 @@ int countVictoryPoints() {
 	return TOTAL;
 }
 
-///////////////////////////////////////
+////// TOUR DE JEU ET METHODES DE CHOIX ///////
 public void reset() {
 	playSomething = true;
 	buySomething = true;
@@ -196,6 +196,12 @@ Card choisitUneAction() {
 	return null;
 }
 
+
+
+////// INDICATEURS //////
+
+
+
 public String toString() {
 
 	
@@ -233,12 +239,8 @@ public static void main(String [] args) {
 	Player p = new Player(s);
 	p.deck.add(Card.cards[6]); p.deck.add(Card.cards[7]); p.deck.add(Card.cards[8]);
 	p.newHand();
-	System.out.println(p);
-	System.out.println(s);
 	for (int i = 0; i<10; i++) {
-	p.tourDeJeu();}
-	System.out.println(p);
-	System.out.println(s);	
-	System.out.println(p.countVictoryPoints());
+	p.tourDeJeu();
+	}
 	}
 }

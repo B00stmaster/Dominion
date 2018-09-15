@@ -27,7 +27,6 @@ Shop(){
 }
 
 
-
 private Stack findStack(String name) {
 	for(int i=0;i<SHOP_SIZE;i++) {
 		if(avalaible[i].peek().name.compareTo(name)==0)

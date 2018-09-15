@@ -31,7 +31,8 @@ void joueUnTourComplet() {
 
 public static void main(String[] args) {
 	Partie p = new Partie();
-	p.joueUnTourComplet();
+	for (int k  = 0; k<10; k++) {
+	p.joueUnTourComplet();}
 	
 }
 
