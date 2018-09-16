@@ -33,8 +33,7 @@ Player (Shop s, Constantes CS, boolean alter){
 	hand = new Hand(this);
 	defausse = new Stack();
 	board = new Stack();
-	if (alter) {
-	C = CS.alter();}
+	if (alter) {C = CS.alter();}
 	else C = CS;
 }
 
@@ -169,12 +168,7 @@ public void tourDeJeu() {
 	Card c = choisitUneAction();
 	if (playSomething) {play(c);}
 	}
-	countGoldValue();
-	//pareil que precedemmet avec l'achat
-	//buySomething = true;
-	
-	
-	
+	countGoldValue();	
 	while(buySomething) {
 		Card c = laMeilleureNote();
 		if (buySomething) {buy(c);}
@@ -230,32 +224,32 @@ Card choisitUneAction() {
 			return playables[i];
 		}
 	}
-	for (int i = 0; i<playables.length; i++) {
+	if (playables.length !=0){
 		playSomething = true;
-		return playables[i];
+		return playables[0];
 	}
 	playSomething = false;
 	return null;
 }
 
-public double incrementGoldDensity(Decklist nouv) {
+private double incrementGoldDensity(Decklist nouv) {
 	 return nouv.goldDensity()- deck.goldDensity();
 }
 
-public double incrementCardValue(Decklist nouv) {
+private double incrementCardValue(Decklist nouv) {
 	return nouv.cardValue() - deck.decklist.cardValue();
 }
 
-public double incrementEnAction(Decklist nouv) {
+private double incrementEnAction(Decklist nouv) {
 
 	return nouv.givenActionDensity() - deck.decklist.givenActionDensity();
 }
 
-public double incrementEnAchat(Decklist nouv) {
+private double incrementEnAchat(Decklist nouv) {
 	return nouv.givenAchatDensity() - deck.decklist.givenAchatDensity();
 }
 
-public double PdV(Card c) {
+private double PdV(Card c) {
 	return c.VP;
 }
 

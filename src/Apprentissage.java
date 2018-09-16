@@ -1,7 +1,7 @@
 
 public class Apprentissage {
 	static final int NOMBRE_DE_PARTIES = 1000;
-	static final int NOMBRE_DEVOLUTIONS = 100;
+	static final int NOMBRE_DEVOLUTIONS = 10;
 static boolean wannaPrint = false;
 	
 	Apprentissage(){

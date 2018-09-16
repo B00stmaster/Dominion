@@ -1,7 +1,7 @@
 
 public class Deck extends Stack{
 Player owner;
-Decklist decklist; //pas encore crée... 
+Decklist decklist; 
 
 
 

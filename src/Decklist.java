@@ -34,7 +34,7 @@ public class Decklist extends Stack{
 	public int probaDePiocher2plusANR() {
 		
 		int n = nActionsNonRenouvelantes();
-		if (n<3)return 0;
+		if (n<2)return 0;
 		return 1-probaDePiocher0ANR(n)-probaDePiocher1ANR(n);
 	}
 
