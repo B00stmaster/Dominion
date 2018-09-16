@@ -18,6 +18,15 @@ Stack(String s, int N) {
 	NCartes = N;
 }
 
+Stack(Stack S, Card c){
+	cartes = new Card[MAX_SIZE];
+	for (int i = 0; i<S.NCartes; i++) {
+		cartes[i] = S.cartes[i];
+	}
+	cartes[S.NCartes] = c;
+	NCartes = S.NCartes+1;
+}
+
 
 Stack add(Card c){
 	if(NCartes>=MAX_SIZE)
@@ -66,8 +75,8 @@ void permutation(int i, int j) {
 }
 
 void shuffle() {
-	System.out.println("shuffle");
-	int n = 100;
+	//System.out.println("shuffle");
+	int n = 500;
 	for (int i = 0; i<n; i++) {
 		int a = (int) (Math.random()*NCartes);
 		int b = (int) (Math.random()*NCartes);
@@ -76,4 +85,14 @@ void shuffle() {
 	}
 }
 
+
+
+
+public String toString() {
+	String s = "contenu de la pile : " + "\n";
+	for (int i = 0; i<NCartes; i++) {
+		s += cartes[i].name + "\n";
+	}
+	return s;
+}
 }

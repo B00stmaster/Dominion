@@ -14,7 +14,11 @@ public static int totalCards;
 
 Card(String n, Type t, int c, int p, int v, int a, int ach, int ca){
 	System.out.println("- "+ n);
-	name = n; type = t; cost = c; VP = p; value = v; actions = a; achats = ach; cartes = ca; 
+	name = n; type = t; 
+	cost = c; 
+	VP = p; 
+	value = v; 
+	actions = a; achats = ach; cartes = ca; 
 }
 
 Card(Card c){
@@ -52,6 +56,13 @@ static void initialise() {
 	add(forgeron);
 	Card marche = new Card("Marche", Type.ACTION, 5,0,1,1,1,1);
 	add(marche);
+	Card bucheron = new Card("Bucheron", Type.ACTION, 3,0 ,2,0,1,0);
+	add(bucheron);
+	Card laboratoire = new Card("Laboratoire", Type.ACTION, 5, 0,0,1,0,2);
+	add(laboratoire);
+	Card festival = new Card("Festival", Type.ACTION, 5, 0,2,2,1,0);
+	add(festival);
+	
 }
 
 
@@ -82,5 +93,6 @@ public boolean equals(Object o) {
     if (!(o instanceof Card))return false;
 	return ((Card) o).name.compareTo(this.name)==0;
 }
+
 
 }
