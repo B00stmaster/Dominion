@@ -42,8 +42,11 @@ void joueUnTourComplet(int first) {
 	
 	for (int i = first; i<4+first; i++) {
 		//System.out.println("tour du joueur " + i);
+		//if (i%4 ==0) {
+		//System.out.println(joueurs[i%4]);}
 		joueurs[i%4].tourDeJeu();
-		//System.out.println(joueurs[i]);
+		//if (i%4 ==0) {
+		//System.out.println(joueurs[i%4]);}
 		//System.out.println(theShop);
 	}
 }
@@ -130,7 +133,7 @@ public static void main(String[] args) {
 	Card.initialise();
 	Partie p = new Partie();
 	p.partie();
-	System.out.println(p.theShop);
+	System.out.println(p.joueurs[0].deck.decklist);
 }
 
 }

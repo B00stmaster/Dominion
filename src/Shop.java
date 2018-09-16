@@ -17,17 +17,17 @@ Shop(){
 	avalaible[4]=duches;
 	Stack provinces = new Stack("Province", 15);
 	avalaible[5]=provinces;
-	Stack villages = new Stack("Village", 10);
+	Stack villages = new Stack("Village", 11);
 	avalaible[6]=villages;
-	Stack forgerons = new Stack("Forgeron", 10);
+	Stack forgerons = new Stack("Forgeron", 11);
 	avalaible[7]= forgerons;
-	Stack marches = new Stack("Marche", 10);
+	Stack marches = new Stack("Marche", 11);
 	avalaible[8]=marches;
-	Stack bucherons = new Stack("Bucheron", 10);
+	Stack bucherons = new Stack("Bucheron", 11);
 	avalaible[9] = bucherons;
-	Stack laboratoires = new Stack("Laboratoire",10);
+	Stack laboratoires = new Stack("Laboratoire",11);
 	avalaible[10] = laboratoires;
-	Stack festivals = new Stack("Festival", 10);
+	Stack festivals = new Stack("Festival", 11);
 	avalaible[11] = festivals;
 
 }
