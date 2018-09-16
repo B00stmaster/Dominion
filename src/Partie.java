@@ -3,6 +3,7 @@ public class Partie {
 Player [] joueurs;
 Shop theShop;
 int iCurrentPlayer;
+boolean hasEnded = false;
 static final int NJOUEURS = 4;
 static final int NOMBRE_DE_PARTIES = 1000;
 static final int NOMBRE_DE_TOURS = 17;
@@ -55,7 +56,7 @@ Player partie(int NTours) {
 	for (int i = 0; i<NJOUEURS; i++) {
 		int points = joueurs[i].countVictoryPoints();
 		if (Apprentissage.wannaPrint) {
-		System.out.println("joueur " + i + " : " + points);
+		//System.out.println("joueur " + i + " : " + points);
 		if (i == 3) {System.out.println("");}}
 	}
 	Player gagnant = gagnant();
@@ -63,6 +64,30 @@ Player partie(int NTours) {
 	
 	return gagnant;
 }
+
+Player partie() {
+	int first = (int) (Math.random()*4);
+	while(!hasEnded()) {		
+		joueUnTourComplet(first);
+		
+	}
+	for (int i = 0; i<NJOUEURS; i++) {
+		int points = joueurs[i].countVictoryPoints();
+		if (Apprentissage.wannaPrint) {
+		//System.out.println("joueur " + i + " : " + points);
+		if (i == 3) {System.out.println("");}}
+	}
+	Player gagnant = gagnant();
+	//System.out.println(gagnant.id);
+	
+	return gagnant;
+}
+
+boolean hasEnded() {
+	return theShop.nombrePilesVides()>3 | !theShop.ilResteDesProvinces();
+}
+
+
 
 Player gagnant() {
 	int max = 0;
@@ -103,31 +128,9 @@ public String toString() {
 
 public static void main(String[] args) {
 	Card.initialise();
-	int j0 = 0;
-	int j1 = 0;
-	int j2 = 0; 
-	int j3 = 0;
 	Partie p = new Partie();
-	Player gagnant = p.partie(NOMBRE_DE_TOURS);
-	for (int k = 0; k<NOMBRE_DE_PARTIES;k++) {
-			p = p.reinitialise();
-			Player g = p.partie(NOMBRE_DE_TOURS);
-			if (g.id == 0) {j0++;}
-			if (g.id == 1) {j1++;}
-			if (g.id == 2) {j2++;}
-			if (g.id == 3) {j3++;}
-			}
-	System.out.println("j0 : " + j0);
-	System.out.println("j1 : " + j1);
-	System.out.println("j2 : " + j2);
-	System.out.println("j3 : " + j3);
-	int max= j0;
-	Player reponse = p.joueurs[0];
-	if (j1>max) {max = j1; reponse = p.joueurs[1];}
-	if (j2>max) {max = j2; reponse = p.joueurs[2];}
-	if (j3>max) {max = j3; reponse = p.joueurs[3];}
-	System.out.println(reponse.id);
-
+	p.partie();
+	System.out.println(p.theShop);
 }
 
 }

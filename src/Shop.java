@@ -2,7 +2,7 @@
 public class Shop {
 static final int SHOP_SIZE=100;
 static Stack [] avalaible = new Stack[SHOP_SIZE];
-static int nItems = 9; //pour pouvoir parcourir le shop sans avoir de null (?)
+static int nItems = 12; //pour pouvoir parcourir le shop sans avoir de null (?)
 
 Shop(){
 	Stack cuivres = new Stack("Cuivre", 50);
@@ -23,6 +23,12 @@ Shop(){
 	avalaible[7]= forgerons;
 	Stack marches = new Stack("Marche", 10);
 	avalaible[8]=marches;
+	Stack bucherons = new Stack("Bucheron", 10);
+	avalaible[9] = bucherons;
+	Stack laboratoires = new Stack("Laboratoire",10);
+	avalaible[10] = laboratoires;
+	Stack festivals = new Stack("Festival", 10);
+	avalaible[11] = festivals;
 
 }
 
@@ -35,15 +41,6 @@ private Stack findStack(String name) {
 	return null;
 }
 
-//Stack findStack(Card c) {
-//	for(int i=0;i<SHOP_SIZE;i++) {
-//		System.out.println(avalaible[i].peek().name);
-//		if(avalaible[i].peek().name.compareTo(c.name)==0)
-//			return avalaible[i];
-//	}
-//	return null;
-//}
-
 public Card getCard(String name) {
 	Stack s = findStack(name);
 	if(s != null && s.size()>1) {
@@ -52,14 +49,34 @@ public Card getCard(String name) {
 	return null;
 }
 
+int nombrePilesVides() {
+	int reponse = 0;
+	for (int i = 0; i<nItems; i++) {
+		if (avalaible[i].NCartes <= 1) {
+			reponse++;
+		}
+	}
+	return reponse;
+}
+
+int provincesRestantes() {
+	return findStack("Province").NCartes-1;
+}
+
+boolean ilResteDesProvinces() {	
+	return findStack("Province").NCartes >1 ;
+}
+
 
 public String toString() {
 	String s = "contenu du Shop : " + "\n";
 	for (int i = 0; i<nItems; i++) {
-		if (avalaible[i].NCartes >1) {
-		s += avalaible[i].NCartes + " - " + avalaible[i].peek().name + "\n";
+		if (avalaible[i].NCartes >0) {
+		s +=( avalaible[i].NCartes -1)+ " - " + avalaible[i].peek().name + "\n";
 		}
 	}
+	s+= "piles vides : " + nombrePilesVides();
+	s+= "il reste des provinces : "+ ilResteDesProvinces();
 	return s;
 }
 

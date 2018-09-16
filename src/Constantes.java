@@ -1,16 +1,35 @@
 
-public class Constantes {
-public static final int NCOEFF = 7;
-double k1 = 0.01; //coeff PdV
+//Constantes plutot pas mal : 
+/*double k1 = 0.01; //coeff PdV
 double k2 = 0.32;//importance gold
 double k3 = 0.32; //importance cartes
 double k4 = 0.2; //importance actions
 double k5 = 0.15; //importance achats
 double k6 = 0.9; // coeff esperance NA piochees
 double k7 = 0.9; //seuil de proba
-double epsilon = 0.001;
+*/
+public class Constantes {
+public static final int NCOEFF = 7;
+double k1 = 0.0117; //coeff PdV
+double k2 = 0.32515;//importance gold
+double k3 = 0.205; //importance cartes
+double k4 = 0.28699; //importance actions
+double k5 = 0.2603; //importance achats
+double k6 = 1.29; // coeff esperance NA piochees
+double k7 = 1.06; //seuil de proba
+int N1= 5; //seuil provinces restantes avant transition to late Game
+int N2 = 2; //seuil nombre piles vides avant transition to late Game
+double q1 = 0.01; //coeff PdV
+double q2 = 0.32;//importance gold
+double q3 = 0.32; //importance cartes
+double q4 = 0.2; //importance actions
+double q5 = 0.15; //importance achats
+double q6 = 0.9; // coeff esperance NA piochees
+double q7 = 0.9; //seuil de proba
+double epsilon = 0.05;
 
 Constantes(){}
+
 Constantes(double [] t){
 	if (t.length < NCOEFF) {
 		System.err.println("tableau trop petit");
@@ -35,9 +54,9 @@ Constantes alter() {
 	double [] nouv = new double[l.length];
 	for (int i = 0; i<l.length;i++) {
 		if (plus()) {
-			nouv[i] = l[i] + epsilon;
+			nouv[i] = l[i]*(1 + epsilon);
 		}
-		else {nouv[i] = l[i]- epsilon;}
+		else {nouv[i] = l[i]*(1- epsilon);}
 	}
 	return new Constantes(nouv);
 }

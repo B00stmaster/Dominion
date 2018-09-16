@@ -176,7 +176,6 @@ public void tourDeJeu() {
 	
 	
 	while(buySomething) {
-		//Card c = laPlusChere();
 		Card c = laMeilleureNote();
 		if (buySomething) {buy(c);}
 	}
@@ -270,6 +269,9 @@ public double note(Card c) {
 	return C.k2*noteGold+ C.k3*noteCard+ C.k4*noteAction + C.k5*noteAchat+ C.k1*notePdV;
 }
 
+//public void transitionToLateGame() {
+//	C.k1 = C.q1; C.k2 = C.q2; k3 = q3; k4 = q4; k5 = q5; k6 = q6; k7 = q7;
+//}
 
 public String toString() {
 
@@ -299,6 +301,10 @@ public String toString() {
 	}
 	
 	return s + "\n";
+}
+
+boolean nearEnd() {
+	return theShop.nombrePilesVides()>=C.N2 | theShop.provincesRestantes()<= C.N1;
 }
 
 
