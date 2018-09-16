@@ -1,5 +1,5 @@
 import java.util.Arrays;
-//bite MDR
+
 public class Player {
 	int id;
 public static final boolean urMomGay = true;
