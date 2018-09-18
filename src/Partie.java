@@ -120,6 +120,16 @@ Partie reinitialise() {
 	return nouv;
 }
 
+public Card [] scryAll() {
+	//utile pour l'espion
+	Card [] liste = new Card[Partie.NJOUEURS];
+	for (int i = 0; i<NJOUEURS; i++) {
+		liste[i] = joueurs[i].deck.peek();
+	}
+	return liste;
+}
+
+
 public String toString() {
 	String s = "appercu de la partie : "+ "\n";
 	s+= "j0 : "+ "\n" +  joueurs[0].deck.decklist.toString();
@@ -134,8 +144,15 @@ public String toString() {
 public static void main(String[] args) {
 	Card.initialise();
 	Partie p = new Partie();
-	p.partie();
-	System.out.println(p.joueurs[0].deck.decklist);
+	p.joueurs[0].hand.add(Card.getCardByName("Puits aux Souhaits"));
+	p.joueurs[0].play(Card.getCardByName("Puits aux Souhaits"));
+	System.out.println(p.joueurs[0].deck);
+	//p.joueurs[0].applyEffect(Card.getCardByName("Chambre du Conseil"));
+	System.out.println(p.joueurs[0].hand);
+	System.out.println(p.joueurs[1].hand);
+	System.out.println(p.joueurs[2].hand);
+	System.out.println(p.joueurs[3].hand);
+	//p.partie();
 }
 
 }

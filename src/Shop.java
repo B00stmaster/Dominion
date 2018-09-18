@@ -2,7 +2,7 @@
 public class Shop {
 static final int SHOP_SIZE=100;
 static Stack [] avalaible = new Stack[SHOP_SIZE];
-static int nItems = 12; //pour pouvoir parcourir le shop sans avoir de null (?)
+static int nItems = 14; //pour pouvoir parcourir le shop sans avoir de null (?)
 
 Shop(){
 	Stack cuivres = new Stack("Cuivre", 50);
@@ -29,6 +29,10 @@ Shop(){
 	avalaible[10] = laboratoires;
 	Stack festivals = new Stack("Festival", 11);
 	avalaible[11] = festivals;
+	Stack sorcieres = new Stack("Sorciere", 11);
+	avalaible[12] = sorcieres;
+	Stack maledictions = new Stack("Malediction", 50);
+	avalaible[13] = maledictions;
 
 }
 

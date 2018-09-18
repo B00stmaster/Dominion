@@ -56,6 +56,7 @@ void play(Card c) {//on suppose que le joueur a deja l'action dispo pour le fair
 	for (int i = 0; i<c.cartes; i++) {
 		draw();
 	}
+	applyEffect(c);
 	board.add(hand.retire(c));
 }
 
@@ -66,11 +67,30 @@ void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo
 	achatsRestants -= 1;
 }
 
+void mill() {
+	defausse.add(deck.pop());
+}
+
 void applyEffect(Card c) {
 	//on liste tous les effets pour appliquer la methode correspondante
 	Card.Effet e = c.effet;
+	System.out.println(e);
 	if (e == Card.Effet.SORCIERE) {
-		Card.Sorciere(partie, this);
+		Card.sorciere(partie, this);
+	}
+	else if (e == Card.Effet.CHAMBRE_DU_CONSEIL) {
+		Card.chambreDuConseil(partie, this);
+	}
+	else if (e == Card.Effet.PUITS_AUX_SOUHAITS) {
+		Card [] choosables = Card.getCardByName("Puits aux Souhaits").choosables(partie, this); //fonction unique qui marche pour toutes les cartes qui font choisir parmis des cartes
+		Card C = choosables[0]; //CHOIX DU JOUEUR !!! après on aura une fonction non débile pou choisir
+		Card.puitsAuxSouhaits(C, this);
+	}
+	else if (e == Card.Effet.ESPION) {
+		Card [] scried = partie.scryAll();
+		boolean [] b  = new boolean[Partie.NJOUEURS];
+		//faire la fonction pour les choix qui change b en fonction du tablea scried
+		Card.espion(partie, b);		
 	}
 }
 
