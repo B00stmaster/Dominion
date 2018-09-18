@@ -3,6 +3,7 @@ import java.util.Arrays;
 public class Player {
 	int id;
 public static final boolean urMomGay = true;
+public Partie partie;
 public Shop theShop;
 public Deck deck;
 public Hand hand;
@@ -16,7 +17,19 @@ public boolean buySomething;
 public Constantes C;
 int PointsDeVictoire = 0;
 
+
 Player(Shop s){
+	theShop = s;
+	deck = new Deck(this);
+	deck.shuffle();
+	hand = new Hand(this);
+	defausse = new Stack();
+	board = new Stack();
+	C = new Constantes();
+}
+
+Player(Shop s, Partie p){
+	partie = p;
 	theShop = s;
 	deck = new Deck(this);
 	deck.shuffle();
@@ -51,6 +64,14 @@ void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo
 	deck.decklist.add(c);
 	remainingMoney -= c.cost;
 	achatsRestants -= 1;
+}
+
+void applyEffect(Card c) {
+	//on liste tous les effets pour appliquer la methode correspondante
+	Card.Effet e = c.effet;
+	if (e == Card.Effet.SORCIERE) {
+		Card.Sorciere(partie, this);
+	}
 }
 
 Card [] playables() {

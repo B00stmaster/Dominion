@@ -3,6 +3,8 @@ public class Card {
 public String name;
 public enum Type {TRESOR, VICTOIRE, ACTION};
 public Type type;
+public enum Effet {AUCUN, SORCIERE};
+public Effet effet;
 public int cost;
 public int VP;
 public int value;
@@ -92,6 +94,15 @@ public boolean equals(Object o) {
 	if (o == null) return false;
     if (!(o instanceof Card))return false;
 	return ((Card) o).name.compareTo(this.name)==0;
+}
+
+public static void Sorciere(Partie p, Player j) {
+	for (int i = 0; i< Partie.NJOUEURS; i++) {
+		if (p.joueurs[i] != j) {
+			p.joueurs[i].defausse.add(p.theShop.getCard("Malediction"));
+			p.joueurs[i].deck.decklist.add(getCardByName("Malediction"));
+		}
+	}
 }
 
 

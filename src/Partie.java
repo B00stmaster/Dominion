@@ -13,7 +13,7 @@ Partie(){
 	Shop s = new Shop();
 	theShop = s;
 	joueurs = new Player [NJOUEURS];
-	joueurs[0] = new Player(s);
+	joueurs[0] = new Player(s, this);
 	joueurs[0].id = 0;
 	for (int i = 1; i<NJOUEURS; i++) {
 	joueurs[i] = new Player(s, joueurs[0].C, true);
@@ -38,6 +38,8 @@ Partie(Constantes Co){
 }
 
 
+
+
 void joueUnTourComplet(int first) {
 	
 	for (int i = first; i<4+first; i++) {
@@ -57,7 +59,7 @@ Player partie(int NTours) {
 		joueUnTourComplet(first);
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
-		int points = joueurs[i].countVictoryPoints();
+		//int points = joueurs[i].countVictoryPoints();
 		if (Apprentissage.wannaPrint) {
 		//System.out.println("joueur " + i + " : " + points);
 		if (i == 3) {System.out.println("");}}
