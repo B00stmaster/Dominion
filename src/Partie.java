@@ -40,23 +40,23 @@ Partie(Constantes Co){
 
 
 
-void joueUnTourComplet(int first) {
+void joueUnTourComplet(boolean printDetails, int first) {
 	
 	for (int i = first; i<4+first; i++) {
-		//System.out.println("tour du joueur " + i);
-		//if (i%4 ==0) {
-		//System.out.println(joueurs[i%4]);}
-		joueurs[i%4].tourDeJeu();
-		//if (i%4 ==0) {
-		//System.out.println(joueurs[i%4]);}
-		//System.out.println(theShop);
+		if (printDetails) {
+		System.out.println("=================================================================");
+		}
+		joueurs[i%4].tourDeJeu(printDetails);
+		if (printDetails) {
+			System.out.println("fin de tour : "); System.out.println("");
+		System.out.println(joueurs[i%4]);}
 	}
 }
 
-Player partie(int NTours) {
+Player partie(int NTours, boolean printDetails) {
 	int first = (int) (Math.random()*4);
 	for (int i = 0; i<NTours; i++) {
-		joueUnTourComplet(first);
+		joueUnTourComplet(printDetails, first);
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
 		//int points = joueurs[i].countVictoryPoints();
@@ -70,10 +70,10 @@ Player partie(int NTours) {
 	return gagnant;
 }
 
-Player partie() {
+Player partie(boolean printDetails) {
 	int first = (int) (Math.random()*4);
 	while(!hasEnded()) {		
-		joueUnTourComplet(first);
+		joueUnTourComplet(printDetails, first);
 		
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
@@ -144,15 +144,7 @@ public String toString() {
 public static void main(String[] args) {
 	Card.initialise();
 	Partie p = new Partie();
-	p.joueurs[0].hand.add(Card.getCardByName("Puits aux Souhaits"));
-	p.joueurs[0].play(Card.getCardByName("Puits aux Souhaits"));
-	System.out.println(p.joueurs[0].deck);
-	//p.joueurs[0].applyEffect(Card.getCardByName("Chambre du Conseil"));
-	System.out.println(p.joueurs[0].hand);
-	System.out.println(p.joueurs[1].hand);
-	System.out.println(p.joueurs[2].hand);
-	System.out.println(p.joueurs[3].hand);
-	//p.partie();
+	p.partie(true);
 }
 
 }

@@ -1,8 +1,8 @@
 
 public class Card {
 public String name;
-public enum Type {TRESOR, VICTOIRE, ACTION};
-public Type type;
+private enum Type {TRESOR, VICTOIRE, ACTION, TRESOR_VICTOIRE, ACTION_ATTACK, ACTION_REACTION, MALEDICTION};
+private Type type;
 public enum Effet {AUCUN, SORCIERE, CHAMBRE_DU_CONSEIL, PUITS_AUX_SOUHAITS, ESPION};
 public Effet effet;
 public int cost;
@@ -25,6 +25,31 @@ Card(String n, Type t, int c, int p, int v, int a, int ach, int ca){
 
 Card(Card c){
 	name = c.name; type = c.type; cost = c.cost; VP = c.VP; value = c.value; actions = c.actions; achats = c.achats; cartes = c.cartes;
+}
+
+public boolean isAnAction() {
+	if (type == Type.ACTION || type == Type.ACTION_ATTACK || type == Type.ACTION_REACTION) {return true;}
+	return false;
+} 
+
+public boolean isAVictory() {
+	if (type == Type.VICTOIRE|| type == Type.TRESOR_VICTOIRE) {return true;}
+	return false;
+}
+
+public boolean isAReaction() {
+	if (type == Type.ACTION_REACTION) {return true;}
+	return false;
+}
+
+public boolean isATreasure() {
+	if (type == Type.TRESOR|| type  == Type.TRESOR_VICTOIRE) {return true;}
+	return false;
+}
+
+public boolean isAnAttack() {
+	if (type == Type.ACTION_ATTACK) {return true;}
+	return false;
 }
 
 public String toString() {
@@ -67,7 +92,7 @@ static void initialise() {
 	Card sorciere = new Card("Sorciere", Type.ACTION, 5,0,0,0,0,2);
 	sorciere.effet = Effet.SORCIERE;
 	add(sorciere);
-	Card malediction = new Card("Malediction", Type.VICTOIRE, 0, -1, 0, 0,0,0);
+	Card malediction = new Card("Malediction", Type.MALEDICTION, 0, -1, 0, 0,0,0);
 	add(malediction);
 	Card chambreDuConseil = new Card("Chambre du Conseil", Type.ACTION, 5,0,0,0,1,4);
 	chambreDuConseil.effet = Effet.CHAMBRE_DU_CONSEIL;

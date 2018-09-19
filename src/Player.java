@@ -18,6 +18,8 @@ public Constantes C;
 int PointsDeVictoire = 0;
 
 
+
+
 Player(Shop s){
 	theShop = s;
 	deck = new Deck(this);
@@ -74,7 +76,6 @@ void mill() {
 void applyEffect(Card c) {
 	//on liste tous les effets pour appliquer la methode correspondante
 	Card.Effet e = c.effet;
-	System.out.println(e);
 	if (e == Card.Effet.SORCIERE) {
 		Card.sorciere(partie, this);
 	}
@@ -99,11 +100,11 @@ Card [] playables() {
 	int p = 0;
 	if (actionsRestantes == 0) {return new Card[0];}
 	for (int i = 0; i<hand.NCartes; i++) {
-		if (hand.cartes[i].type == Card.Type.ACTION) {n++;}
+		if (hand.cartes[i].isAnAction()) {n++;}
 	};
 	Card [] reponse = new Card[n];
 	for (int i = 0; i<hand.NCartes; i++) {
-		if (hand.cartes[i].type == Card.Type.ACTION) {
+		if (hand.cartes[i].isAnAction()) {
 			reponse[p] = hand.cartes[i];
 			p++;}
 	};
@@ -163,8 +164,9 @@ int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeu
 	int imax = hand.NCartes; 
 	for(int i = 0; i< imax;i++) {
 		Card c0 = hand.pop();
-		if (c0.type == Card.Type.TRESOR) 
-		{TOTAL += c0.value;}
+		if (c0.isATreasure()){
+			TOTAL += c0.value;
+			}
 		defausse.add(c0);
 	}
 	int jmax = board.NCartes;
@@ -201,22 +203,31 @@ public void reset() {
 	actionsRestantes = 1;
 	remainingMoney = 0;
 }
-public void tourDeJeu() {
+public void tourDeJeu(boolean printDetails) {
 	reset();
-	//playSomething = true; //on peut passer ça en fin de tour plutot en vrai
-	//doit choisir quelle carte action jouer methode Carte choose()
+	if(printDetails) {
+		System.out.println("tour du joueur " + id);
+	System.out.println(this);}
 	while(playSomething) {
 	Card c = choisitUneAction();
-	if (playSomething) {play(c);}
+	if (playSomething) {
+		play(c);
+		if(printDetails) {System.out.println("joue " + c);} }
 	}
 	countGoldValue();	
 	while(buySomething) {
-		Card c = laMeilleureNote();
-		if (buySomething) {buy(c);}
+		Card c = laMeilleureNote(printDetails);
+		if (buySomething) {
+			buy(c);
+			}
 	}
 	
 	newHand();
 }
+
+
+
+
 
 Card laPlusChere() {
 	//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
@@ -234,13 +245,13 @@ Card laPlusChere() {
 	return reponse;
 }
 
-Card laMeilleureNote() {
+Card laMeilleureNote(boolean printDetails) {
 	Card [] buyables = buyables();
 	double noteMax = 0;
 	buySomething = false;
 	Card reponse = Card.getCardByName("Cuivre");
 	for (int i = 0; i<buyables.length; i++) {
-		double note = note(buyables[i]);
+		double note = note(buyables[i], printDetails);
 		//System.out.println(buyables[i] +  " : " + note);
 		if (note > noteMax) {
 			buySomething = true;
@@ -248,7 +259,8 @@ Card laMeilleureNote() {
 			noteMax = note;
 		}
 	}
-	//System.out.println("J'ai choisi : " + reponse + " avec une note de : " + noteMax);
+	if (reponse.name != "Cuivre" && printDetails) {
+	System.out.println("achete : " + reponse);}
 	return reponse;
 }
 
@@ -278,13 +290,16 @@ private double incrementGoldDensity(Decklist nouv) {
 }
 
 private double incrementCardValue(Decklist nouv) {
-	return nouv.cardValue() - deck.decklist.cardValue();
+	return nouv.averageDrawnCards() - deck.decklist.averageDrawnCards();
 }
 
 private double incrementEnAction(Decklist nouv) {
-
-	return nouv.givenActionDensity() - deck.decklist.givenActionDensity();
+	return (nouv.givenActionDensity() - deck.decklist.givenActionDensity())*(1 + deck.decklist.actionDensity());
 }
+
+//private double noteCartes(Decklist nouv) {
+//	return nouv.averageDrawnCards() - deck.decklist.averageDrawnCards();
+//}
 
 private double incrementEnAchat(Decklist nouv) {
 	return nouv.givenAchatDensity() - deck.decklist.givenAchatDensity();
@@ -294,19 +309,28 @@ private double PdV(Card c) {
 	return c.VP;
 }
 
-public double note(Card c) {
+public double note(Card c, boolean printDetails) {
 	Decklist nouv = new Decklist(deck.decklist, c, this);
 	double noteGold  = incrementGoldDensity(nouv);
 	double noteCard = incrementCardValue(nouv);
 	double noteAction = incrementEnAction(nouv);
 	double noteAchat = incrementEnAchat(nouv);
 	double notePdV = PdV(c);
-	return C.k2*noteGold+ C.k3*noteCard+ C.k4*noteAction + C.k5*noteAchat+ C.k1*notePdV;
+	double note = C.k2*noteGold+ C.k3*noteCard+ C.k4*noteAction + C.k5*noteAchat+ C.k1*notePdV;
+	if (printDetails & false) {
+		System.out.println("");
+		System.out.println("Carte : " + c);
+		System.out.println("note Gold : " + noteGold);
+		System.out.println("note Card : " + noteCard);
+		System.out.println("note Action : " + noteAction);
+		System.out.println("note Achat : " + noteAchat);
+		System.out.println("note Points de Victoire : " + notePdV);
+		System.out.println("note totale : " + note);
+	}
+	return note;
 }
 
-//public void transitionToLateGame() {
-//	C.k1 = C.q1; C.k2 = C.q2; k3 = q3; k4 = q4; k5 = q5; k6 = q6; k7 = q7;
-//}
+
 
 public String toString() {
 
@@ -349,7 +373,7 @@ public static void main(String [] args) {
 	Player p = new Player(s);
 	p.newHand();
 	for (int i = 0; i<20; i++) {
-	p.tourDeJeu();}
+	p.tourDeJeu(true);}
 	System.out.println(p.deck.decklist);
 	System.out.println(p.C);
 	}
