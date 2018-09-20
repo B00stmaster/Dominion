@@ -36,8 +36,8 @@ public String toString() {
 // faut creer une liste des cartes du deck ! 
 
 
-double goldDensity() {
-	return decklist.goldDensity();
-}
+//double goldDensity() {
+//	return decklist.goldDensity();
+//}
 
 }

@@ -8,7 +8,8 @@ public Deck deck;
 public Hand hand;
 public Stack defausse;
 public Stack board;
-public int actionsRestantes = 1;
+public int actionsRestant
+es = 1;
 public int achatsRestants = 1;
 public int remainingMoney;
 public boolean playSomething;
