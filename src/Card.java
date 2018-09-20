@@ -7,7 +7,7 @@ public enum Effet {AUCUN, SORCIERE, CHAMBRE_DU_CONSEIL, PUITS_AUX_SOUHAITS, ESPI
 public Effet effet;
 public int cost;
 public int VP;
-public int value;
+public int goldValue;
 public int actions;
 public int achats;
 public int cartes;
@@ -19,37 +19,32 @@ Card(String n, Type t, int c, int p, int v, int a, int ach, int ca){
 	name = n; type = t; 
 	cost = c; 
 	VP = p; 
-	value = v; 
+	goldValue = v; 
 	actions = a; achats = ach; cartes = ca; 
 }
 
 Card(Card c){
-	name = c.name; type = c.type; cost = c.cost; VP = c.VP; value = c.value; actions = c.actions; achats = c.achats; cartes = c.cartes;
+	name = c.name; type = c.type; cost = c.cost; VP = c.VP; goldValue = c.goldValue; actions = c.actions; achats = c.achats; cartes = c.cartes;
 }
 
 public boolean isAnAction() {
-	if (type == Type.ACTION || type == Type.ACTION_ATTACK || type == Type.ACTION_REACTION) {return true;}
-	return false;
+	return (type == Type.ACTION || type == Type.ACTION_ATTACK || type == Type.ACTION_REACTION);
 } 
 
 public boolean isAVictory() {
-	if (type == Type.VICTOIRE|| type == Type.TRESOR_VICTOIRE) {return true;}
-	return false;
+	return (type == Type.VICTOIRE|| type == Type.TRESOR_VICTOIRE);
 }
 
 public boolean isAReaction() {
-	if (type == Type.ACTION_REACTION) {return true;}
-	return false;
+	return (type == Type.ACTION_REACTION);
 }
 
 public boolean isATreasure() {
-	if (type == Type.TRESOR|| type  == Type.TRESOR_VICTOIRE) {return true;}
-	return false;
+	return (type == Type.TRESOR|| type  == Type.TRESOR_VICTOIRE);
 }
 
 public boolean isAnAttack() {
-	if (type == Type.ACTION_ATTACK) {return true;}
-	return false;
+	return (type == Type.ACTION_ATTACK);
 }
 
 public String toString() {
@@ -138,7 +133,7 @@ public static void sorciere(Partie p, Player j) {
 	for (int i = 0; i< Partie.NJOUEURS; i++) {
 		if (p.joueurs[i] != j) {
 			p.joueurs[i].defausse.add(p.theShop.getCard("Malediction"));
-			p.joueurs[i].deck.decklist.add(getCardByName("Malediction"));
+			p.joueurs[i].decklist.add(getCardByName("Malediction"));
 		}
 	}
 }

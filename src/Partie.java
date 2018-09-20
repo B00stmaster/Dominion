@@ -14,10 +14,10 @@ Partie(){
 	theShop = s;
 	joueurs = new Player [NJOUEURS];
 	joueurs[0] = new Player(s, this);
-	joueurs[0].id = 0;
+	joueurs[0].number = 0;
 	for (int i = 1; i<NJOUEURS; i++) {
 	joueurs[i] = new Player(s, joueurs[0].C, true);
-	joueurs[i].id = i;}
+	joueurs[i].number = i;}
 	for (int i = 0; i<NJOUEURS; i++) {
 		joueurs[i].newHand();
 	}
@@ -28,10 +28,10 @@ Partie(Constantes Co){
 	theShop = s;
 	joueurs = new Player [NJOUEURS];
 	joueurs[0] = new Player(s, Co, false);
-	joueurs[0].id = 0;
+	joueurs[0].number = 0;
 	for (int i = 1; i<NJOUEURS; i++) {
 	joueurs[i] = new Player(s, joueurs[0].C, true);
-	joueurs[i].id = i;}
+	joueurs[i].number = i;}
 	for (int i = 0; i<NJOUEURS; i++) {
 		joueurs[i].newHand();
 	}
@@ -132,10 +132,10 @@ public Card [] scryAll() {
 
 public String toString() {
 	String s = "appercu de la partie : "+ "\n";
-	s+= "j0 : "+ "\n" +  joueurs[0].deck.decklist.toString();
-	s+= "j1 : "+ "\n" +  joueurs[1].deck.decklist.toString();
-	s+= "j2 : "+ "\n" +  joueurs[2].deck.decklist.toString();
-	s+= "j3 : "+ "\n" +  joueurs[3].deck.decklist.toString();
+	s+= "j0 : "+ "\n" +  joueurs[0].decklist.toString();
+	s+= "j1 : "+ "\n" +  joueurs[1].decklist.toString();
+	s+= "j2 : "+ "\n" +  joueurs[2].decklist.toString();
+	s+= "j3 : "+ "\n" +  joueurs[3].decklist.toString();
 	return s;
 }
 

@@ -18,10 +18,10 @@ static boolean wannaPrint = false;
 		for (int k = 0; k<NOMBRE_DE_PARTIES;k++) {
 				p = p.reinitialise();	
 				Player g = p.partie(false);				
-				if (g.id == 0) {j0++;}
-				if (g.id == 1) {j1++;}
-				if (g.id == 2) {j2++;}
-				if (g.id == 3) {j3++;}
+				if (g.number == 0) {j0++;}
+				if (g.number == 1) {j1++;}
+				if (g.number == 2) {j2++;}
+				if (g.number == 3) {j3++;}
 				}
 		System.out.println("j0 : " + j0);
 		System.out.println("j1 : " + j1);
@@ -64,11 +64,11 @@ static boolean wannaPrint = false;
 		wannaPrint = true;
 		int compteur = 0;
 		for (int i = 0; i<100; i++) {
-			int ID = p.partie(false).id;
+			int ID = p.partie(false).number;
 			if (ID == 0) {compteur++;}
 		//System.out.println(ID);
 			System.out.println("points Gagnant : " + p.joueurs[ID].PointsDeVictoire);
-			System.out.println(p.joueurs[ID].deck.decklist);
+			System.out.println(p.joueurs[ID].decklist);
 		p = p.reinitialise();
 		
 		}

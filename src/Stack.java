@@ -1,97 +1,74 @@
+import java.util.ArrayList;
+import java.util.List;
 
 public class Stack {
-static final int MAX_SIZE=1000;
-public Card[] cartes;
-protected int NCartes;
-
+public List<Card> data;
 
 Stack() {
-	NCartes=0;
-	cartes = new Card[MAX_SIZE];
+	data = new ArrayList<Card>();
 }
 
 Stack(String s, int N) {
-	cartes = new Card[MAX_SIZE];
+	this();
 	for (int i = 0; i<N; i++) {
-		cartes[i]= Card.copie(s);
+		data.add(Card.copie(s));
 	}
-	NCartes = N;
 }
 
-Stack(Stack S, Card c){
-	cartes = new Card[MAX_SIZE];
-	for (int i = 0; i<S.NCartes; i++) {
-		cartes[i] = S.cartes[i];
+Stack(Stack cop){
+	this();
+	for (int i = 0; i<cop.data.size()-1; i++) {
+		data.add(Card.copie(cop.data.get(i).name));
 	}
-	cartes[S.NCartes] = c;
-	NCartes = S.NCartes+1;
 }
-
 
 Stack add(Card c){
-	if(NCartes>=MAX_SIZE)
-		System.err.println("Tentative de add une file pleine!");
-	cartes[NCartes] = c;
-	NCartes++;
+	data.add(c);
 	return this;
 }
 
+Stack simulatedAdd(Card c){
+	return (new Stack(this)).add(c);
+}
+
 Card pop(){
-	if(isEmpty())
-		System.err.println("ERREUR - Tentative de pop une file vide!"); 
-	NCartes--;
-	return cartes[NCartes];
+	return data.remove(data.size()-1);
 }
 
 Card peek(){
-	if(isEmpty())
-		System.err.println("ERREUR - Tentative de peek une file vide!");
-	return cartes[NCartes-1];
+	return data.get(data.size()-1);
 }
 
-int size() {return NCartes;}
+int size() {return data.size();}
 
 
-boolean isEmpty() {return NCartes<=0;}
+boolean isEmpty() {return data.isEmpty();}
 
 public Card retire(Card c) {
-	for (int i = 0; i<NCartes;i++) {
-		if (c == cartes[i]) {
-			Card temp=cartes[i];
-			NCartes --;
-			cartes[i] = cartes[NCartes];
-			return temp;
-		}
-	}
-	System.out.println("Erreur carte absente");
-	return null;
+	return data.remove(data.indexOf(c));
 }
 
-void permutation(int i, int j) {
-	Card temp = cartes[i];
-	cartes[i] = cartes[j];
-	cartes[j] = temp;
-	
-}
+//void permutation(int i, int j) {
+//	Card temp = cartes[i];
+//	cartes[i] = cartes[j];
+//	cartes[j] = temp;
+//}
 
-void shuffle() {
-	//System.out.println("shuffle");
-	int n = 500;
-	for (int i = 0; i<n; i++) {
-		int a = (int) (Math.random()*NCartes);
-		int b = (int) (Math.random()*NCartes);
-		
-		permutation(a,b);
-	}
-}
-
-
-
+//void shuffle() {
+//	//System.out.println("shuffle");
+//	int n = 500;
+//	for (int i = 0; i<n; i++) {
+//		int a = (int) (Math.random()*NCartes);
+//		int b = (int) (Math.random()*NCartes);
+//		
+//		permutation(a,b);
+//	}
+//}
 
 public String toString() {
-	String s = "contenu de la pile : " + "\n";
-	for (int i = 0; i<NCartes; i++) {
-		s += cartes[i].name + "\n";
+	String s = "Stack" + super.toString() + "content : " + "\n";
+	for (int i = 0; i<data.size(); i++) {
+		s += data.get(i).name + "\n";
 	}
 	return s;
 }
