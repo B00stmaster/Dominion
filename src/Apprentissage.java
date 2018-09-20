@@ -1,7 +1,7 @@
 
 public class Apprentissage {
 	static final int NOMBRE_DE_PARTIES = 1000;
-	static final int NOMBRE_DEVOLUTIONS = 10;
+	static final int NOMBRE_DEVOLUTIONS = 300;
 static boolean wannaPrint = false;
 	
 	Apprentissage(){
@@ -14,11 +14,10 @@ static boolean wannaPrint = false;
 		int j2 = 0; 
 		int j3 = 0;
 		//Player gagnant = p.partie(Partie.NOMBRE_DE_TOURS);
-		Player gagnant = p.partie();
+		Player gagnant = p.partie(false);
 		for (int k = 0; k<NOMBRE_DE_PARTIES;k++) {
 				p = p.reinitialise();	
-				Player g = p.partie();
-				
+				Player g = p.partie(false);				
 				if (g.id == 0) {j0++;}
 				if (g.id == 1) {j1++;}
 				if (g.id == 2) {j2++;}
@@ -40,12 +39,9 @@ static boolean wannaPrint = false;
 	Constantes constantesUpdated(Constantes C) {
 		 return meilleurJoueur(C).C;
 		}
-//	
-//	void initialisationNouvellePartie() {
-//		p.theShop = new Shop();
-//		
-//	}
-//	
+
+	
+
 	
 	public static void main(String[] args) {
 		Card.initialise();
@@ -57,7 +53,8 @@ static boolean wannaPrint = false;
 		System.out.println(Cgen);
 		for (int i = 0; i<NOMBRE_DEVOLUTIONS; i++) {
 		Cgen = a.constantesUpdated(Cgen);
-		System.out.println(Cgen);}
+		System.out.println(Cgen);
+		System.out.println("apprentissage fait à : " +  (int)  ((double) 100*i/NOMBRE_DEVOLUTIONS) + "%");}
 		
 		Partie p = new Partie();
 		p.joueurs[0].C = Cgen;
@@ -67,7 +64,7 @@ static boolean wannaPrint = false;
 		wannaPrint = true;
 		int compteur = 0;
 		for (int i = 0; i<100; i++) {
-			int ID = p.partie().id;
+			int ID = p.partie(false).id;
 			if (ID == 0) {compteur++;}
 		//System.out.println(ID);
 			System.out.println("points Gagnant : " + p.joueurs[ID].PointsDeVictoire);
@@ -76,6 +73,8 @@ static boolean wannaPrint = false;
 		
 		}
 		System.out.println("le joueur crée a gagné " + compteur +" % des parties" );
+		System.out.println(Cgen);
+		
 		
 	}
 }

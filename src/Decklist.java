@@ -15,7 +15,7 @@ public class Decklist extends Stack{
 		//compte les actions qui n'en donnent pas d'autres
 		int reponse = 0;
 		for (int i =0; i<NCartes; i++) {
-			if (cartes[i].type == Card.Type.ACTION && cartes[i].actions == 0) {
+			if (cartes[i].isAnAction() && cartes[i].actions == 0) {
 				reponse++;
 			}
 		}
@@ -31,71 +31,71 @@ public class Decklist extends Stack{
 		return 5*(nANR*(NCartes-nANR)*(NCartes-nANR-1)*(NCartes-nANR-2)*(NCartes-nANR-3)/(NCartes*(NCartes-1)*(NCartes-2)*(NCartes-3)*(NCartes-4)));
 	}
 
-	public int probaDePiocher2plusANR() {
-		
-		int n = nActionsNonRenouvelantes();
-		if (n<2)return 0;
-		return 1-probaDePiocher0ANR(n)-probaDePiocher1ANR(n);
-	}
+//	public int probaDePiocher2plusANR() {
+//		
+//		int n = nActionsNonRenouvelantes();
+//		if (n<2)return 0;
+//		return 1-probaDePiocher0ANR(n)-probaDePiocher1ANR(n);
+//	}
 
 	public double goldDensity() {
 		//densité en or + celle des cartes actions si la probabilité de pouvoir la jouer est >= .8
 		int TOTAL = 0;
-		double p = probaDePiocher2plusANR();
 		for(int i = 0; i<NCartes; i++) {
-			if (cartes[i].type == Card.Type.TRESOR || cartes[i].type == Card.Type.VICTOIRE) {
+			if (cartes[i].isATreasure() || cartes[i].isAVictory()) {
 			TOTAL += cartes[i].value;}
-			if (cartes[i].type == Card.Type.ACTION && p < owner.C.k5) {
+			if (cartes[i].isAnAction()) {
 				TOTAL += cartes[i].value;
 			}
 		}
 		return (double) TOTAL/NCartes;
 	}
 	
-	public double cardValue() {
+	public double averageDrawnCards() {
 		int TOTAL = 0;
-		double p = probaDePiocher2plusANR();
-		double q = esperanceNA();
 		for (int i = 0; i<NCartes; i++) {
-			if (cartes[i].type == Card.Type.ACTION && p < owner.C.k5 && q > owner.C.k6*esperanceNAPiochees()) {
+			if (cartes[i].isAnAction() ) {
 				TOTAL += cartes[i].cartes;
 			}
 		}
+		
 		return (double) TOTAL/NCartes;
 	}
+	
 	
 	public double givenActionDensity() {
 		int TOTAL = 0; 
 		for (int i = 0; i<NCartes; i++) {
 			TOTAL += cartes[i].actions;
 		}
-		return TOTAL/NCartes;
+		return (double) TOTAL/NCartes;
 	}
+	
 	
 	public double givenAchatDensity() {
 		int TOTAL = 0; 
 		for (int i = 0; i<NCartes; i++) {
+
 			TOTAL += cartes[i].achats;
 		}
-		return TOTAL/NCartes;
+		return (double) TOTAL/NCartes;
 	}
 	
 	public double actionDensity() {
 		int TOTAL = 0;
 		for (int i = 0; i<NCartes; i++) {
-			if (cartes[i].type == Card.Type.ACTION) {
+			if (cartes[i].isAnAction()) {
 				TOTAL ++;
 			}
 		}
 		return (double)TOTAL/NCartes;
 	}
 	
-	public double esperanceNA() {
-		return 5*givenActionDensity()+1;		
+	public boolean pourraJouerSesActions(int pourcentage) {
+		//PB AU DEBUT !! 
+		return( actionDensity()/givenActionDensity()<= pourcentage/100);
 	}
-	public double esperanceNAPiochees() {
-		return 5*actionDensity();
-	}
+
 	public String toString() {
 		String s = "contenu du deck : " + "\n";
 		for (int i = 0; i<NCartes; i++) {
@@ -103,4 +103,6 @@ public class Decklist extends Stack{
 		}
 		return s;
 	}
+	
+
 }

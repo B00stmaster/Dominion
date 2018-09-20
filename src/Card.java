@@ -1,8 +1,10 @@
 
 public class Card {
 public String name;
-public enum Type {TRESOR, VICTOIRE, ACTION};
-public Type type;
+private enum Type {TRESOR, VICTOIRE, ACTION, TRESOR_VICTOIRE, ACTION_ATTACK, ACTION_REACTION, MALEDICTION};
+private Type type;
+public enum Effet {AUCUN, SORCIERE, CHAMBRE_DU_CONSEIL, PUITS_AUX_SOUHAITS, ESPION};
+public Effet effet;
 public int cost;
 public int VP;
 public int value;
@@ -23,6 +25,31 @@ Card(String n, Type t, int c, int p, int v, int a, int ach, int ca){
 
 Card(Card c){
 	name = c.name; type = c.type; cost = c.cost; VP = c.VP; value = c.value; actions = c.actions; achats = c.achats; cartes = c.cartes;
+}
+
+public boolean isAnAction() {
+	if (type == Type.ACTION || type == Type.ACTION_ATTACK || type == Type.ACTION_REACTION) {return true;}
+	return false;
+} 
+
+public boolean isAVictory() {
+	if (type == Type.VICTOIRE|| type == Type.TRESOR_VICTOIRE) {return true;}
+	return false;
+}
+
+public boolean isAReaction() {
+	if (type == Type.ACTION_REACTION) {return true;}
+	return false;
+}
+
+public boolean isATreasure() {
+	if (type == Type.TRESOR|| type  == Type.TRESOR_VICTOIRE) {return true;}
+	return false;
+}
+
+public boolean isAnAttack() {
+	if (type == Type.ACTION_ATTACK) {return true;}
+	return false;
 }
 
 public String toString() {
@@ -62,16 +89,29 @@ static void initialise() {
 	add(laboratoire);
 	Card festival = new Card("Festival", Type.ACTION, 5, 0,2,2,1,0);
 	add(festival);
-	
+	Card sorciere = new Card("Sorciere", Type.ACTION, 5,0,0,0,0,2);
+	sorciere.effet = Effet.SORCIERE;
+	add(sorciere);
+	Card malediction = new Card("Malediction", Type.MALEDICTION, 0, -1, 0, 0,0,0);
+	add(malediction);
+	Card chambreDuConseil = new Card("Chambre du Conseil", Type.ACTION, 5,0,0,0,1,4);
+	chambreDuConseil.effet = Effet.CHAMBRE_DU_CONSEIL;
+	add(chambreDuConseil);
+	Card puitsAuxSouhaits = new Card("Puits aux Souhaits",Type.ACTION, 3,0,0,1,0,1);
+	puitsAuxSouhaits.effet = Effet.PUITS_AUX_SOUHAITS;
+	add(puitsAuxSouhaits);
+	Card espion = new Card("Espion",Type.ACTION, 4,0,0,1,0,1);
+	espion.effet = Effet.ESPION;
+	add(espion);
 }
 
 
 public static Card getCardByName(String Name) {
 	Card c = new Card();
 	for (int i= 0; i<totalCards; i++) {
-		Card c0 = cards[i];
+		Card c0 = cards[i];		
 		if (c0.name == Name) {
-			return c; 
+			return c0; 
 		}
 	}
 	return null;
@@ -94,5 +134,48 @@ public boolean equals(Object o) {
 	return ((Card) o).name.compareTo(this.name)==0;
 }
 
+public static void sorciere(Partie p, Player j) {
+	for (int i = 0; i< Partie.NJOUEURS; i++) {
+		if (p.joueurs[i] != j) {
+			p.joueurs[i].defausse.add(p.theShop.getCard("Malediction"));
+			p.joueurs[i].deck.decklist.add(getCardByName("Malediction"));
+		}
+	}
+}
+
+public static void chambreDuConseil(Partie p, Player j) {
+	for (int i = 0; i< Partie.NJOUEURS; i++) {
+		if (p.joueurs[i] != j) {
+			p.joueurs[i].draw();
+		}
+	}
+}
+public static void puitsAuxSouhaits(Card c, Player j) {
+	Card c0 = j.deck.peek();
+	System.out.println("scry 1 : " + c0.name);
+	System.out.println("j'avais parié sur : " + c.name);
+	if (c0.name == c.name) {
+		j.draw();
+	}
+}
+
+public static void espion(Partie p, boolean [] b) {
+	if (b.length != Partie.NJOUEURS) {System.err.println("tableau b pas de la bonne taille");}
+	for (int i = 0; i<Partie.NJOUEURS; i++) {
+		if (b[i]) {p.joueurs[i].mill();}
+	}
+}
+
+
+public Card [] choosables(Partie p, Player j) {
+	if (effet == Effet.PUITS_AUX_SOUHAITS) {
+		Card [] liste = new Card[totalCards];
+		for (int i = 0; i<totalCards; i++) {
+			liste[i] = cards[i];
+		}
+		return liste;
+	}
+	return null;
+}
 
 }

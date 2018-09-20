@@ -28,6 +28,8 @@ public String toString() {
 	return s;
 }
 
+
+
 ///ANR : action non renouvelante = ne donne pas d'autres actions
 // le but c'est de quantifier la proba de pouvoir jouer une carte action donnée en fonction du nombre d'actions
 

@@ -13,7 +13,7 @@ Partie(){
 	Shop s = new Shop();
 	theShop = s;
 	joueurs = new Player [NJOUEURS];
-	joueurs[0] = new Player(s);
+	joueurs[0] = new Player(s, this);
 	joueurs[0].id = 0;
 	for (int i = 1; i<NJOUEURS; i++) {
 	joueurs[i] = new Player(s, joueurs[0].C, true);
@@ -38,26 +38,28 @@ Partie(Constantes Co){
 }
 
 
-void joueUnTourComplet(int first) {
+
+
+void joueUnTourComplet(boolean printDetails, int first) {
 	
 	for (int i = first; i<4+first; i++) {
-		//System.out.println("tour du joueur " + i);
-		//if (i%4 ==0) {
-		//System.out.println(joueurs[i%4]);}
-		joueurs[i%4].tourDeJeu();
-		//if (i%4 ==0) {
-		//System.out.println(joueurs[i%4]);}
-		//System.out.println(theShop);
+		if (printDetails) {
+		System.out.println("=================================================================");
+		}
+		joueurs[i%4].tourDeJeu(printDetails);
+		if (printDetails) {
+			System.out.println("fin de tour : "); System.out.println("");
+		System.out.println(joueurs[i%4]);}
 	}
 }
 
-Player partie(int NTours) {
+Player partie(int NTours, boolean printDetails) {
 	int first = (int) (Math.random()*4);
 	for (int i = 0; i<NTours; i++) {
-		joueUnTourComplet(first);
+		joueUnTourComplet(printDetails, first);
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
-		int points = joueurs[i].countVictoryPoints();
+		//int points = joueurs[i].countVictoryPoints();
 		if (Apprentissage.wannaPrint) {
 		//System.out.println("joueur " + i + " : " + points);
 		if (i == 3) {System.out.println("");}}
@@ -68,10 +70,10 @@ Player partie(int NTours) {
 	return gagnant;
 }
 
-Player partie() {
+Player partie(boolean printDetails) {
 	int first = (int) (Math.random()*4);
 	while(!hasEnded()) {		
-		joueUnTourComplet(first);
+		joueUnTourComplet(printDetails, first);
 		
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
@@ -118,6 +120,16 @@ Partie reinitialise() {
 	return nouv;
 }
 
+public Card [] scryAll() {
+	//utile pour l'espion
+	Card [] liste = new Card[Partie.NJOUEURS];
+	for (int i = 0; i<NJOUEURS; i++) {
+		liste[i] = joueurs[i].deck.peek();
+	}
+	return liste;
+}
+
+
 public String toString() {
 	String s = "appercu de la partie : "+ "\n";
 	s+= "j0 : "+ "\n" +  joueurs[0].deck.decklist.toString();
@@ -132,8 +144,7 @@ public String toString() {
 public static void main(String[] args) {
 	Card.initialise();
 	Partie p = new Partie();
-	p.partie();
-	System.out.println(p.joueurs[0].deck.decklist);
+	p.partie(true);
 }
 
 }
