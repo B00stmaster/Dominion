@@ -9,7 +9,7 @@ double k6 = 0.46; // coeff esperance NA piochees
 double pourcentage = 112; //seuil de proba
 int N1= 5; //seuil provinces restantes avant transition to late Game
 int N2 = 2; //seuil nombre piles vides avant transition to late Game
-double epsilon = 0.05;
+double epsilon = 0.01;
 
 Constantes(){}
 
