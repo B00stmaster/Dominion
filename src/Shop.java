@@ -56,7 +56,7 @@ public Card getCard(String name) {
 int nombrePilesVides() {
 	int reponse = 0;
 	for (int i = 0; i<nItems; i++) {
-		if (avalaible[i].NCartes <= 1) {
+		if (avalaible[i].size() <= 1) {
 			reponse++;
 		}
 	}
@@ -64,19 +64,19 @@ int nombrePilesVides() {
 }
 
 int provincesRestantes() {
-	return findStack("Province").NCartes-1;
+	return findStack("Province").size()-1;
 }
 
 boolean ilResteDesProvinces() {	
-	return findStack("Province").NCartes >1 ;
+	return findStack("Province").size() >1 ;
 }
 
 
 public String toString() {
 	String s = "contenu du Shop : " + "\n";
 	for (int i = 0; i<nItems; i++) {
-		if (avalaible[i].NCartes >0) {
-		s +=( avalaible[i].NCartes -1)+ " - " + avalaible[i].peek().name + "\n";
+		if (avalaible[i].size() >0) {
+		s +=( avalaible[i].size() -1)+ " - " + avalaible[i].peek().name + "\n";
 		}
 	}
 	s+= "piles vides : " + nombrePilesVides();

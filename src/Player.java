@@ -1,16 +1,18 @@
 import java.util.Arrays;
 
 public class Player {
-	int id;
-public static final boolean urMomGay = true;
+	static int idGenerator = 0;
+final public int id;
+public 	int number;
 public Partie partie;
 public Shop theShop;
 public Deck deck;
+public Decklist decklist;
 public Hand hand;
 public Stack defausse;
 public Stack board;
-public int actionsRestant
-es = 1;
+public String name;
+public int actionsRestantes = 1;
 public int achatsRestants = 1;
 public int remainingMoney;
 public boolean playSomething;
@@ -18,13 +20,14 @@ public boolean buySomething;
 public Constantes C;
 int PointsDeVictoire = 0;
 
-
-
-
 Player(Shop s){
+	id = idGenerator++;
 	theShop = s;
 	deck = new Deck(this);
 	deck.shuffle();
+	decklist = new Decklist(this);
+	decklist.setupOnDeck(deck);
+	name = "Player " + Integer.toString(id);
 	hand = new Hand(this);
 	defausse = new Stack();
 	board = new Stack();
@@ -32,23 +35,12 @@ Player(Shop s){
 }
 
 Player(Shop s, Partie p){
+	this(s);
 	partie = p;
-	theShop = s;
-	deck = new Deck(this);
-	deck.shuffle();
-	hand = new Hand(this);
-	defausse = new Stack();
-	board = new Stack();
-	C = new Constantes();
 }
 
 Player (Shop s, Constantes CS, boolean alter){
-	theShop = s;
-	deck = new Deck(this);
-	deck.shuffle();
-	hand = new Hand(this);
-	defausse = new Stack();
-	board = new Stack();
+	this(s);
 	if (alter) {C = CS.alter();}
 	else C = CS;
 }
@@ -65,7 +57,7 @@ void play(Card c) {//on suppose que le joueur a deja l'action dispo pour le fair
 
 void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo pour le faire
 	defausse.add(theShop.getCard(c.name));
-	deck.decklist.add(c);
+	decklist.add(c);
 	remainingMoney -= c.cost;
 	achatsRestants -= 1;
 }
@@ -100,13 +92,13 @@ Card [] playables() {
 	int n = 0;
 	int p = 0;
 	if (actionsRestantes == 0) {return new Card[0];}
-	for (int i = 0; i<hand.NCartes; i++) {
-		if (hand.cartes[i].isAnAction()) {n++;}
+	for (int i = 0; i<hand.size(); i++) {
+		if (hand.get(i).isAnAction()) {n++;}
 	};
 	Card [] reponse = new Card[n];
-	for (int i = 0; i<hand.NCartes; i++) {
-		if (hand.cartes[i].isAnAction()) {
-			reponse[p] = hand.cartes[i];
+	for (int i = 0; i<hand.size(); i++) {
+		if (hand.get(i).isAnAction()) {
+			reponse[p] = hand.get(i);
 			p++;}
 	};
 	return reponse;	
@@ -117,13 +109,13 @@ Card [] buyables() {
 	int p = 0;
 	if (achatsRestants == 0) {return new Card[0];}
 	for (int i = 0; i< Shop.nItems; i++) {
-		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].NCartes>1) {
+		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
 			n++;
 		}
 	}
 	Card [] reponse = new Card[n];
 	for (int i = 0; i<Shop.nItems; i++) {
-		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].NCartes>1) {
+		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
 			reponse[p] = Shop.avalaible[i].peek();
 			p++;
 		}
@@ -138,7 +130,7 @@ void draw() {
 		defausseDansLaBibli();
 		deck.shuffle();
 	}
-	if (deck.NCartes != 0) {
+	if (deck.size() != 0) {
 	hand.add(deck.pop());
 	}
 }
@@ -146,7 +138,7 @@ void draw() {
 
 
 void defausseDansLaBibli() {
-	int imax = defausse.NCartes;
+	int imax = defausse.size();
 	for (int i = 0; i<imax; i++) {
 		Card c0 = defausse.pop();
 		deck.add(c0);
@@ -161,39 +153,29 @@ void newHand() {
 
 
 int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeur, puis on compte sur les cartes jouées ! 
-	int TOTAL = 0;
-	int imax = hand.NCartes; 
-	for(int i = 0; i< imax;i++) {
-		Card c0 = hand.pop();
-		if (c0.isATreasure()){
-			TOTAL += c0.value;
+	int total = 0;
+	for(int i = 0; i< hand.size();i++) {
+		if (hand.get(i).isATreasure()){
+			total += hand.get(i).goldValue;
 			}
-		defausse.add(c0);
 	}
-	int jmax = board.NCartes;
-	for (int j = 0; j< jmax; j++) {
+	for (int j = 0; j< board.size(); j++) {
 		Card c0 = board.pop();
-		TOTAL += c0.value;
+		total += c0.goldValue;
 		defausse.add(c0);	
 	}
-	remainingMoney = TOTAL;
-	return TOTAL;
+	remainingMoney = total;
+	return total;
 }
 
 int countVictoryPoints() {
 	//je compte dans la main, je melange la defausse dans le deck, puis je compte dans le deck
-	int TOTAL = 0;
-	for (int i = 0; i<hand.NCartes; i++) {
-		//System.out.println(hand.cartes[i].name + " : " + hand.cartes[i].VP);
-		TOTAL += hand.cartes[i].VP;
+	int total = 0;
+	for (int i = 0; i<decklist.size(); i++) {
+		total+=decklist.get(i).VP;
 	}
-	defausseDansLaBibli();
-	for (int i = 0; i<deck.NCartes; i++) {
-		//System.out.println(deck.cartes[i].name + " : " + deck.cartes[i].VP);
-		TOTAL += deck.cartes[i].VP;
-	}
-	PointsDeVictoire = TOTAL;
-	return TOTAL;
+	PointsDeVictoire = total;
+	return total;
 }
 
 ////// TOUR DE JEU ET METHODES DE CHOIX ///////
@@ -204,10 +186,11 @@ public void reset() {
 	actionsRestantes = 1;
 	remainingMoney = 0;
 }
+
 public void tourDeJeu(boolean printDetails) {
 	reset();
 	if(printDetails) {
-		System.out.println("tour du joueur " + id);
+		System.out.println("TOUR DU JOUEUR " + name);
 	System.out.println(this);}
 	while(playSomething) {
 	Card c = choisitUneAction();
@@ -225,9 +208,6 @@ public void tourDeJeu(boolean printDetails) {
 	
 	newHand();
 }
-
-
-
 
 
 Card laPlusChere() {
@@ -266,7 +246,6 @@ Card laMeilleureNote(boolean printDetails) {
 }
 
 
-
 Card choisitUneAction() {
 	//fonction toute conne, si il a une carte qui donne des actions il la joue,
 	//s'il a pas de carte donnant des actions, il joue la premiere action q'uil voit
@@ -287,23 +266,23 @@ Card choisitUneAction() {
 }
 
 private double incrementGoldDensity(Decklist nouv) {
-	 return nouv.goldDensity()- deck.goldDensity();
+	 return nouv.goldDensity()- decklist.goldDensity();
 }
 
 private double incrementCardValue(Decklist nouv) {
-	return nouv.averageDrawnCards() - deck.decklist.averageDrawnCards();
+	return nouv.averageDrawnCards() - decklist.averageDrawnCards();
 }
 
 private double incrementEnAction(Decklist nouv) {
-	return (nouv.givenActionDensity() - deck.decklist.givenActionDensity())*(1 + deck.decklist.actionDensity());
+	return (nouv.givenActionDensity() - decklist.givenActionDensity())*(1 + decklist.actionDensity());
 }
 
 //private double noteCartes(Decklist nouv) {
-//	return nouv.averageDrawnCards() - deck.decklist.averageDrawnCards();
+//	return nouv.averageDrawnCards() - decklist.averageDrawnCards();
 //}
 
 private double incrementEnAchat(Decklist nouv) {
-	return nouv.givenAchatDensity() - deck.decklist.givenAchatDensity();
+	return nouv.givenAchatDensity() - decklist.givenAchatDensity();
 }
 
 private double PdV(Card c) {
@@ -311,14 +290,15 @@ private double PdV(Card c) {
 }
 
 public double note(Card c, boolean printDetails) {
-	Decklist nouv = new Decklist(deck.decklist, c, this);
+	Decklist nouv = decklist.simulatedAdd(c);
+	System.out.println("decklist: "+decklist);
 	double noteGold  = incrementGoldDensity(nouv);
 	double noteCard = incrementCardValue(nouv);
 	double noteAction = incrementEnAction(nouv);
 	double noteAchat = incrementEnAchat(nouv);
 	double notePdV = PdV(c);
 	double note = C.k2*noteGold+ C.k3*noteCard+ C.k4*noteAction + C.k5*noteAchat+ C.k1*notePdV;
-	if (printDetails & false) {
+	if (printDetails) {
 		System.out.println("");
 		System.out.println("Carte : " + c);
 		System.out.println("note Gold : " + noteGold);
@@ -338,23 +318,11 @@ public String toString() {
 	
 	String s = "Joueur ";
 	s+= "Actions Restantes : " + actionsRestantes + "  |   Achats : " + achatsRestants + "\n";
-	s += "Contenu du deck :" + "\n";
-	for (int i =0; i<deck.NCartes;i++) {
-		s += deck.cartes[i].name + "  |  " ;
-		if (i%7 == 0 && i !=0) {
-			s+= "\n";
-		}
-	}
-	s +="\n" +  "Contenu de la main :" + "\n";
-	for (int i =0; i<hand.NCartes;i++) {
-		s += hand.cartes[i].name + "  |  " ;
-		if (i%7 == 0 && i !=0) {
-			s+= "\n";
-		}
-	}
-	s +="\n" +  "Contenu de la defausse :" + "\n";
-	for (int i =0; i<defausse.NCartes;i++) {
-		s += defausse.cartes[i].name + "  |  " ;
+	s+=deck.toString();
+	s+=hand.toString();
+	s+="\n" +  "Contenu de la defausse :" + "\n";
+	for (int i =0; i<defausse.size();i++) {
+		s += defausse.data.get(i).name + "  |  " ;
 		if (i%7 == 0 && i !=0) {
 			s+= "\n";
 		}
@@ -375,7 +343,7 @@ public static void main(String [] args) {
 	p.newHand();
 	for (int i = 0; i<20; i++) {
 	p.tourDeJeu(true);}
-	System.out.println(p.deck.decklist);
+	System.out.println(p.decklist);
 	System.out.println(p.C);
 	}
 

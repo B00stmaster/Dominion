@@ -1,36 +1,40 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
-public class Decklist extends Stack{
+public class Decklist extends Vector<Card>{
 	Player owner;
 	//plein de methodes d'analyse d'une liste de cartes pour pouvoir les evaluer
 	
 	Decklist(Player p){
-		super();
 		owner = p;		
 	}
-	Decklist(Stack s, Card c, Player p){
-		super(s,c);
-		owner = p;
-	}
-	public int nActionsNonRenouvelantes() {
-		//compte les actions qui n'en donnent pas d'autres
-		int reponse = 0;
-		for (int i =0; i<NCartes; i++) {
-			if (cartes[i].isAnAction() && cartes[i].actions == 0) {
-				reponse++;
-			}
+	
+	Decklist(Decklist cop){
+		super(cop.size());
+		for(int i=0;i<cop.size();i++) {
+			this.add(Card.copie(cop.get(i).name));
 		}
-		return reponse;
 	}
-
-	public int probaDePiocher0ANR(int nANR) {
-		
-		return ((NCartes-nANR)*(NCartes-nANR-1)*(NCartes-nANR-2)*(NCartes-nANR-3)*(NCartes-nANR-4))/(NCartes*(NCartes-1)*(NCartes-2)*(NCartes-3)*(NCartes-4));
+	
+	Decklist simulatedAdd(Card c) {
+		Decklist temp = new Decklist(this);
+		temp.add(c);
+		return temp;
 	}
-
-	public int probaDePiocher1ANR(int nANR) {
-		return 5*(nANR*(NCartes-nANR)*(NCartes-nANR-1)*(NCartes-nANR-2)*(NCartes-nANR-3)/(NCartes*(NCartes-1)*(NCartes-2)*(NCartes-3)*(NCartes-4)));
+	
+	Decklist setupOnDeck(Deck d) {
+		Stack temp = new Stack();
+		while(!d.isEmpty()) {
+			add(d.peek());
+			temp.add(d.pop());
+		}
+		while(!temp.isEmpty()) {
+			d.add(temp.pop());
+		}
+		return this;
 	}
-
+	
 //	public int probaDePiocher2plusANR() {
 //		
 //		int n = nActionsNonRenouvelantes();
@@ -39,70 +43,60 @@ public class Decklist extends Stack{
 //	}
 
 	public double goldDensity() {
-		//densité en or + celle des cartes actions si la probabilité de pouvoir la jouer est >= .8
+		//gold density + gold-adding actions weighted by the probability of playing it
 		int TOTAL = 0;
-		for(int i = 0; i<NCartes; i++) {
-			if (cartes[i].isATreasure() || cartes[i].isAVictory()) {
-			TOTAL += cartes[i].value;}
-			if (cartes[i].isAnAction()) {
-				TOTAL += cartes[i].value;
+		double prob = 
+		for(int i = 0; i<size(); i++) {
+			if (get(i).isATreasure()) {
+			TOTAL += get(i).goldValue;}
+			if (get(i).isAnAction()) {
+				TOTAL += get(i).goldValue;
 			}
 		}
-		return (double) TOTAL/NCartes;
+		return (double) TOTAL/size();
 	}
 	
 	public double averageDrawnCards() {
 		int TOTAL = 0;
-		for (int i = 0; i<NCartes; i++) {
-			if (cartes[i].isAnAction() ) {
-				TOTAL += cartes[i].cartes;
+		for (int i = 0; i<size(); i++) {
+			if (get(i).isAnAction() ) {
+				TOTAL += get(i).cartes;
 			}
 		}
-		
-		return (double) TOTAL/NCartes;
+		return (double) TOTAL/size();
 	}
 	
 	
 	public double givenActionDensity() {
 		int TOTAL = 0; 
-		for (int i = 0; i<NCartes; i++) {
-			TOTAL += cartes[i].actions;
+		for (int i = 0; i<size(); i++) {
+			TOTAL += get(i).actions;
 		}
-		return (double) TOTAL/NCartes;
+		return (double) TOTAL/size();
 	}
-	
 	
 	public double givenAchatDensity() {
 		int TOTAL = 0; 
-		for (int i = 0; i<NCartes; i++) {
+		for (int i = 0; i<size(); i++) {
 
-			TOTAL += cartes[i].achats;
+			TOTAL += get(i).achats;
 		}
-		return (double) TOTAL/NCartes;
+		return (double) TOTAL/size();
 	}
 	
 	public double actionDensity() {
 		int TOTAL = 0;
-		for (int i = 0; i<NCartes; i++) {
-			if (cartes[i].isAnAction()) {
+		for (int i = 0; i<size(); i++) {
+			if (get(i).isAnAction()) {
 				TOTAL ++;
 			}
 		}
-		return (double)TOTAL/NCartes;
+		return (double)TOTAL/size();
 	}
 	
 	public boolean pourraJouerSesActions(int pourcentage) {
 		//PB AU DEBUT !! 
 		return( actionDensity()/givenActionDensity()<= pourcentage/100);
 	}
-
-	public String toString() {
-		String s = "contenu du deck : " + "\n";
-		for (int i = 0; i<NCartes; i++) {
-			s += cartes[i].name + "\n";
-		}
-		return s;
-	}
-	
 
 }

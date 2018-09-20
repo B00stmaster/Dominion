@@ -1,12 +1,12 @@
 public class Constantes {
-public static final int NCOEFF = 7;
+public static final int NCOEFF = 6;
 double k1 = 0.115; //coeff PdV
 double k2 = 2.559;//importance gold
 double k3 = 1.46; //importance cartes
 double k4 = 0.277; //importance actions
 double k5 = 1.02; //importance achats
 double k6 = 0.46; // coeff esperance NA piochees
-double pourcentage = 112; //seuil de proba
+
 int N1= 5; //seuil provinces restantes avant transition to late Game
 int N2 = 2; //seuil nombre piles vides avant transition to late Game
 double epsilon = 0.05;
@@ -18,11 +18,11 @@ Constantes(double [] t){
 		System.err.println("tableau trop petit");
 	}
 	else {
-		k1 = t[0]; k2 = t[1]; k3 = t[2]; k4 = t[3]; k5 = t[4]; k6 = t[5]; pourcentage = t[6];
+		k1 = t[0]; k2 = t[1]; k3 = t[2]; k4 = t[3]; k5 = t[4]; k6 = t[5];
 	}
 }
 double [] listeC() {
-	double [] l = {k1,k2,k3,k4,k5,k6,pourcentage};
+	double [] l = {k1,k2,k3,k4,k5,k6};
 	return l;
 }
 
@@ -58,7 +58,6 @@ public String toString() {
 	s += "coeff Actions : " + k4 + "\n";
 	s += "coeff achats : " + k5 + "\n";
 	s += "coeff comparaison esperances nombre d'action/ cartes actions " + k6 + "\n";
-	s += "densité cartes actions/actions données : " + pourcentage + "\n";
 	return s;
 }
 
