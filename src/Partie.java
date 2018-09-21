@@ -89,7 +89,7 @@ Player partie(boolean printDetails) {
 }
 
 boolean hasEnded() {
-	return theShop.nombrePilesVides()>3 | !theShop.ilResteDesProvinces();
+	return theShop.nombrePilesVides()>=3 | !theShop.ilResteDesProvinces();
 }
 
 

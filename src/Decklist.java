@@ -35,6 +35,17 @@ public class Decklist extends Vector<Card>{
 		return this;
 	}
 	
+	
+	public double proportion(Card c){
+		int total = 0; 
+		for (int i =0; i< size() ;i++){
+			if (get(i).name == c.name){total++;} 
+
+		} 
+
+		return (double) total/size(); 
+	} 
+	
 //	public int probaDePiocher2plusANR() {
 //		
 //		int n = nActionsNonRenouvelantes();
@@ -45,7 +56,7 @@ public class Decklist extends Vector<Card>{
 	public double goldDensity() {
 		//gold density + gold-adding actions weighted by the probability of playing it
 		int TOTAL = 0;
-		double prob = 
+		//double prob = 
 		for(int i = 0; i<size(); i++) {
 			if (get(i).isATreasure()) {
 			TOTAL += get(i).goldValue;}

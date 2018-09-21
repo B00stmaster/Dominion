@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Vector;
 
 public class Player {
 	static int idGenerator = 0;
@@ -19,6 +20,7 @@ public boolean playSomething;
 public boolean buySomething;
 public Constantes C;
 int PointsDeVictoire = 0;
+
 
 Player(Shop s){
 	id = idGenerator++;
@@ -104,25 +106,25 @@ Card [] playables() {
 	return reponse;	
 }
 
-Card [] buyables() {
+Vector<Card> buyables() {
+	Vector<Card> result = new Vector<Card>(10);
 	int n = 0;
 	int p = 0;
-	if (achatsRestants == 0) {return new Card[0];}
+	if (achatsRestants == 0) {return result;}
 	for (int i = 0; i< Shop.nItems; i++) {
 		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
-			n++;
+			result.add(Shop.avalaible[i].peek());
 		}
 	}
-	Card [] reponse = new Card[n];
-	for (int i = 0; i<Shop.nItems; i++) {
-		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
-			reponse[p] = Shop.avalaible[i].peek();
-			p++;
-		}
-	};
-	
+//	Card [] reponse = new Card[n];
+//	for (int i = 0; i<Shop.nItems; i++) {
+//		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
+//			reponse[p] = Shop.avalaible[i].peek();
+//			p++;
+//		}
+//	};	
 
-	return reponse;	
+	return result;	
 }
 
 void draw() {
@@ -154,17 +156,19 @@ void newHand() {
 
 int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeur, puis on compte sur les cartes jouées ! 
 	int total = 0;
-	for(int i = 0; i< hand.size();i++) {
-		if (hand.get(i).isATreasure()){
-			total += hand.get(i).goldValue;
+	int NCartes = hand.size();
+	for(int i = 0; i< NCartes;i++) {
+		if (hand.get(0).isATreasure()){
+			total += hand.get(0).goldValue;
 			}
+		//System.out.println("carte : " + hand.get(i));
+		defausse.add(hand.retire(hand.get(0)));
 	}
 	for (int j = 0; j< board.size(); j++) {
 		Card c0 = board.pop();
 		total += c0.goldValue;
 		defausse.add(c0);	
 	}
-	remainingMoney = total;
 	return total;
 }
 
@@ -198,28 +202,28 @@ public void tourDeJeu(boolean printDetails) {
 		play(c);
 		if(printDetails) {System.out.println("joue " + c);} }
 	}
-	countGoldValue();	
+	remainingMoney = countGoldValue();
+	System.out.println("je suis riche de : " + remainingMoney);
 	while(buySomething) {
 		Card c = laMeilleureNote(printDetails);
 		if (buySomething) {
 			buy(c);
 			}
-	}
-	
+	}	
 	newHand();
 }
 
 
 Card laPlusChere() {
 	//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
-	Card [] buyables = buyables();
+	Vector<Card> buyables = buyables();
 	int maxCost = 0;
 	buySomething = false;
 	Card reponse = Card.getCardByName("Cuivre");
-	for (int i = 0; i<buyables.length; i++) {
-		if (buyables[i].cost > maxCost) {
+	for (int i = 0; i<buyables.size(); i++) {
+		if (buyables.get(i).cost > maxCost) {
 			buySomething = true;
-			reponse = buyables[i];
+			reponse = buyables.get(i);
 			maxCost = reponse.cost;
 		}
 	}
@@ -227,16 +231,15 @@ Card laPlusChere() {
 }
 
 Card laMeilleureNote(boolean printDetails) {
-	Card [] buyables = buyables();
+	Vector<Card> buyables = buyables();
 	double noteMax = 0;
 	buySomething = false;
 	Card reponse = Card.getCardByName("Cuivre");
-	for (int i = 0; i<buyables.length; i++) {
-		double note = note(buyables[i], printDetails);
-		//System.out.println(buyables[i] +  " : " + note);
+	for (int i = 0; i<buyables.size(); i++) {
+		double note = noteCardStratCycling(buyables.get(i), printDetails);
 		if (note > noteMax) {
 			buySomething = true;
-			reponse = buyables[i];
+			reponse = buyables.get(i);
 			noteMax = note;
 		}
 	}
@@ -277,9 +280,6 @@ private double incrementEnAction(Decklist nouv) {
 	return (nouv.givenActionDensity() - decklist.givenActionDensity())*(1 + decklist.actionDensity());
 }
 
-//private double noteCartes(Decklist nouv) {
-//	return nouv.averageDrawnCards() - decklist.averageDrawnCards();
-//}
 
 private double incrementEnAchat(Decklist nouv) {
 	return nouv.givenAchatDensity() - decklist.givenAchatDensity();
@@ -310,6 +310,36 @@ public double note(Card c, boolean printDetails) {
 	}
 	return note;
 }
+
+public double noteCardStratGold(Card c, boolean printDetails){ 
+
+if(c.name =="Province") {return 5;} 
+
+if(c.name == "Or"){return 4;} 
+
+if(c.name == "Forgeron" && decklist.proportion(Card.getCardByName( c.name))< C.Seuil1){return 3;} 
+
+if (c.name == "Argent"){return 2;} 
+
+return 0; 
+
+} 
+
+public double noteCardStratCycling(Card c, boolean PrintDetails){ 
+
+if(c.name =="Marche"|| c.name == "Laboratoire") {return 5+Math.random();} 
+
+if(c.name == "Or" && decklist.proportion(Card.getCardByName(c.name))<C.Seuil2){return 6;} 
+
+if(c.name == "Province"){return 7;} 
+
+if(c.name == "Forgeron"){return 5;} 
+
+if (c.name == "Village"){return 2;} 
+
+return 0; 
+
+} 
 
 
 
