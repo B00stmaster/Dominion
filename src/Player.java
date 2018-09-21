@@ -236,7 +236,7 @@ Card laMeilleureNote(boolean printDetails) {
 	buySomething = false;
 	Card reponse = Card.getCardByName("Cuivre");
 	for (int i = 0; i<buyables.size(); i++) {
-		double note = noteCardStratCycling(buyables.get(i), printDetails);
+		double note = note(buyables.get(i), printDetails);
 		if (note > noteMax) {
 			buySomething = true;
 			reponse = buyables.get(i);
