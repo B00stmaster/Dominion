@@ -34,64 +34,61 @@ public class Decklist extends Vector<Card>{
 		}
 		return this;
 	}
-	
-//	public int probaDePiocher2plusANR() {
-//		
-//		int n = nActionsNonRenouvelantes();
-//		if (n<2)return 0;
-//		return 1-probaDePiocher0ANR(n)-probaDePiocher1ANR(n);
-//	}
 
+	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/actionDensity(),100);}
+	
+	private double playActionProbability() {return playActionProbability(0.7);}
+	
 	public double goldDensity() {
-		//gold density + gold-adding actions weighted by the probability of playing it
-		int TOTAL = 0;
-		double prob = 
+		//gold density + gold-adding actions weighted by the approximated probability of playing it
+		int total = 0;
+		double prob = playActionProbability();
 		for(int i = 0; i<size(); i++) {
 			if (get(i).isATreasure()) {
-			TOTAL += get(i).goldValue;}
+				total += get(i).goldValue;}
 			if (get(i).isAnAction()) {
-				TOTAL += get(i).goldValue;
+				total += get(i).goldValue*prob;
 			}
 		}
-		return (double) TOTAL/size();
+		return (double) total/size();
 	}
 	
 	public double averageDrawnCards() {
-		int TOTAL = 0;
+		int total = 0;
 		for (int i = 0; i<size(); i++) {
 			if (get(i).isAnAction() ) {
-				TOTAL += get(i).cartes;
+				total += get(i).cartes;
 			}
 		}
-		return (double) TOTAL/size();
+		return (double) total/size();
 	}
 	
 	
 	public double givenActionDensity() {
-		int TOTAL = 0; 
+		int total = 0; 
 		for (int i = 0; i<size(); i++) {
-			TOTAL += get(i).actions;
+			total += get(i).actions;
 		}
-		return (double) TOTAL/size();
+		return (double) total/size();
 	}
 	
 	public double givenAchatDensity() {
-		int TOTAL = 0; 
+		int total = 0; 
 		for (int i = 0; i<size(); i++) {
 
-			TOTAL += get(i).achats;
+			total += get(i).achats;
 		}
-		return (double) TOTAL/size();
+		return (double) total/size();
 	}
 	
 	public double actionDensity() {
-		int TOTAL = 0;
+		int total = 0;
 		for (int i = 0; i<size(); i++) {
 			if (get(i).isAnAction()) {
-				TOTAL ++;
+				total ++;
 			}
 		}
-		return (double)TOTAL/size();
+		return (double)total/size();
 	}
 	
 	public boolean pourraJouerSesActions(int pourcentage) {
