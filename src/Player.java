@@ -48,9 +48,9 @@ Player (Shop s, Constantes CS, boolean alter){
 }
 
 void play(Card c) {//on suppose que le joueur a deja l'action dispo pour le faire
-	actionsRestantes += c.actions - 1;
-	achatsRestants += c.achats;
-	for (int i = 0; i<c.cartes; i++) {
+	actionsRestantes += c.plusActions - 1;
+	achatsRestants += c.plusBuys;
+	for (int i = 0; i<c.plusCards; i++) {
 		draw();
 	}
 	applyEffect(c);
@@ -159,14 +159,14 @@ int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeu
 	int NCartes = hand.size();
 	for(int i = 0; i< NCartes;i++) {
 		if (hand.get(0).isATreasure()){
-			total += hand.get(0).goldValue;
+			total += hand.get(0).plusGold;
 			}
 		//System.out.println("carte : " + hand.get(i));
 		defausse.add(hand.retire(hand.get(0)));
 	}
 	for (int j = 0; j< board.size(); j++) {
 		Card c0 = board.pop();
-		total += c0.goldValue;
+		total += c0.plusGold;
 		defausse.add(c0);	
 	}
 	return total;
@@ -255,7 +255,7 @@ Card choisitUneAction() {
 	//si il n'a pas d'action il renvoie null et change le boolean playSomething to false
 	Card [] playables = playables();
 	for (int i = 0; i<playables.length; i++) {
-		if (playables[i].actions>0) {
+		if (playables[i].plusActions>0) {
 			playSomething = true;
 			return playables[i];
 		}
@@ -273,7 +273,7 @@ private double incrementGoldDensity(Decklist nouv) {
 }
 
 private double incrementCardValue(Decklist nouv) {
-	return nouv.averageDrawnCards() - decklist.averageDrawnCards();
+	return nouv.givenCardsDensity() - decklist.givenCardsDensity();
 }
 
 private double incrementEnAction(Decklist nouv) {
