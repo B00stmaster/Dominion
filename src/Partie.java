@@ -44,7 +44,7 @@ void joueUnTourComplet(boolean printDetails, int first) {
 	
 	for (int i = first; i<4+first; i++) {
 		if (printDetails) {
-		System.out.println("=================================================================");
+		System.out.println("=======================================================================");
 		}
 		joueurs[i%4].tourDeJeu(printDetails);
 		if (printDetails) {
