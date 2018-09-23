@@ -42,7 +42,8 @@ public class Decklist extends Vector<Card>{
 		return (double) total/size(); 
 	} 
 
-	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/actionDensity(),100);}
+	//bullshit methods FIND A WAY TO GET RID OF THEM
+	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/typeDensity(Card.Type.ACTION),100);}
 	
 	private double playActionProbability() {return playActionProbability(0.7);}
 	
@@ -50,9 +51,9 @@ public class Decklist extends Vector<Card>{
 		//gold density + gold-adding actions weighted by the approximated probability of playing it
 		int total = 0;
 		for(int i = 0; i<size(); i++) {
-			if (get(i).isATreasure()) {
+			if (get(i).isA(Card.Type.TRESOR)) {
 				total += get(i).plusGold;}
-			else if (get(i).isAnAction()) {
+			else if (get(i).isA(Card.Type.ACTION)) {
 				total += get(i).plusGold*playActionProbability();}
 		}
 		return (double) total/size();
@@ -83,53 +84,16 @@ public class Decklist extends Vector<Card>{
 		return (double) total/size();
 	}
 	
-	public int actionCount() {
+	public int typeCount(Card.Type t) {
 		int total = 0;
 		for (int i = 0; i<size(); i++) {
-			if (get(i).isAnAction()) {
+			if (get(i).isA(t)) {
 				total ++;
 			}
 		}
 		return total;
 	}
 	
-	public double actionDensity() {return (double)actionCount()/size();}
-	
-	public int treasureCount() {
-		int total = 0;
-		for (int i = 0; i<size(); i++) {
-			if (get(i).isATreasure()) {
-				total ++;
-			}
-		}
-		return total;
-	}
-	
-	public double treasureDensity() {return (double)treasureCount()/size();}
-	
-	public int victoryCount() {
-		int total = 0;
-		for (int i = 0; i<size(); i++) {
-			if (get(i).isAVictory()) {
-				total ++;
-			}
-		}
-		return total;
-	}
-	
-	public double victoryDensity() {return (double)victoryCount()/size();}
-	
-	public int reactionCount() {
-		int total = 0;
-		for (int i = 0; i<size(); i++) {
-			if (get(i).isAReaction()) {
-				total ++;
-			}
-		}
-		return total;
-	}
-	
-	public double reactionDensity() {return (double)reactionCount()/size();}
-	
-
+	public double typeDensity(Card.Type t) {return (double)typeCount(t)/size();}
+		
 }

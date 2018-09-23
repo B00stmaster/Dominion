@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Vector;
 
 public class Player {
@@ -70,23 +69,32 @@ void mill() {
 
 void applyEffect(Card c) {
 	//on liste tous les effets pour appliquer la methode correspondante
-	Card.Effet e = c.effet;
-	if (e == Card.Effet.SORCIERE) {
+	if(c.effet==null) return;
+	switch (c.effet) {
+	case SORCIERE:
 		Card.sorciere(partie, this);
-	}
-	else if (e == Card.Effet.CHAMBRE_DU_CONSEIL) {
+		break;
+	case CHAMBRE_DU_CONSEIL:
 		Card.chambreDuConseil(partie, this);
-	}
-	else if (e == Card.Effet.PUITS_AUX_SOUHAITS) {
-		Card [] choosables = Card.getCardByName("Puits aux Souhaits").choosables(partie, this); //fonction unique qui marche pour toutes les cartes qui font choisir parmis des cartes
+		break;
+	case PUITS_AUX_SOUHAITS:
+		Card [] choosables = Card.getCardByName("Puits aux Souhaits").choosables(partie, this); //fonction unique qui marche pour toutes les cartes qui font choisir parmi des cartes
 		Card C = choosables[0]; //CHOIX DU JOUEUR !!! après on aura une fonction non débile pou choisir
 		Card.puitsAuxSouhaits(C, this);
-	}
-	else if (e == Card.Effet.ESPION) {
-		Card [] scried = partie.scryAll();
-		boolean [] b  = new boolean[Partie.NJOUEURS];
-		//faire la fonction pour les choix qui change b en fonction du tablea scried
-		Card.espion(partie, b);		
+		break;
+	case ESPION:
+		Card [] revealed = partie.allRevealTopCard();
+		boolean [] discard  = new boolean[Partie.NJOUEURS];
+		for(int i=0;i<revealed.length;i++) {
+			if(revealed[i].isA(Card.Type.VICTOIRE) || (revealed[i].isA(Card.Type.TRESOR)&&(revealed[i].plusGold<=partie.joueurs[i].decklist.goldDensity()))) {
+				discard[i]=false;
+			}
+			else {discard[i]=true;}
+		}
+		Card.espion(partie, discard);	
+		break;
+	default:
+		break;
 	}
 }
 
@@ -95,11 +103,11 @@ Card [] playables() {
 	int p = 0;
 	if (actionsRestantes == 0) {return new Card[0];}
 	for (int i = 0; i<hand.size(); i++) {
-		if (hand.get(i).isAnAction()) {n++;}
+		if (hand.get(i).isA(Card.Type.ACTION)) {n++;}
 	};
 	Card [] reponse = new Card[n];
 	for (int i = 0; i<hand.size(); i++) {
-		if (hand.get(i).isAnAction()) {
+		if (hand.get(i).isA(Card.Type.ACTION)) {
 			reponse[p] = hand.get(i);
 			p++;}
 	};
@@ -108,22 +116,12 @@ Card [] playables() {
 
 Vector<Card> buyables() {
 	Vector<Card> result = new Vector<Card>(10);
-	int n = 0;
-	int p = 0;
 	if (achatsRestants == 0) {return result;}
 	for (int i = 0; i< Shop.nItems; i++) {
 		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
 			result.add(Shop.avalaible[i].peek());
 		}
 	}
-//	Card [] reponse = new Card[n];
-//	for (int i = 0; i<Shop.nItems; i++) {
-//		if (Shop.avalaible[i].peek().cost <= remainingMoney && Shop.avalaible[i].size()>1) {
-//			reponse[p] = Shop.avalaible[i].peek();
-//			p++;
-//		}
-//	};	
-
 	return result;	
 }
 
@@ -158,7 +156,7 @@ int countGoldValue() {//on défausse chaque carte de la main en comptant sa valeu
 	int total = 0;
 	int NCartes = hand.size();
 	for(int i = 0; i< NCartes;i++) {
-		if (hand.get(0).isATreasure()){
+		if (hand.get(0).isA(Card.Type.TRESOR)){
 			total += hand.get(0).plusGold;
 			}
 		//System.out.println("carte : " + hand.get(i));
@@ -277,7 +275,7 @@ private double incrementCardValue(Decklist nouv) {
 }
 
 private double incrementEnAction(Decklist nouv) {
-	return (nouv.givenActionDensity() - decklist.givenActionDensity())*(1 + decklist.actionDensity());
+	return (nouv.givenActionDensity() - decklist.givenActionDensity())*(1 + decklist.typeDensity(Card.Type.ACTION));
 }
 
 
@@ -342,10 +340,7 @@ return 0;
 } 
 
 
-
 public String toString() {
-
-	
 	String s = "Joueur ";
 	s+= "Actions Restantes : " + actionsRestantes + "  |   Achats : " + achatsRestants + "\n";
 	s+=deck.toString();
@@ -361,10 +356,7 @@ public String toString() {
 	return s + "\n";
 }
 
-boolean nearEnd() {
-	return theShop.nombrePilesVides()>=C.N2 | theShop.provincesRestantes()<= C.N1;
-}
-
+boolean nearEnd() {return theShop.nombrePilesVides()>=C.N2 | theShop.remainingProvinces()<= C.N1;}
 
 public static void main(String [] args) {
 	Card.initialise();
