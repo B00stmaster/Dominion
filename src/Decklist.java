@@ -42,8 +42,7 @@ public class Decklist extends Vector<Card>{
 		return (double) total/size(); 
 	} 
 
-	//bullshit methods FIND A WAY TO GET RID OF THEM
-	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/typeDensity(Card.Type.ACTION),100);}
+	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/actionDensity(),100);}
 	
 	private double playActionProbability() {return playActionProbability(0.7);}
 	
@@ -51,9 +50,9 @@ public class Decklist extends Vector<Card>{
 		//gold density + gold-adding actions weighted by the approximated probability of playing it
 		int total = 0;
 		for(int i = 0; i<size(); i++) {
-			if (get(i).isA(Card.Type.TRESOR)) {
+			if (get(i).isATreasure()) {
 				total += get(i).plusGold;}
-			else if (get(i).isA(Card.Type.ACTION)) {
+			else if (get(i).isAnAction()) {
 				total += get(i).plusGold*playActionProbability();}
 		}
 		return (double) total/size();
@@ -84,16 +83,53 @@ public class Decklist extends Vector<Card>{
 		return (double) total/size();
 	}
 	
-	public int typeCount(Card.Type t) {
+	public int actionCount() {
 		int total = 0;
 		for (int i = 0; i<size(); i++) {
-			if (get(i).isA(t)) {
+			if (get(i).isAnAction()) {
 				total ++;
 			}
 		}
 		return total;
 	}
 	
-	public double typeDensity(Card.Type t) {return (double)typeCount(t)/size();}
-		
+	public double actionDensity() {return (double)actionCount()/size();}
+	
+	public int treasureCount() {
+		int total = 0;
+		for (int i = 0; i<size(); i++) {
+			if (get(i).isATreasure()) {
+				total ++;
+			}
+		}
+		return total;
+	}
+	
+	public double treasureDensity() {return (double)treasureCount()/size();}
+	
+	public int victoryCount() {
+		int total = 0;
+		for (int i = 0; i<size(); i++) {
+			if (get(i).isAVictory()) {
+				total ++;
+			}
+		}
+		return total;
+	}
+	
+	public double victoryDensity() {return (double)victoryCount()/size();}
+	
+	public int reactionCount() {
+		int total = 0;
+		for (int i = 0; i<size(); i++) {
+			if (get(i).isAReaction()) {
+				total ++;
+			}
+		}
+		return total;
+	}
+	
+	public double reactionDensity() {return (double)reactionCount()/size();}
+	
+
 }

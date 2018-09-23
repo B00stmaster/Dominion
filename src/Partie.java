@@ -89,7 +89,7 @@ Player partie(boolean printDetails) {
 }
 
 boolean hasEnded() {
-	return theShop.nombrePilesVides()>=3 | !theShop.provincesRemain();
+	return theShop.nombrePilesVides()>=3 | !theShop.ilResteDesProvinces();
 }
 
 
@@ -120,7 +120,7 @@ Partie reinitialise() {
 	return nouv;
 }
 
-public Card [] allRevealTopCard() {
+public Card [] scryAll() {
 	//utile pour l'espion
 	Card [] liste = new Card[Partie.NJOUEURS];
 	for (int i = 0; i<NJOUEURS; i++) {
