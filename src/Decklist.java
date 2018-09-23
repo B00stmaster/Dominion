@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 public class Decklist extends Vector<Card>{
@@ -34,9 +32,6 @@ public class Decklist extends Vector<Card>{
 		}
 		return this;
 	}
-<<<<<<< HEAD
-=======
-	
 	
 	public double proportion(Card c){
 		int total = 0; 
@@ -44,57 +39,38 @@ public class Decklist extends Vector<Card>{
 			if (get(i).name == c.name){total++;} 
 
 		} 
-
 		return (double) total/size(); 
 	} 
-	
-//	public int probaDePiocher2plusANR() {
-//		
-//		int n = nActionsNonRenouvelantes();
-//		if (n<2)return 0;
-//		return 1-probaDePiocher0ANR(n)-probaDePiocher1ANR(n);
-//	}
->>>>>>> 7c38b25dde49458695451134d9bfda7d6e33822a
 
-	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/actionDensity(),100);}
+	//bullshit methods FIND A WAY TO GET RID OF THEM
+	private double playActionProbability(double playActionConstant) {return Math.min(playActionConstant*givenActionDensity()/typeDensity(Card.Type.ACTION),100);}
 	
 	private double playActionProbability() {return playActionProbability(0.7);}
 	
 	public double goldDensity() {
-<<<<<<< HEAD
 		//gold density + gold-adding actions weighted by the approximated probability of playing it
 		int total = 0;
-		double prob = playActionProbability();
-=======
-		//gold density + gold-adding actions weighted by the probability of playing it
-		int TOTAL = 0;
-		//double prob = 
->>>>>>> 7c38b25dde49458695451134d9bfda7d6e33822a
 		for(int i = 0; i<size(); i++) {
-			if (get(i).isATreasure()) {
-				total += get(i).goldValue;}
-			if (get(i).isAnAction()) {
-				total += get(i).goldValue*prob;
-			}
+			if (get(i).isA(Card.Type.TRESOR)) {
+				total += get(i).plusGold;}
+			else if (get(i).isA(Card.Type.ACTION)) {
+				total += get(i).plusGold*playActionProbability();}
 		}
 		return (double) total/size();
 	}
 	
-	public double averageDrawnCards() {
+	public double givenCardsDensity() {
 		int total = 0;
 		for (int i = 0; i<size(); i++) {
-			if (get(i).isAnAction() ) {
-				total += get(i).cartes;
-			}
+			total += get(i).plusCards;
 		}
 		return (double) total/size();
 	}
-	
-	
+		
 	public double givenActionDensity() {
 		int total = 0; 
 		for (int i = 0; i<size(); i++) {
-			total += get(i).actions;
+			total += get(i).plusActions;
 		}
 		return (double) total/size();
 	}
@@ -103,24 +79,21 @@ public class Decklist extends Vector<Card>{
 		int total = 0; 
 		for (int i = 0; i<size(); i++) {
 
-			total += get(i).achats;
+			total += get(i).plusBuys;
 		}
 		return (double) total/size();
 	}
 	
-	public double actionDensity() {
+	public int typeCount(Card.Type t) {
 		int total = 0;
 		for (int i = 0; i<size(); i++) {
-			if (get(i).isAnAction()) {
+			if (get(i).isA(t)) {
 				total ++;
 			}
 		}
-		return (double)total/size();
+		return total;
 	}
 	
-	public boolean pourraJouerSesActions(int pourcentage) {
-		//PB AU DEBUT !! 
-		return( actionDensity()/givenActionDensity()<= pourcentage/100);
-	}
-
+	public double typeDensity(Card.Type t) {return (double)typeCount(t)/size();}
+		
 }
