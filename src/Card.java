@@ -1,9 +1,10 @@
+import java.util.Arrays;
 import java.util.Vector;
 
 public class Card {
 public String name;
-private enum Type {TRESOR, VICTOIRE, ACTION, TRESOR_VICTOIRE, ACTION_ATTACK, ACTION_REACTION, MALEDICTION};
-private Type type;
+public enum Type {TRESOR, VICTOIRE, ACTION, REACTION, MALEDICTION, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_DRAWER, TERMINAL_DRAWER, TERMINAL_SILVER, TRASHER, GAINER};
+private Vector<Type> types;
 public enum Effet {AUCUN, SORCIERE, CHAMBRE_DU_CONSEIL, PUITS_AUX_SOUHAITS, ESPION};
 public Effet effet;
 public int cost;
@@ -13,55 +14,43 @@ public int plusActions;
 public int plusBuys;
 public int plusCards;
 public static Vector<Card> cards = new Vector<Card>();
-public static int totalCards;
 
 public Card() {
 
 }
 
-public Card(String n, Type t, int c, int p, int v, int a, int ach, int ca){
+public Card(String n, Type ty, int c, int p, int v, int a, int ach, int ca){
+	this(n,new Vector<Type>(Arrays.asList(ty)),c,p,v,a,ach,ca);
+}
+
+public Card(String n, Vector<Type> ty, int c, int p, int v, int a, int ach, int ca){
 	System.out.println("- "+ n);
-	name = n; type = t; 
+	name = n; types = ty; 
 	cost = c; 
 	VP = p; 
-	plusGold = v; plusActions = a; plusBuys = ach; plusCards = ca; 
+	plusGold = v; plusActions = a; plusBuys = ach; plusCards = ca;
+	
+	//a gainer is a card that gives you a card without using buy or trashing card
+	
+	//a village is a card that increase your action count
+	if(plusActions>1) types.add(Type.VILLAGE);
+	//a cantrip is a card that can be played "free" i.e. it replaces itself and its action
+	if((plusActions>0)&&(plusCards>0)) types.add(Type.CANTRIP);
+	
+	if(isA(Type.CANTRIP)&&(plusGold>0)) types.add(Type.PEDDLER);
+	//a non-terminal drawer is a card that "freely" increase your card count
+	if((plusActions>0)&&(plusCards>1)) types.add(Type.NON_TERMINAL_DRAWER);
+	//a terminal drawer is a card that increase your card count but costs you an action
+	if((plusActions==0)&&(plusCards>1)) types.add(Type.TERMINAL_DRAWER);
+	//a terminal silver is a card that increase gives 2 gold but costs you an action
+	if((plusActions==0)&&(plusGold==2)) types.add(Type.TERMINAL_SILVER);
 }
 
 public Card(Card c){
-	name = c.name; type = c.type; cost = c.cost; VP = c.VP; plusGold = c.plusGold; plusActions = c.plusActions; plusBuys = c.plusBuys; plusCards = c.plusCards;
+	name = c.name; types = (Vector<Type>) c.types.clone(); cost = c.cost; VP = c.VP; plusGold = c.plusGold; plusActions = c.plusActions; plusBuys = c.plusBuys; plusCards = c.plusCards;
 }
 
-public boolean isAnAction() {return (type == Type.ACTION || type == Type.ACTION_ATTACK || type == Type.ACTION_REACTION);} 
-
-public boolean isAVictory() {return (type == Type.VICTOIRE|| type == Type.TRESOR_VICTOIRE);}
-
-public boolean isAReaction() {return (type == Type.ACTION_REACTION);}
-
-public boolean isATreasure() {return (type == Type.TRESOR|| type  == Type.TRESOR_VICTOIRE);}
-
-public boolean isAnAttack() {return (type == Type.ACTION_ATTACK);}
-
-//a village is a card that increase your action count
-public boolean isAVillage() {return (plusActions>1);}
-
-//a cantrip is a card that can be played "free" i.e. it replaces itself and its action
-public boolean isACantrip() {return ((plusActions>0)&&(plusCards>0));}
-
-public boolean isAPeddler() {return (isACantrip()&&(plusGold>0));}
-
-//a non-terminal drawer is a card that "freely" increase your card count
-public boolean isANonTerminalDrawer() {return ((plusActions>0)&&(plusCards>1));}
-
-//a terminal drawer is a card that increase your card count but costs you an action
-public boolean isATerminalDrawer() {return ((plusActions==0)&&(plusCards>1));}
-
-//a terminal silver is a card that increase gives 2 gold but costs you an action
-public boolean isATerminalSilver() {return ((plusActions==0)&&(plusGold==2));}
-
-public boolean isATrasher() {return false;}
-
-//a gainer is a card that gives you a card without using buy or trashing card
-public boolean isAGainer() {return false;}
+public boolean isA(Card.Type t) {return (types.contains(t));} 
 
 public String toString() {return name;}
 
@@ -106,7 +95,7 @@ static void initialise() {
 }
 
 public static Card getCardByName(String name) {
-	for (int i= 0; i<totalCards; i++) {
+	for (int i= 0; i<cards.size(); i++) {
 		Card c0 = cards.get(i);		
 		if (c0.name == name) {
 			return c0; 
@@ -116,14 +105,13 @@ public static Card getCardByName(String name) {
 }
 
 public static Card copie(String Name) {
-	Card c = new Card();
-	for (int i= 0; i<totalCards; i++) {
+	for (int i= 0; i<cards.size(); i++) {
 		Card c0 = cards.get(i);
 		if (c0.name == Name) {
-			c = new Card(c0);
+			return new Card(c0);
 		}
 	}
-	return c;
+	return null;
 }
 
 public boolean equals(Object o) {
@@ -167,8 +155,8 @@ public static void espion(Partie p, boolean [] b) {
 
 public Card [] choosables(Partie p, Player j) {
 	if (effet == Effet.PUITS_AUX_SOUHAITS) {
-		Card [] liste = new Card[totalCards];
-		for (int i = 0; i<totalCards; i++) {
+		Card [] liste = new Card[cards.size()];
+		for (int i = 0; i<cards.size(); i++) {
 			liste[i] = cards.get(i);
 		}
 		return liste;
