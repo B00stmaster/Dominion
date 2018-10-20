@@ -77,7 +77,7 @@ Player partie(boolean printDetails) {
 		
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
-		int points = joueurs[i].countVictoryPoints();
+		int points = joueurs[i].updateVictoryPoints();
 		if (Apprentissage.wannaPrint) {
 		//System.out.println("joueur " + i + " : " + points);
 		if (i == 3) {System.out.println("");}}
@@ -144,7 +144,7 @@ public String toString() {
 public static void main(String[] args) {
 	Card.initialise();
 	Partie p = new Partie();
-	p.partie(true);
+	p.partie(false);
 }
 
 }

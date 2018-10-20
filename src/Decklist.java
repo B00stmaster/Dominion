@@ -51,7 +51,7 @@ public class Decklist extends Vector<Card>{
 		//gold density + gold-adding actions weighted by the approximated probability of playing it
 		int total = 0;
 		for(int i = 0; i<size(); i++) {
-			if (get(i).isA(Card.Type.TRESOR)) {
+			if (get(i).isA(Card.Type.TREASURE)) {
 				total += get(i).plusGold;}
 			else if (get(i).isA(Card.Type.ACTION)) {
 				total += get(i).plusGold*playActionProbability();}
