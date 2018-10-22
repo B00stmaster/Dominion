@@ -3,7 +3,7 @@ import java.util.Vector;
 
 public class Card {
 public String name;
-public enum Type {TRESOR, VICTOIRE, ACTION, REACTION, MALEDICTION, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_DRAWER, TERMINAL_DRAWER, TERMINAL_SILVER, TRASHER, GAINER};
+public enum Type {TREASURE, VICTORY, ACTION, REACTION, CURSE, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_ACTION, TERMINAL_ACTION, TERMINAL_SILVER, TRASHER, GAINER, DRAWER};
 private Vector<Type> types;
 public enum Effet {AUCUN, SORCIERE, CHAMBRE_DU_CONSEIL, PUITS_AUX_SOUHAITS, ESPION};
 public Effet effet;
@@ -19,29 +19,32 @@ public Card() {
 
 }
 
-public Card(String n, Type ty, int c, int p, int v, int a, int ach, int ca){
-	this(n,new Vector<Type>(Arrays.asList(ty)),c,p,v,a,ach,ca);
+public Card(String name, Type ty, int cost, int vpoints, int pG, int pA, int pAch, int pC){
+	this(name,new Vector<Type>(Arrays.asList(ty)),cost,vpoints,pG,pA,pAch,pC);
 }
 
-public Card(String n, Vector<Type> ty, int c, int p, int v, int a, int ach, int ca){
+public Card(String n, Vector<Type> ty, int cost, int vpoints, int pG, int pA, int pAch, int pC){
 	System.out.println("- "+ n);
 	name = n; types = ty; 
-	cost = c; 
-	VP = p; 
-	plusGold = v; plusActions = a; plusBuys = ach; plusCards = ca;
+	this.cost = cost; 
+	VP = vpoints; 
+	plusGold = pG; plusActions = pA; plusBuys = pAch; plusCards = pC;
 	
 	//a gainer is a card that gives you a card without using buy or trashing card
 	
+	//a terminal action is an action that costs you an action
+	if(plusActions==0 && ty.contains(Type.ACTION)) types.add(Type.TERMINAL_ACTION);
+	//a non-terminal action is an action that replace its action
+	if(plusActions>0 && ty.contains(Type.ACTION)) types.add(Type.NON_TERMINAL_ACTION);
 	//a village is a card that increase your action count
 	if(plusActions>1) types.add(Type.VILLAGE);
+	//a drawer is a card that increases your hand size
+	if(plusCards>1) types.add(Type.DRAWER);
 	//a cantrip is a card that can be played "free" i.e. it replaces itself and its action
 	if((plusActions>0)&&(plusCards>0)) types.add(Type.CANTRIP);
 	
 	if(isA(Type.CANTRIP)&&(plusGold>0)) types.add(Type.PEDDLER);
-	//a non-terminal drawer is a card that "freely" increase your card count
-	if((plusActions>0)&&(plusCards>1)) types.add(Type.NON_TERMINAL_DRAWER);
-	//a terminal drawer is a card that increase your card count but costs you an action
-	if((plusActions==0)&&(plusCards>1)) types.add(Type.TERMINAL_DRAWER);
+
 	//a terminal silver is a card that increase gives 2 gold but costs you an action
 	if((plusActions==0)&&(plusGold==2)) types.add(Type.TERMINAL_SILVER);
 }
@@ -55,45 +58,32 @@ public boolean isA(Card.Type t) {return (types.contains(t));}
 public String toString() {return name;}
 
 static void initialise() {
+	cards.clear();
 	System.out.println("Creation des Cartes : ");
-	System.out.println("Tresors");
-	Card cuivre = new Card("Cuivre", Type.TRESOR, 0, 0, 1, 0,0,0);
-	Card argent = new Card("Argent",Type.TRESOR , 3, 0, 2, 0,0,0);
-	Card or = new Card("Or", Type.TRESOR, 6, 0, 3, 0,0,0);
-	cards.add(cuivre); cards.add(argent); cards.add(or);
-	System.out.println("Victoire");
-	Card domaine = new Card("Domaine", Type.VICTOIRE, 2, 1, 0, 0,0,0);
-	Card duche = new Card("Duche", Type.VICTOIRE, 5, 3, 0, 0,0,0);
-	Card province = new Card("Province", Type.VICTOIRE, 8, 6, 0, 0,0,0);
-	cards.add(domaine); cards.add(duche); cards.add(province);
-	Card village = new Card("Village", Type.ACTION, 3,0,0,2,0,1);
-	cards.add(village);
-	Card forgeron = new Card("Forgeron", Type.ACTION, 4,0,0,0,0,3 );
-	cards.add(forgeron);
-	Card marche = new Card("Marche", Type.ACTION, 5,0,1,1,1,1);
-	cards.add(marche);
-	Card bucheron = new Card("Bucheron", Type.ACTION, 3,0 ,2,0,1,0);
-	cards.add(bucheron);
-	Card laboratoire = new Card("Laboratoire", Type.ACTION, 5, 0,0,1,0,2);
-	cards.add(laboratoire);
-	Card festival = new Card("Festival", Type.ACTION, 5, 0,2,2,1,0);
-	cards.add(festival);
-	Card sorciere = new Card("Sorciere", Type.ACTION, 5,0,0,0,0,2);
-	sorciere.effet = Effet.SORCIERE;
-	cards.add(sorciere);
-	Card malediction = new Card("Malediction", Type.MALEDICTION, 0, -1, 0, 0,0,0);
-	cards.add(malediction);
-	Card chambreDuConseil = new Card("Chambre du Conseil", Type.ACTION, 5,0,0,0,1,4);
-	chambreDuConseil.effet = Effet.CHAMBRE_DU_CONSEIL;
-	cards.add(chambreDuConseil);
-	Card puitsAuxSouhaits = new Card("Puits aux Souhaits",Type.ACTION, 3,0,0,1,0,1);
-	puitsAuxSouhaits.effet = Effet.PUITS_AUX_SOUHAITS;
-	cards.add(puitsAuxSouhaits);
-	Card espion = new Card("Espion",Type.ACTION, 4,0,0,1,0,1);
-	espion.effet = Effet.ESPION;
-	cards.add(espion);
+	System.out.println("Tresors:");
+	cards.add(new Card("Cuivre", Type.TREASURE, 0, 0, 1, 0,0,0));
+	cards.add(new Card("Argent",Type.TREASURE , 3, 0, 2, 0,0,0));
+	cards.add(new Card("Or", Type.TREASURE, 6, 0, 3, 0,0,0));
+	System.out.println("Victoire:");
+	cards.add(new Card("Domaine", Type.VICTORY, 2, 1, 0, 0,0,0));
+	cards.add(new Card("Duche", Type.VICTORY, 5, 3, 0, 0,0,0));
+	cards.add(new Card("Province", Type.VICTORY, 8, 6, 0, 0,0,0));
+	System.out.println("Royaume:");
+	cards.add(new Card("Village", Type.ACTION, 3,0,0,2,0,1));
+	cards.add(new Card("Forgeron", Type.ACTION, 4,0,0,0,0,3 ));
+	cards.add(new Card("Marche", Type.ACTION, 5,0,1,1,1,1));
+	cards.add(new Card("Bucheron", Type.ACTION, 3,0 ,2,0,1,0));
+	cards.add(new Card("Laboratoire", Type.ACTION, 5, 0,0,1,0,2));
+	cards.add(new Card("Festival", Type.ACTION, 5, 0,2,2,1,0));
+	cards.add(new Card("Sorciere", new Vector<Type>(Arrays.asList(new Type[]{Type.ACTION,Type.ATTACK})), 5,0,0,0,0,2));
+	cards.add(new Card("Malediction", Type.CURSE, 0, -1, 0, 0,0,0));
+	cards.add(new Card("Milice", new Vector<Type>(Arrays.asList(new Type[]{Type.ACTION,Type.ATTACK})), 4,0,2,0,0,0));
+	cards.add(new Card("Chambre du Conseil", Type.ACTION, 5,0,0,0,1,4));
+	cards.add(new Card("Puits aux Souhaits",Type.ACTION, 3,0,0,1,0,1));
+	cards.add(new Card("Espion",new Vector<Type>(Arrays.asList(new Type[]{Type.ACTION,Type.ATTACK})), 4,0,0,1,0,1));
 }
 
+//pointe vers la liste de TOUTES LES CARTES i.e. ne pas modifier!
 public static Card getCardByName(String name) {
 	for (int i= 0; i<cards.size(); i++) {
 		Card c0 = cards.get(i);		
@@ -120,48 +110,90 @@ public boolean equals(Object o) {
 	return ((Card) o).name.compareTo(this.name)==0;
 }
 
-public static void sorciere(Partie p, Player j) {
-	for (int i = 0; i< Partie.NJOUEURS; i++) {
-		if (p.joueurs[i] != j) {
-			p.joueurs[i].defausse.add(p.theShop.getCard("Malediction"));
-			p.joueurs[i].decklist.add(getCardByName("Malediction"));
+public void playedBy(Player p) {
+	p.board.add(p.hand.retire(this));
+	if(this.isA(Type.ACTION)) p.leftActions--;
+	p.leftActions+=this.plusActions;
+	p.leftBuys+=this.plusBuys;
+	p.leftGold+=this.plusGold;
+	for(int i=0;i<this.plusCards;i++) {
+		p.draw();
+	}
+	System.out.println(p.name+" plays "+this+ " | actions left: "+p.leftActions+" | buys left: "+p.leftBuys+" | gold left: "+p.leftGold);
+	switch (name) {
+	case "Sorciere":
+		sorciere(p);
+		break;
+	case "Chambre du Conseil":
+		chambreDuConseil(p);
+		break;
+	case "Puits aux Souhaits":
+		Card.puitsAuxSouhaits(p);
+		break;
+	case "Espion":
+		Card.espion(p);	
+		break;
+	case "Milice":
+		Card.milice(p);	
+		break;
+	default:
+		break;
+	}
+}
+
+public static void sorciere(Player p) {
+	Partie gam=p.partie;
+	for (int i = 0; i<p.partie.joueurs.length; i++) {
+		if (gam.joueurs[i] != p && gam.theShop.remainingCards("Malediction")>0) {
+			gam.joueurs[i].defausse.add(gam.theShop.getCard("Malediction"));
+			//oui la ligne du dessous est inutilement compliquee mais servira en cas de traduction du jeu
+			System.out.println(gam.joueurs[i].name+" reçoit "+Card.getCardByName("Malediction").name);
+			gam.joueurs[i].decklist.add(getCardByName("Malediction"));
 		}
 	}
 }
 
-public static void chambreDuConseil(Partie p, Player j) {
+public static void chambreDuConseil(Player p) {
+	Partie gam=p.partie;
 	for (int i = 0; i< Partie.NJOUEURS; i++) {
-		if (p.joueurs[i] != j) {
-			p.joueurs[i].draw();
+		if (gam.joueurs[i] != p) {
+			gam.joueurs[i].draw();
 		}
 	}
 }
 
-public static void puitsAuxSouhaits(Card c, Player j) {
-	Card c0 = j.deck.peek();
+public static void puitsAuxSouhaits(Player p) {
+	Card [] choosables = choosables(p); //fonction unique qui marche pour toutes les cartes qui font choisir parmi des cartes
+	Card c = choosables[0]; //CHOIX DU JOUEUR !!! après on aura une fonction non débile pou choisir
+	Card c0 = p.deck.peek();
 	System.out.println("scry 1 : " + c0.name);
 	System.out.println("j'avais parié sur : " + c.name);
 	if (c0.name == c.name) {
-		j.draw();
+		p.draw();
 	}
 }
 
-public static void espion(Partie p, boolean [] b) {
-	if (b.length != Partie.NJOUEURS) {System.err.println("tableau b pas de la bonne taille");}
-	for (int i = 0; i<Partie.NJOUEURS; i++) {
-		if (b[i]) {p.joueurs[i].mill();}
+public static void espion(Player p) {
+	boolean[] discard = p.decideEspion();
+	for (int i = 0; i<p.partie.joueurs.length; i++) {
+		if (discard[i]) p.partie.joueurs[i].mill();
 	}
 }
 
-public Card [] choosables(Partie p, Player j) {
-	if (effet == Effet.PUITS_AUX_SOUHAITS) {
-		Card [] liste = new Card[cards.size()];
-		for (int i = 0; i<cards.size(); i++) {
-			liste[i] = cards.get(i);
+public static void milice(Player p) {
+	for (int i = 0; i<p.partie.joueurs.length; i++) {
+		if (!p.partie.joueurs[i].equals(p)) {
+			while(p.partie.joueurs[i].hand.size()>3) p.partie.joueurs[i].discard(p.partie.joueurs[i].chooseToDiscard());
 		}
-		return liste;
 	}
-	return null;
+}
+
+static public Card [] choosables(Player p) {
+	Card [] liste = new Card[cards.size()];
+	for (int i = 0; i<cards.size(); i++) {
+		liste[i] = cards.get(i);
+	}
+	return liste;
 }
 
 }
