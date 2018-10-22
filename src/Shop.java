@@ -12,7 +12,7 @@ Shop(){
 	avalaible[4]=new Stack("Duche", 30);
 	avalaible[5]=new Stack("Province", 15);
 	avalaible[6]=new Stack("Village", 11);
-	avalaible[7]= new Stack("Forgeron", 11);
+	avalaible[7]=new Stack("Forgeron", 11);
 	avalaible[8]=new Stack("Marche", 11);
 	avalaible[9] = new Stack("Bucheron", 11);
 	avalaible[10] = new Stack("Laboratoire",11);
