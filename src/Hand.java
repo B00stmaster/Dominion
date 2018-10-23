@@ -9,7 +9,7 @@ Hand(Player p){
 }
 
 public String toString() {
-	String s = "Contenu de la main "+ getClass().getName() + "@" + Integer.toHexString(hashCode()) + ":\n";
+	String s = owner.name + " hand content:" + "\n";
 	for (int i =0; i<size();i++) {
 		s += get(i).name + "  |  " ;
 		if (i%7 == 0 && i !=0) {
@@ -17,22 +17,6 @@ public String toString() {
 		}
 	}
 	return s;
-}
-
-public int cardCount(String name) {
-	int total = 0;
-	for (int i = 0; i<size(); i++) {
-		if (get(i).name.equals(name)) total ++;
-	}
-	return total;
-}
-
-public int typeCount(Card.Type t) {
-	int total = 0;
-	for (int i = 0; i<size(); i++) {
-		if (get(i).isA(t)) total ++;
-	}
-	return total;
 }
 
 public Card retire(Card c) {
