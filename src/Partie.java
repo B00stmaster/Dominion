@@ -10,27 +10,43 @@ static final int NOMBRE_DE_TOURS = 17;
 
 
 Partie(){	
-	Shop s = new Shop();
+	Shop s = new Shop(NJOUEURS);
 	theShop = s;
 	joueurs = new Player [NJOUEURS];
-	joueurs[0] = new Player(s, this);
+	joueurs[0] = new Player(this);
 	joueurs[0].number = 0;
 	for (int i = 1; i<NJOUEURS; i++) {
-	joueurs[i] = new Player(s, joueurs[0].C, true);
+	joueurs[i] = new Player(this,joueurs[0].C, true);
 	joueurs[i].number = i;}
 	for (int i = 0; i<NJOUEURS; i++) {
 		joueurs[i].newHand();
 	}
 }
 
+Partie(int players){	
+	Shop s = new Shop(players);
+	theShop = s;
+	joueurs = new Player [players];
+	for (int i = 0; i<players; i++) joueurs[i] = new Player(this);
+	for (int i = 0; i<players; i++) joueurs[i].newHand();
+}
+
+Partie(String[] strats){	
+	Shop s = new Shop(strats.length);
+	theShop = s;
+	joueurs = new Player [strats.length];
+	for (int i = 0; i<joueurs.length; i++) joueurs[i] = new Player(this,strats[i]);
+	for (int i = 0; i<joueurs.length; i++) joueurs[i].newHand();
+}
+
 Partie(Constantes Co){
-	Shop s = new Shop();
+	Shop s = new Shop(NJOUEURS);
 	theShop = s;
 	joueurs = new Player [NJOUEURS];
-	joueurs[0] = new Player(s, Co, false);
+	joueurs[0] = new Player(this,Co, false);
 	joueurs[0].number = 0;
 	for (int i = 1; i<NJOUEURS; i++) {
-	joueurs[i] = new Player(s, joueurs[0].C, true);
+	joueurs[i] = new Player(this,joueurs[0].C, true);
 	joueurs[i].number = i;}
 	for (int i = 0; i<NJOUEURS; i++) {
 		joueurs[i].newHand();
@@ -41,18 +57,12 @@ Partie(Constantes Co){
 
 
 void joueUnTourComplet(boolean printDetails, int first) {
-	
 	for (int i = first; i<4+first; i++) {
-		if (printDetails) {
-		System.out.println("=======================================================================");
-		}
 		joueurs[i%4].tourDeJeu(printDetails);
-		if (printDetails) {
-			System.out.println("fin de tour : "); System.out.println("");
-		System.out.println(joueurs[i%4]);}
 	}
 }
 
+//DEPRECATED
 Player partie(int NTours, boolean printDetails) {
 	int first = (int) (Math.random()*4);
 	for (int i = 0; i<NTours; i++) {
@@ -60,52 +70,46 @@ Player partie(int NTours, boolean printDetails) {
 	}
 	for (int i = 0; i<NJOUEURS; i++) {
 		//int points = joueurs[i].countVictoryPoints();
-		if (Apprentissage.wannaPrint) {
 		//System.out.println("joueur " + i + " : " + points);
-		if (i == 3) {System.out.println("");}}
 	}
 	Player gagnant = gagnant();
 	//System.out.println(gagnant.id);
-	
 	return gagnant;
 }
 
 Player partie(boolean printDetails) {
-	int first = (int) (Math.random()*4);
-	while(!hasEnded()) {		
-		joueUnTourComplet(printDetails, first);
-		
+	int first = (int) (Math.random()*this.joueurs.length);
+	int turn=0;
+	while(!hasEnded()) {
+		joueurs[(turn+first)%this.joueurs.length].tourDeJeu(printDetails);
+		turn++;
 	}
-	for (int i = 0; i<NJOUEURS; i++) {
-		int points = joueurs[i].countVictoryPoints();
-		if (Apprentissage.wannaPrint) {
-		//System.out.println("joueur " + i + " : " + points);
-		if (i == 3) {System.out.println("");}}
+	System.out.println("===================== PARTIE TERMINEE ===============================");
+	for (int i = 0; i<this.joueurs.length; i++) {
+		System.out.println("decklist de "+joueurs[i].name+":\n"+joueurs[i].decklist);
+		int points = joueurs[i].updateVictoryPoints();
+		System.out.println(joueurs[i].name+" a " + points + " PV");
 	}
 	Player gagnant = gagnant();
-	//System.out.println(gagnant.id);
-	
 	return gagnant;
 }
 
 boolean hasEnded() {
-	return theShop.nombrePilesVides()>=3 | !theShop.provincesRemain();
+	return theShop.nombrePilesVides()>=3 || (theShop.remainingCards("Province")==0);
 }
-
-
 
 Player gagnant() {
 	int max = 0;
-	for (int i = 0; i<NJOUEURS; i++) {
+	for (int i = 0; i<this.joueurs.length; i++) {
 		if (joueurs[i].PointsDeVictoire>max) {max = joueurs[i].PointsDeVictoire;}
 	}
 	int p = 0; 
-	for (int i = 0; i<NJOUEURS; i++) {
+	for (int i = 0; i<this.joueurs.length; i++) {
 		if (joueurs[i].PointsDeVictoire == max) {p++;}
 	}
 	Player [] gagnants = new Player[p];
 	p=0;
-	for (int i=0; i<NJOUEURS; i++) {
+	for (int i=0; i<this.joueurs.length; i++) {
 		if (joueurs[i].PointsDeVictoire == max) {gagnants[p] = joueurs[i];p++; }
 	}
 	int g = (int)(Math.random()*p);
@@ -114,14 +118,14 @@ Player gagnant() {
 
 Partie reinitialise() {
 	Partie nouv = new Partie();
-	for (int i = 0; i<NJOUEURS; i++) {
+	for (int i = 0; i<this.joueurs.length; i++) {
 		nouv.joueurs[i].C = joueurs[i].C;
 	}
 	return nouv;
 }
 
+//utile pour l'espion
 public Card [] allRevealTopCard() {
-	//utile pour l'espion
 	Card [] liste = new Card[Partie.NJOUEURS];
 	for (int i = 0; i<NJOUEURS; i++) {
 		liste[i] = joueurs[i].deck.peek();
@@ -143,8 +147,8 @@ public String toString() {
 
 public static void main(String[] args) {
 	Card.initialise();
-	Partie p = new Partie();
-	p.partie(true);
+	Partie p = new Partie(new String[] {"OptimizedBM","MilitiaBasicEngine"});
+	p.partie(false);
 }
 
 }
