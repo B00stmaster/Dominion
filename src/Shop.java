@@ -3,23 +3,6 @@ import java.util.Vector;
 public class Shop {
 Vector<Stack> avalaible;
 
-<<<<<<< HEAD
-Shop(){ 
-	avalaible[0]=new Stack("Cuivre", 50);
-	avalaible[1]=new Stack("Argent", 50);
-	avalaible[2]=new Stack("Or", 30);
-	avalaible[3]=new Stack("Domaine", 30);
-	avalaible[4]=new Stack("Duche", 30);
-	avalaible[5]=new Stack("Province", 15);
-	avalaible[6]=new Stack("Village", 11);
-	avalaible[7]=new Stack("Forgeron", 11);
-	avalaible[8]=new Stack("Marche", 11);
-	avalaible[9] = new Stack("Bucheron", 11);
-	avalaible[10] = new Stack("Laboratoire",11);
-	avalaible[11] = new Stack("Festival", 11);
-	avalaible[12] = new Stack("Sorciere", 11);
-	avalaible[13] = new Stack("Malediction", 50);
-=======
 Shop(int players){ 
 	avalaible = new Vector<Stack>();
 	avalaible.add(new Stack("Cuivre", 50));
@@ -36,8 +19,7 @@ Shop(int players){
 	avalaible.add(new Stack("Festival", 11));
 	avalaible.add(new Stack("Sorciere", 11));
 	avalaible.add(new Stack("Milice", 11));
-	avalaible.add(new Stack("Malediction", 10*(players-1)));
->>>>>>> 2b3299fa6d00be8271138fa2db7dd12f949e5fb2
+	avalaible.add(new Stack("Malediction", 10*(players-1)+1));
 }
 
 private Stack findStack(String name) {

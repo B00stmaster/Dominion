@@ -1,8 +1,5 @@
 import java.util.Vector;
 
-
-import com.sun.xml.internal.ws.util.StringUtils;
-
 public class Player {
 	static int idGenerator = 0;
 final public int id;
@@ -687,12 +684,16 @@ public static void main(String [] args) {
 	Card.initialise();
 	Partie p = new Partie(1);
 	p.joueurs[0].buy(Card.getCardByName("Or"));
+	p.joueurs[0].buy(Card.getCardByName("Argent"));
 	p.joueurs[0].buy(Card.getCardByName("Forgeron"));
+	p.joueurs[0].buy(Card.getCardByName("Village"));
+	p.joueurs[0].buy(Card.getCardByName("Village"));
+	p.joueurs[0].buy(Card.getCardByName("Village"));
 	System.out.println(p.joueurs[0].decklist);
 	System.out.println("No terminal prob: "+p.joueurs[0].decklist.noTerminalProb());
 	System.out.println("One terminal prob: "+p.joueurs[0].decklist.oneTerminalProb());
 	System.out.println("Terminal coll prob: "+p.joueurs[0].decklist.terminalCollisionProb());
-	System.out.println(p.joueurs[0].getStrategyTab("SmithyBM"));
+	System.out.println(p.joueurs[0].getStrategyTab("BasicEngine"));
 }
 
 	
