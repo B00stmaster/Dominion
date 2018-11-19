@@ -48,23 +48,6 @@ public Card retire(Card c) {
 	return data.remove(data.indexOf(c));
 }
 
-//void permutation(int i, int j) {
-//	Card temp = cartes[i];
-//	cartes[i] = cartes[j];
-//	cartes[j] = temp;
-//}
-
-//void shuffle() {
-//	//System.out.println("shuffle");
-//	int n = 500;
-//	for (int i = 0; i<n; i++) {
-//		int a = (int) (Math.random()*NCartes);
-//		int b = (int) (Math.random()*NCartes);
-//		
-//		permutation(a,b);
-//	}
-//}
-
 public String toString() {
 	String s = "Stack" + super.toString() + "content : " + "\n";
 	for (int i = 0; i<data.size(); i++) {

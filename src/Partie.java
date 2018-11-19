@@ -147,7 +147,7 @@ public String toString() {
 
 public static void main(String[] args) {
 	Card.initialise();
-	Partie p = new Partie(new String[] {"OptimizedBM","MilitiaBasicEngine"});
+	Partie p = new Partie(new String[] {"OptimizedBM","WitchBasicEngine"});
 	p.partie(false);
 }
 
