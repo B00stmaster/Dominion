@@ -15,6 +15,8 @@ public int plusBuys;
 public int plusCards;
 public static Vector<Card> cards = new Vector<Card>();
 
+//BULLSHIT TEST
+
 public Card() {
 
 }

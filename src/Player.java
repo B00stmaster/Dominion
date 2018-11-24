@@ -540,7 +540,6 @@ public String getStrategyTab(String stratName) {
 }
 
 //DEPRECATED
-
 Card laPlusChere() {
 	//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
 	Vector<Card> buyables = buyables();
@@ -574,7 +573,7 @@ Card laMeilleureNote(boolean printDetails) {
 }
 
 Card chooseAction() {
-	//fonction toute conne, si il a une carte qui donne des actions il la joue,
+	//fonction toute conne, si il a une carte qui donne des actions il la choisit
 	//s'il a pas de carte donnant des actions, il joue son action la plus chere
 	//si il n'a pas d'action il renvoie null et change le boolean playSomething to false
 	Card [] playables = playables();
