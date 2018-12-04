@@ -1,12 +1,12 @@
-
+package base;
 public class Partie {
-Player [] joueurs;
-Shop theShop;
-int iCurrentPlayer;
-boolean hasEnded = false;
-static final int NJOUEURS = 4;
-static final int NOMBRE_DE_PARTIES = 1000;
-static final int NOMBRE_DE_TOURS = 17;
+public Player [] joueurs;
+public Shop theShop;
+public int iCurrentPlayer;
+public boolean hasEnded = false;
+public static final int NJOUEURS = 4;
+public static final int NOMBRE_DE_PARTIES = 1000;
+public static final int NOMBRE_DE_TOURS = 17;
 
 
 Partie(){	
@@ -133,7 +133,6 @@ public Card [] allRevealTopCard() {
 	return liste;
 }
 
-
 public String toString() {
 	String s = "appercu de la partie : "+ "\n";
 	s+= "j0 : "+ "\n" +  joueurs[0].decklist.toString();
@@ -142,8 +141,6 @@ public String toString() {
 	s+= "j3 : "+ "\n" +  joueurs[3].decklist.toString();
 	return s;
 }
-
-
 
 public static void main(String[] args) {
 	Card.initialise();

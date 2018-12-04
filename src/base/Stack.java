@@ -1,3 +1,4 @@
+package base;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,6 @@ Card peek(){
 
 int size() {return data.size();}
 
-
 boolean isEmpty() {return data.isEmpty();}
 
 public Card retire(Card c) {
@@ -49,7 +49,7 @@ public Card retire(Card c) {
 }
 
 public String toString() {
-	String s = "Stack" + super.toString() + "content : " + "\n";
+	String s = "Stack" + super.toString() + " content : " + "\n";
 	for (int i = 0; i<data.size(); i++) {
 		s += data.get(i).name + "\n";
 	}

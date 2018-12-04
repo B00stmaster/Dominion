@@ -1,7 +1,5 @@
+package base;
 import java.util.Vector;
-
-
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class Player {
 	static int idGenerator = 0;
@@ -12,11 +10,12 @@ public Deck deck;
 public Decklist decklist;
 public Hand hand;
 public DiscardPile defausse;
-public Stack board;
+public Board board;
 public String name;
 public int leftActions = 1;
 public int leftBuys = 1;
-public int leftGold;
+public int leftGold = 0;
+public int leftPotions = 0;
 public boolean playSomething;
 public boolean buySomething;
 public Constantes C;
@@ -29,7 +28,7 @@ Player(Partie p){
 	partie = p;
 	hand = new Hand(this);
 	defausse = new DiscardPile(this);
-	board = new Stack();
+	board = new Board(this);
 	deck = new Deck(this);
 	deck.shuffle();
 	decklist = new Decklist(this);
@@ -48,17 +47,6 @@ Player(Partie p,Constantes CS, boolean alter){
 	else C = CS;
 }
 
-//deprecated. Use play()
-void play_old(Card c) {//on suppose que le joueur a deja l'action dispo pour le faire
-	leftActions += c.plusActions - 1;
-	leftBuys += c.plusBuys;
-	for (int i = 0; i<c.plusCards; i++) {
-		draw();
-	}
-	applyEffect(c);
-	board.add(hand.retire(c));
-}
-
 void play(Card c) {
 	c.playedBy(this);
 }
@@ -72,37 +60,6 @@ void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo
 	System.out.println(partie.theShop.remainingCards(c)+" "+c+" remaining");
 }
 
-//deprecated. Use Card.playedBy(Player p) instead
-void applyEffect(Card c) {
-	//on liste tous les effets pour appliquer la methode correspondante
-	if(c.effet==null) return;
-	switch (c.effet) {
-	case SORCIERE:
-		Card.sorciere(this);
-		break;
-	case CHAMBRE_DU_CONSEIL:
-		Card.chambreDuConseil(this);
-		break;
-	case PUITS_AUX_SOUHAITS:
-		Card [] choosables = Card.getCardByName("Puits aux Souhaits").choosables(this); //fonction unique qui marche pour toutes les cartes qui font choisir parmi des cartes
-		Card C = choosables[0]; //CHOIX DU JOUEUR !!! après on aura une fonction non débile pou choisir
-		Card.puitsAuxSouhaits(this);
-		break;
-	case ESPION:
-		Card [] revealed = partie.allRevealTopCard();
-		boolean [] discard  = new boolean[Partie.NJOUEURS];
-		for(int i=0;i<revealed.length;i++) {
-			if(revealed[i].isA(Card.Type.VICTORY) || (revealed[i].isA(Card.Type.TREASURE)&&(revealed[i].plusGold<=partie.joueurs[i].decklist.goldDensity()))) {
-				discard[i]=false;
-			}
-			else {discard[i]=true;}
-		}
-		Card.espion(this);	
-		break;
-	default:
-		break;
-	}
-}
 
 Card [] playables() {
 	int n = 0;
@@ -124,25 +81,36 @@ Vector<Card> buyables() {
 	Vector<Card> result = new Vector<Card>(10);
 	if (leftBuys == 0) {return result;}
 	for (int i = 0; i< partie.theShop.avalaible.size(); i++) {
-		if (partie.theShop.avalaible.get(i).peek().cost <= leftGold && partie.theShop.avalaible.get(i).size()>1) {
+		if (partie.theShop.avalaible.get(i).size()>1 && partie.theShop.avalaible.get(i).peek().cost <= leftGold) {
 			result.add(partie.theShop.avalaible.get(i).peek());
 		}
 	}
 	return result;	
 }
 
-void draw() {
+public boolean draw(int number) {
+	boolean shuffle=false;
+	for(int i=0;i<number;i++) {
+		shuffle|=draw();
+	}
+	return shuffle;
+}
+
+public boolean draw() {
+	boolean shuffle=false;
 	if (deck.isEmpty()) {
 		defausseDansLaBibli();
 		System.out.println(name+" melange son deck");
 		deck.shuffle();
+		shuffle=true;
 	}
 	if (deck.size() != 0) {
 	hand.add(deck.pop());
 	}
+	return shuffle;
 }
 
-void mill() {
+public void mill() {
 	System.out.println(name+" mills "+deck.peek());
 	defausse.add(deck.pop());
 }
@@ -152,7 +120,12 @@ void discard(Card c) {
 	defausse.add(hand.retire(c));
 }
 
-void defausseDansLaBibli() {
+void trash(Card c) {
+	System.out.println(name+" trashes "+c);
+	hand.retire(c);
+}
+
+public void defausseDansLaBibli() {
 	int imax = defausse.size();
 	for (int i = 0; i<imax; i++) {
 		deck.add(defausse.pop());
@@ -162,14 +135,12 @@ void defausseDansLaBibli() {
 void discardBoard() {
 	int imax = board.size();
 	for (int i = 0; i<imax; i++) {
-		defausse.add(board.pop());
+		defausse.add(board.popACard());
 	}
 }
 
-void newHand() {
-	for (int i =0; i<5; i++) {
-		draw();
-	}
+boolean newHand() {
+	return draw(5);
 }
 
 //on défausse chaque carte de la main en comptant sa valeur si c'est un tresor, puis on ajoute le total
@@ -212,6 +183,7 @@ public void tourDeJeu(boolean printDetails) {
 			play(c);
 		}
 	}
+	System.out.println("FIN ACTIONS");
 	playTreasures();
 	while(leftBuys>0 && buySomething) {
 		Card c = chooseCard();
@@ -220,7 +192,7 @@ public void tourDeJeu(boolean printDetails) {
 		}
 		else buySomething=false;
 	}
-	if(printDetails) System.out.println("FIN ACHATS");
+	System.out.println("FIN ACHATS");
 	discardBoard();
 	newHand();
 	if(printDetails) System.out.println(this);
@@ -446,7 +418,6 @@ public Card chooseCard(String stratName, Shop theShop) {
 }
 
 //DISCARDING
-
 //STRATEGIES MATTERS HERE
 //Higher value means higher priority. Negative value means you prefer to discard nothing vs drawing a card
 public int valueToDiscard(Card c, String stratName) {
@@ -466,11 +437,11 @@ public int valueToDiscard(Card c, String stratName) {
 }
 
 //return the preferred card to discard
-public Card chooseToDiscard() {
+Card chooseToDiscard() {
 	return chooseToDiscard(this.stratName);
 }
 
-public Card chooseToDiscard(String stratName) {
+Card chooseToDiscard(String stratName) {
 	double noteMax = -1000000;
 	Card res = null;
 	for (int i = 0; i<this.hand.size(); i++) {
@@ -483,6 +454,69 @@ public Card chooseToDiscard(String stratName) {
 	return res;
 }
 
+public boolean askToDiscard() {
+	discard(chooseToDiscard());
+	return true;
+}
+
+public boolean askToDiscard(int number) {
+	boolean res=false;
+	for(int i=0;i<number;i++) {
+		res|=askToDiscard();
+	}
+	return res;
+}
+
+
+//TRASHING
+//STRATEGIES MATTERS HERE
+//Higher value means higher priority. Negative value means you prefer to trash nothing vs gaining +2g
+public int valueToTrash(Card c, String stratName) {
+	if(c.isA(Card.Type.CURSE)) return 1600;
+	if(c.name.equals("Domaine")) return 100*(4-this.partie.theShop.remainingCards("Province"))-10;
+	if(c.isA(Card.Type.TREASURE)) {
+		//Engine decks prefer to have actions in their hands
+		if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.6-c.plusGold)*100);
+		else return (int) ((this.decklist.goldDensity()-c.plusGold)*100);
+	}
+	if(c.isA(Card.Type.ACTION)) {
+		//Engine decks prefer to have actions in their hands
+		if(stratName.contains("Engine")) return (int) (-200*(1-this.decklist.typeDensity(Card.Type.ACTION)));
+		else return -80;
+	}
+	return -50;
+}
+
+//return the preferred card to discard
+Card chooseToTrash() {
+	return chooseToDiscard(this.stratName);
+}
+
+Card chooseToTrash(String stratName) {
+	double noteMax = -1000000;
+	Card res = null;
+	for (int i = 0; i<this.hand.size(); i++) {
+		int note = valueToTrash(this.hand.get(i), stratName);
+		if (note > noteMax) {
+			res = this.hand.get(i);
+			noteMax = note;
+		}
+	}
+	return res;
+}
+
+public boolean askToTrash() {
+	trash(chooseToTrash());
+	return true;
+}
+
+public boolean askToTrash(int number) {
+	boolean res=false;
+	for(int i=0;i<number;i++) {
+		res|=askToTrash();
+	}
+	return res;
+}
 //OTHERS
 public boolean[] decideEspion() {
 	Card [] revealed = partie.allRevealTopCard();

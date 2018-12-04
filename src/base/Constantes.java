@@ -1,3 +1,4 @@
+package base;
 public class Constantes {
 public static final int NCOEFF = 6;
 double k1 = 0.115; //coeff PdV

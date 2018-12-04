@@ -1,3 +1,4 @@
+package base;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -118,9 +119,7 @@ public void playedBy(Player p) {
 	p.leftActions+=this.plusActions;
 	p.leftBuys+=this.plusBuys;
 	p.leftGold+=this.plusGold;
-	for(int i=0;i<this.plusCards;i++) {
-		p.draw();
-	}
+	p.draw(this.plusCards);
 	System.out.println(p.name+" plays "+this+ " | actions left: "+p.leftActions+" | buys left: "+p.leftBuys+" | gold left: "+p.leftGold);
 	switch (name) {
 	case "Sorciere":
@@ -130,13 +129,13 @@ public void playedBy(Player p) {
 		chambreDuConseil(p);
 		break;
 	case "Puits aux Souhaits":
-		Card.puitsAuxSouhaits(p);
+		puitsAuxSouhaits(p);
 		break;
 	case "Espion":
-		Card.espion(p);	
+		espion(p);	
 		break;
 	case "Milice":
-		Card.milice(p);	
+		milice(p);	
 		break;
 	default:
 		break;
@@ -165,7 +164,7 @@ public static void chambreDuConseil(Player p) {
 }
 
 public static void puitsAuxSouhaits(Player p) {
-	Card [] choosables = choosables(p); //fonction unique qui marche pour toutes les cartes qui font choisir parmi des cartes
+	Card [] choosables = choosables(); //fonction unique qui marche pour toutes les cartes qui font choisir parmi des cartes
 	Card c = choosables[0]; //CHOIX DU JOUEUR !!! après on aura une fonction non débile pou choisir
 	Card c0 = p.deck.peek();
 	System.out.println("scry 1 : " + c0.name);
@@ -185,12 +184,12 @@ public static void espion(Player p) {
 public static void milice(Player p) {
 	for (int i = 0; i<p.partie.joueurs.length; i++) {
 		if (!p.partie.joueurs[i].equals(p)) {
-			while(p.partie.joueurs[i].hand.size()>3) p.partie.joueurs[i].discard(p.partie.joueurs[i].chooseToDiscard());
+			p.partie.joueurs[i].askToDiscard(p.partie.joueurs[i].hand.size()-3);
 		}
 	}
 }
 
-static public Card [] choosables(Player p) {
+static public Card[] choosables() {
 	Card [] liste = new Card[cards.size()];
 	for (int i = 0; i<cards.size(); i++) {
 		liste[i] = cards.get(i);

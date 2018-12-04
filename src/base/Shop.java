@@ -1,3 +1,4 @@
+package base;
 import java.util.Vector;
 
 public class Shop {
@@ -52,7 +53,10 @@ public int remainingCards(Card c) {
 	return remainingCards(c.name);
 }
 public int remainingCards(String cardName) {
-	return findStack(cardName).size()-1;
+	Stack res=findStack(cardName);
+	if(res!=null)
+		return res.size()-1;
+	return 0;
 }
 
 int remainingProvinces() {
