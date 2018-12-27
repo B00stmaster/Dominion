@@ -1,4 +1,7 @@
 package base;
+
+import cards.AbstractCard;
+
 public class Board extends AbstractZone{
 	
 	Board(Player p){
@@ -11,7 +14,7 @@ public class Board extends AbstractZone{
 	}
 	
 	//similar to .pop() in a stack
-	public Card popACard() {
+	public AbstractCard popACard() {
 		return remove(this.size()-1);
 	}
 }

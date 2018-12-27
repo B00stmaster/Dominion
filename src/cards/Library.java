@@ -1,6 +1,5 @@
 package cards;
 
-import base.Card;
 import base.Player;
 
 public class Library extends AbstractAction {
@@ -13,8 +12,8 @@ public class Library extends AbstractAction {
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
 		while((!p.deck.isEmpty()) && p.hand.size()<7){
-			Card drawn = p.deck.pop();
-			if(drawn.isA(Card.Type.ACTION)) {
+			AbstractCard drawn = p.deck.pop();
+			if(drawn.isA(AbstractCard.Type.ACTION)) {
 				if(p.decideToDiscard(drawn,"+ 1 card")) {
 					System.out.println(name+" sets "+drawn+" aside");
 					p.defausse.add(drawn);

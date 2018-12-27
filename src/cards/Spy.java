@@ -1,6 +1,5 @@
 package cards;
 
-import base.Card;
 import base.Player;
 
 public class Spy extends AbstractAttack {
@@ -15,9 +14,20 @@ public class Spy extends AbstractAttack {
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
 		for (Player pla: p.partie.joueurs) {
-			if(!pla.askToReact(this).name.equals("Moat")) {
-				Card shown = pla.reveal();
-				if(p.decideSpy(pla,shown)) {
+			AbstractCard reaction = pla.askToReact(this);
+			if(reaction!=null) {
+				switch (reaction.getName()) {
+				case "Moat":
+					break;
+				default:
+					if(p.decideSpy(pla,pla.reveal())) {
+						pla.mill();
+					}
+					break;
+				}
+			}
+			else {
+				if(p.decideSpy(pla,pla.reveal())) {
 					pla.mill();
 				}
 			}

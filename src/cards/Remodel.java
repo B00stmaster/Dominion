@@ -2,7 +2,6 @@ package cards;
 
 import java.util.Vector;
 
-import base.Card;
 import base.Player;
 
 public class Remodel extends AbstractAction {
@@ -23,19 +22,15 @@ public class Remodel extends AbstractAction {
 			return newCard.getGoldCost(p)==newCost(oldCard.getGoldCost(p));
 		return newCard.getGoldCost(p)<=newCost(oldCard.getGoldCost(p));
 	}
-	
-	boolean canUpgrade(Player p, Card oldCard, Card newCard) {
-		return newCard.cost<=newCost(oldCard.cost);
-	}
-	
+
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
-		Card oldChoice = null;
-		Card newChoice = null;
-		Vector<Card> shopAvailable = p.partie.theShop.buyables();
+		AbstractCard oldChoice = null;
+		AbstractCard newChoice = null;
+		Vector<AbstractCard> shopAvailable = p.partie.theShop.buyables();
 		int upgradeValue= -100000;
-		for(Card c : p.hand) {
-			for(Card a : shopAvailable) {
+		for(AbstractCard c : p.hand) {
+			for(AbstractCard a : shopAvailable) {
 				if(canUpgrade(p, c, a)) {
 					int score = p.valueToTrash(c) + p.valueCard(a);
 					if(score>upgradeValue) {
@@ -48,7 +43,7 @@ public class Remodel extends AbstractAction {
 		}
 		if(upgradeValue>0) {
 			p.trash(oldChoice);
-			//p.gain(newChoice);
+			p.gainToDiscard(newChoice);
 		}
 		return true;
 	}

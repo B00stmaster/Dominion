@@ -1,6 +1,5 @@
 package cards;
 
-import base.Card;
 import base.Player;
 
 public class Chapel extends AbstractAction {
@@ -16,7 +15,7 @@ public class Chapel extends AbstractAction {
 		boolean wantToTrash=true;
 		do {
 			wantToTrash=false;
-			Card c = p.decideToTrash("None");
+			AbstractCard c = p.decideToTrash("None");
 			if(c!=null) {
 				wantToTrash=true;
 				p.trash(c);

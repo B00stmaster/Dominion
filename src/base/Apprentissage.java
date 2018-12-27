@@ -44,8 +44,6 @@ static boolean wannaPrint = false;
 
 	
 	public static void main(String[] args) {
-		Card.initialise();
-		
 
 		Apprentissage a = new Apprentissage();
 		Constantes Cgen = a.constantesUpdated(new Constantes());

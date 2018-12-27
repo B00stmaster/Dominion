@@ -2,7 +2,6 @@ package cards;
 
 import java.util.Vector;
 
-import base.Card;
 import base.Player;
 
 public class Workshop extends AbstractAction {
@@ -14,10 +13,10 @@ public class Workshop extends AbstractAction {
 	
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
-		Vector<Card> choices = p.partie.theShop.buyables(4);
-		Card choice = p.chooseToGain(choices);
+		Vector<AbstractCard> choices = p.partie.theShop.buyables(p,4);
+		AbstractCard choice = p.chooseToGain(choices);
 		if(choice!=null) {
-			//p.gainToDiscard(choice);	
+			p.gainToDiscard(choice);	
 		}
 		return true;
 	}

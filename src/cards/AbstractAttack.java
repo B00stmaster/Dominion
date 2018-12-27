@@ -1,6 +1,7 @@
 package cards;
 
-public class AbstractAttack extends AbstractCard {
+
+public class AbstractAttack extends AbstractAction {
 
 	public AbstractAttack() {
 		super();

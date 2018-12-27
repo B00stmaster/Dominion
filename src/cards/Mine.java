@@ -1,7 +1,6 @@
 package cards;
 
 import java.util.Vector;
-import base.Card;
 import base.Player;
 
 public class Mine extends Remodel {
@@ -17,19 +16,15 @@ public class Mine extends Remodel {
 	boolean canUpgrade(Player p, AbstractCard oldCard, AbstractCard newCard) {
 		return (oldCard.isA(Type.TREASURE) && newCard.isA(Type.TREASURE) && newCard.getGoldCost(p)<=newCost(oldCard.getGoldCost(p)));
 	}
-	
-	boolean canUpgrade(Player p, Card oldCard, Card newCard) {
-		return (oldCard.isA(Card.Type.TREASURE) && newCard.isA(Card.Type.TREASURE) && newCard.cost<=newCost(oldCard.cost));
-	}
-	
+		
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
-		Card oldChoice = null;
-		Card newChoice = null;
-		Vector<Card> shopAvailable = p.partie.theShop.buyables();
+		AbstractCard oldChoice = null;
+		AbstractCard newChoice = null;
+		Vector<AbstractCard> shopAvailable = p.partie.theShop.buyables();
 		int upgradeValue= -100000;
-		for(Card c : p.hand) {
-			for(Card a : shopAvailable) {
+		for(AbstractCard c : p.hand) {
+			for(AbstractCard a : shopAvailable) {
 				if(canUpgrade(p, c, a)) {
 					int score = p.valueToTrash(c) + p.valueCard(a);
 					if(score>upgradeValue) {
@@ -42,7 +37,7 @@ public class Mine extends Remodel {
 		}
 		if(upgradeValue>0) {
 			p.trash(oldChoice);
-			//p.gainToHand(newChoice);
+			p.gainToHand(newChoice);
 		}
 		return true;
 	}

@@ -1,7 +1,6 @@
 package base;
 import java.util.Vector;
 
-import base.Card.Type;
 import cards.*;
 
 public class Player {
@@ -50,43 +49,38 @@ Player(Partie p,Constantes CS, boolean alter){
 	else C = CS;
 }
 
-void play(Card c) {
-	if(c.isA(Type.ACTION)) leftActions--;
-	c.playedBy(this);
-}
-
 void play(AbstractCard c) {
 	if(c.isA(AbstractCard.Type.ACTION)) leftActions--;
 	c.onPlay(this);
 }
 
-void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo pour le faire
-	defausse.add(partie.theShop.getCard(c.name));
+void buy(AbstractCard c) {//on suppose que le joueur a deja les achats et l'argent dispo pour le faire
+	defausse.add(partie.theShop.getCard(c.getName()));
 	decklist.add(c);
-	leftGold -= c.cost;
+	leftGold -= c.getGoldCost(this);
 	leftBuys -= 1;
 	System.out.println(name+" buys "+c+" | buys left: "+leftBuys+" | gold left: "+leftGold);
 	System.out.println(partie.theShop.remainingCards(c)+" "+c+" remaining");
 }
 
-Card [] playables() {
+AbstractCard [] playables() {
 	int p = 0;
-	if (leftActions == 0) {return new Card[0];}
-	Card [] reponse = new Card[hand.typeCount(Type.ACTION)];
-	for (int i = 0; i<hand.size(); i++) {
-		if (hand.get(i).isA(Card.Type.ACTION)) {
-			reponse[p++] = hand.get(i);
+	if (leftActions == 0) {return new AbstractCard[0];}
+	AbstractCard [] reponse = new AbstractCard[hand.typeCount(AbstractCard.Type.ACTION)];
+	for (AbstractCard c: hand) {
+		if (c.isA(AbstractCard.Type.ACTION)) {
+			reponse[p++] = c;
 			}
 	}
 	return reponse;	
 }
 
-Vector<Card> buyables() {
-	Vector<Card> result = new Vector<Card>(10);
+Vector<AbstractCard> buyables() {
+	Vector<AbstractCard> result = new Vector<AbstractCard>(10);
 	if (leftBuys == 0) {return result;}
-	Vector<Card> shopAvailable = partie.theShop.buyables();
-	for (Card c: shopAvailable) {
-		if (c.cost <= leftGold) {
+	Vector<AbstractCard> shopAvailable = partie.theShop.buyables();
+	for (AbstractCard c: shopAvailable) {
+		if (c.getGoldCost(this) <= leftGold) {
 			result.add(c);
 		}
 	}
@@ -118,12 +112,12 @@ public void mill() {
 	defausse.add(deck.pop());
 }
 
-public void discard(Card c) {
+public void discard(AbstractCard c) {
 	System.out.println(name+" discards "+c);
 	defausse.add(hand.retire(c));
 }
 
-public void trash(Card c) {
+public void trash(AbstractCard c) {
 	System.out.println(name+" trashes "+c);
 	hand.retire(c);
 }
@@ -131,21 +125,23 @@ public void trash(Card c) {
 public boolean gainToDiscard(AbstractCard c) {
 	boolean res=false;
 	res|=c.onGain(this);
-	//defausse.add(c);
+	defausse.add(c);
+	System.out.println(name+" gains "+c+" on his discard pile");
 	return res;
 }
 
 public boolean gainToHand(AbstractCard c) {
 	boolean res=false;
 	res|=c.onGain(this);
-	//hand.add(c);
+	hand.add(c);
+	System.out.println(name+" gains "+c+" to his hand");
 	return res;
 }
 
 //useful for Spy
-public Card reveal() {
+public AbstractCard reveal() {
 	if(!deck.isEmpty()) {
-		Card res=deck.peek();
+		AbstractCard res=deck.peek();
 		System.out.println(name+" reveals "+res);
 		return res;
 	}
@@ -155,11 +151,11 @@ public Card reveal() {
 	}
 }
 
-public Card[] reveal(int number) {
-	Card[] res=new Card[number];
+public AbstractCard[] reveal(int number) {
+	AbstractCard[] res=new AbstractCard[number];
 	for(int i=1;i<number+1;i++) {
 		if(deck.size()>=i) {
-			Card temp = deck.peek(i);
+			AbstractCard temp = deck.peek(i);
 			System.out.println(name+" reveals "+temp);
 			res[i]=temp;
 		}
@@ -196,7 +192,7 @@ boolean newHand() {
 void playTreasures() {
 	int NCartes = hand.size();
 	for(int i = 0; i< NCartes;i++) {
-		if (hand.get(0).isA(Card.Type.TREASURE)){
+		if (hand.get(0).isA(AbstractCard.Type.TREASURE)){
 			play(hand.get(0));
 		}
 		else defausse.add(hand.retire(hand.get(0)));
@@ -205,8 +201,8 @@ void playTreasures() {
 
 int countVictoryPoints() {
 	int total = 0;
-	for (Card c:decklist) {
-		total+=c.VP;
+	for (AbstractCard c:decklist) {
+		total+=c.getVP(this);
 	}
 	PointsDeVictoire=total;
 	return total;
@@ -226,7 +222,7 @@ public void tourDeJeu(boolean printDetails) {
 	System.out.println("===================== TOUR DU JOUEUR " +name+" ===============================");
 	System.out.println(this);
 	while(leftActions>0 && playSomething) {
-		Card c = chooseToPlay();
+		AbstractCard c = chooseToPlay();
 		if (playSomething) {
 			play(c);
 		}
@@ -234,7 +230,7 @@ public void tourDeJeu(boolean printDetails) {
 	System.out.println("FIN ACTIONS");
 	playTreasures();
 	while(leftBuys>0 && buySomething) {
-		Card c = chooseToGain(buyables());
+		AbstractCard c = chooseToGain(buyables());
 		if (c!=null)
 			buy(c);
 		else 
@@ -247,13 +243,14 @@ public void tourDeJeu(boolean printDetails) {
 	System.out.println("FIN DU TOUR DE "+name+"\n"); 
 }
 
-public Card chooseToPlay() {
+public AbstractCard chooseToPlay() {
 //tries to play +actions and then most expensive actions, except if has throne room
 	if(hand.cardCount("Throne room")>0)
 		return hand.findA("Throne room");
-	Card [] playables = playables();
+	
+	AbstractCard [] playables = playables();
 	for (int i = 0; i<playables.length; i++) {
-		if (playables[i].plusActions>0) {
+		if (playables[i].getPlusActions(this)>0) {
 			playSomething = true;
 			return playables[i];
 		}
@@ -264,8 +261,8 @@ public Card chooseToPlay() {
 		int maxCost=0;
 		int maxIndex=-1;
 		for (int i = 0; i<playables.length; i++) {
-			if(playables[i].cost>maxCost) {
-				maxCost=playables[i].cost;
+			if(playables[i].getGoldCost(this)>maxCost) {
+				maxCost=playables[i].getGoldCost(this);
 				maxIndex=i;
 			}
 		}
@@ -276,16 +273,16 @@ public Card chooseToPlay() {
 }
 
 //BUYING/RECEIVING CARDS
-public int valueCard(Card c) {
+public int valueCard(AbstractCard c) {
 	return valueCard(c, stratName);
 }
 
-public int valueCard(Card c, String stratName) {
-	return valueCard(c.name, stratName,this.partie.theShop);
+public int valueCard(AbstractCard c, String stratName) {
+	return valueCard(c.getName(), stratName,this.partie.theShop);
 }
 
-private int valueCard(Card c, String stratName, Shop theShop) {
-	return valueCard(c.name, stratName,theShop);
+private int valueCard(AbstractCard c, String stratName, Shop theShop) {
+	return valueCard(c.getName(), stratName,theShop);
 }
 
 //STRATEGIES CODED HERE. default is BM
@@ -296,9 +293,9 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 		switch (cardName) {
 		case "Province":
 			return 1000;
-		case "Or":
+		case "Gold":
 			return 200;
-		case "Argent":
+		case "Silver":
 			if(this.decklist.goldDensity()<2) return 100;
 			else return -50;
 		default:
@@ -307,20 +304,20 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	case "OptimizedBM":
 		switch (cardName) {
 		case "Province":
-			if(this.decklist.cardCount("Or")==0 && this.decklist.cardCount("Argent")<5) return 150;
+			if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 150;
 			else return 1600;
-		case "Or":
+		case "Gold":
 			return 200;
-		case "Duche":
-			if(theShop.remainingProvinces()==5) return 150;
-			if(theShop.remainingProvinces()<=4) return 800;
+		case "Duchy":
+			if(theShop.remainingCards("Province")==5) return 150;
+			if(theShop.remainingCards("Province")<=4) return 800;
 			else return 0;
-		case "Argent":
+		case "Silver":
 			if(this.decklist.goldDensity()<2) return 100;
 			else return -50;
-		case "Domaine":
-			if(theShop.remainingProvinces()<=2) return 400;
-			if(theShop.remainingProvinces()==3) return 50;
+		case "Estate":
+			if(theShop.remainingCards("Province")<=2) return 400;
+			if(theShop.remainingCards("Province")==3) return 50;
 			else return -50;
 		default:
 			return -100;
@@ -328,23 +325,23 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	case "SmithyBM":
 		switch (cardName) {
 		case "Province":
-			if(this.decklist.cardCount("Or")==0 && this.decklist.cardCount("Argent")<5) return 150;
+			if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 150;
 			else return 1600;
-		case "Or":
+		case "Gold":
 			return 200;
-		case "Forgeron":
-			if(this.decklist.cardCount("Forgeron")==0 || (this.decklist.size()>=14 && this.decklist.cardCount("Forgeron")==1)) return 150;
+		case "Smithy":
+			if(this.decklist.cardCount("Smithy")==0 || (this.decklist.size()>=14 && this.decklist.cardCount("Smithy")==1)) return 150;
 			else return -50;
-		case "Duche":
-			if(theShop.remainingProvinces()==5) return 150;
-			if(theShop.remainingProvinces()<=4) return 800;
+		case "Duchy":
+			if(theShop.remainingCards("Province")==5) return 150;
+			if(theShop.remainingCards("Province")<=4) return 800;
 			else return 0;
-		case "Argent":
+		case "Silver":
 			if(this.decklist.goldDensity()<2) return 100;
 			else return -50;
-		case "Domaine":
-			if(theShop.remainingProvinces()<=2) return 400;
-			if(theShop.remainingProvinces()==3) return 50;
+		case "Estate":
+			if(theShop.remainingCards("Province")<=2) return 400;
+			if(theShop.remainingCards("Province")==3) return 50;
 			else return -50;
 		default:
 			return -100;
@@ -352,32 +349,32 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	case "BasicEngine":
 		switch (cardName) {
 		case "Province":
-			if(this.decklist.cardCount("Or")==0 && this.decklist.cardCount("Argent")<5) return 150;
+			if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 150;
 			else return 1600;
-		case "Or":
-			if(this.decklist.cardCount("Or")==0) return 400;
+		case "Gold":
+			if(this.decklist.cardCount("Gold")==0) return 400;
 			else return -50;
-		case "Forgeron":
-			if(this.decklist.cardCount("Forgeron")==0) return 300;
-			if(this.decklist.cardCount("Village")>=this.decklist.cardCount("Forgeron")) return 250;
+		case "Smithy":
+			if(this.decklist.cardCount("Smithy")==0) return 300;
+			if(this.decklist.cardCount("Village")>=this.decklist.cardCount("Smithy")) return 250;
 			else return -50;
-		case "Marche":
-			if(this.decklist.cardCount("Marche")<=4) return 350;
+		case "Market":
+			if(this.decklist.cardCount("Market")<=4) return 350;
 			else return -50;
 		case "Village":
-			if(this.decklist.cardCount("Village")<this.decklist.cardCount("Forgeron")) return 250;
-			if((this.decklist.cardCount("Village")-this.decklist.cardCount("Forgeron"))<=1) return 200;
+			if(this.decklist.cardCount("Village")<this.decklist.cardCount("Smithy")) return 250;
+			if((this.decklist.cardCount("Village")-this.decklist.cardCount("Smithy"))<=1) return 200;
 			else return -50;
-		case "Duche":
-			if(theShop.remainingProvinces()==4) return 150;
-			if(theShop.remainingProvinces()<=3) return 600;
+		case "Duchy":
+			if(theShop.remainingCards("Province")==4) return 150;
+			if(theShop.remainingCards("Province")<=3) return 600;
 			else return 0;
-		case "Argent":
-			if(this.decklist.cardCount("Argent")==0) return 200;
+		case "Silver":
+			if(this.decklist.cardCount("Silver")==0) return 200;
 			else return -50;
-		case "Domaine":
-			if(theShop.remainingProvinces()<=2) return 400;
-			if(theShop.remainingProvinces()==3) return 50;
+		case "Estate":
+			if(theShop.remainingCards("Province")<=2) return 400;
+			if(theShop.remainingCards("Province")==3) return 50;
 			else return -50;
 		default:
 			return -100;
@@ -385,35 +382,35 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	case "MilitiaBasicEngine":
 		switch (cardName) {
 		case "Province":
-			if(this.decklist.cardCount("Or")==0 && this.decklist.cardCount("Argent")<5) return 150;
+			if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 150;
 			else return 1600;
-		case "Or":
-			if(this.decklist.cardCount("Or")==0) return 500;
+		case "Gold":
+			if(this.decklist.cardCount("Gold")==0) return 500;
 			else return -50;
-		case "Milice":
-			if(this.decklist.cardCount("Milice")==0) return 400;
+		case "Militia":
+			if(this.decklist.cardCount("Militia")==0) return 400;
 			else return -50;
-		case "Forgeron":
-			if(this.decklist.cardCount("Forgeron")==0) return 300;
-			if(this.decklist.cardCount("Village")>=this.decklist.typeCount(Card.Type.TERMINAL_ACTION)) return 250;
+		case "Smithy":
+			if(this.decklist.cardCount("Smithy")==0) return 300;
+			if(this.decklist.cardCount("Village")>=this.decklist.typeCount(AbstractCard.Type.TERMINAL_ACTION)) return 250;
 			else return -50;
-		case "Marche":
-			if(this.decklist.cardCount("Marche")<=4) return 350;
+		case "Market":
+			if(this.decklist.cardCount("Market")<=4) return 350;
 			else return -50;
 		case "Village":
-			if(this.decklist.cardCount("Village")<this.decklist.typeCount(Card.Type.TERMINAL_ACTION)) return 250;
-			if((this.decklist.cardCount("Village")-this.decklist.typeCount(Card.Type.TERMINAL_ACTION))<=1) return 200;
+			if(this.decklist.cardCount("Village")<this.decklist.typeCount(AbstractCard.Type.TERMINAL_ACTION)) return 250;
+			if((this.decklist.cardCount("Village")-this.decklist.typeCount(AbstractCard.Type.TERMINAL_ACTION))<=1) return 200;
 			else return -50;
-		case "Duche":
-			if(theShop.remainingProvinces()==4) return 150;
-			if(theShop.remainingProvinces()<=3) return 600;
+		case "Duchy":
+			if(theShop.remainingCards("Province")==4) return 150;
+			if(theShop.remainingCards("Province")<=3) return 600;
 			else return 0;
-		case "Argent":
-			if(this.decklist.cardCount("Argent")==0) return 200;
+		case "Silver":
+			if(this.decklist.cardCount("Silver")==0) return 200;
 			else return -50;
-		case "Domaine":
-			if(theShop.remainingProvinces()<=1) return 400;
-			if(theShop.remainingProvinces()==2) return 50;
+		case "Estate":
+			if(theShop.remainingCards("Province")<=1) return 400;
+			if(theShop.remainingCards("Province")==2) return 50;
 			else return -50;
 		default:
 			return -100;
@@ -421,38 +418,38 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	case "WitchBasicEngine":
 		switch (cardName) {
 		case "Province":
-			if(this.decklist.cardCount("Or")==0 && this.decklist.cardCount("Argent")<5) return 150;
+			if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 150;
 			else return 1600;
-		case "Or":
-			if(this.decklist.cardCount("Or")==0) return 500;
+		case "Gold":
+			if(this.decklist.cardCount("Gold")==0) return 500;
 			else return -50;
-		case "Milice":
-			if(this.decklist.cardCount("Milice")==0) return 400;
+		case "Militia":
+			if(this.decklist.cardCount("Militia")==0) return 400;
 			else return -50;
-		case "Sorciere":
-			if(this.decklist.cardCount("Sorciere")==0) return 450;
+		case "Witch":
+			if(this.decklist.cardCount("Witch")==0) return 450;
 			else return -50;
-		case "Forgeron":
-			if(this.decklist.cardCount("Forgeron")==0) return 300;
-			if(this.decklist.cardCount("Village")>=this.decklist.typeCount(Card.Type.TERMINAL_ACTION)) return 250;
+		case "Smithy":
+			if(this.decklist.cardCount("Smithy")==0) return 300;
+			if(this.decklist.cardCount("Village")>=this.decklist.typeCount(AbstractCard.Type.TERMINAL_ACTION)) return 250;
 			else return -50;
-		case "Marche":
-			if(this.decklist.cardCount("Marche")<=4) return 350;
+		case "Market":
+			if(this.decklist.cardCount("Market")<=4) return 350;
 			else return -50;
 		case "Village":
-			if(this.decklist.cardCount("Village")<this.decklist.typeCount(Card.Type.TERMINAL_ACTION)) return 250;
-			if((this.decklist.cardCount("Village")-this.decklist.typeCount(Card.Type.TERMINAL_ACTION))<=1) return 200;
+			if(this.decklist.cardCount("Village")<this.decklist.typeCount(AbstractCard.Type.TERMINAL_ACTION)) return 250;
+			if((this.decklist.cardCount("Village")-this.decklist.typeCount(AbstractCard.Type.TERMINAL_ACTION))<=1) return 200;
 			else return -50;
-		case "Duche":
-			if(theShop.remainingProvinces()==4) return 150;
-			if(theShop.remainingProvinces()<=3) return 600;
+		case "Duchy":
+			if(theShop.remainingCards("Province")==4) return 150;
+			if(theShop.remainingCards("Province")<=3) return 600;
 			else return 0;
-		case "Argent":
-			if(this.decklist.cardCount("Argent")==0) return 200;
+		case "Silver":
+			if(this.decklist.cardCount("Silver")==0) return 200;
 			else return -50;
-		case "Domaine":
-			if(theShop.remainingProvinces()<=1) return 400;
-			if(theShop.remainingProvinces()==2) return 50;
+		case "Estate":
+			if(theShop.remainingCards("Province")<=1) return 400;
+			if(theShop.remainingCards("Province")==2) return 50;
 			else return -50;
 		default:
 			return -100;
@@ -473,18 +470,18 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	}
 }
 
-public Card chooseToGain(Vector<Card> available) {
+public AbstractCard chooseToGain(Vector<AbstractCard> available) {
 	return chooseToGain(available,this.stratName);
 }
 
-public Card chooseToGain(Vector<Card> available,String stratName) {
+public AbstractCard chooseToGain(Vector<AbstractCard> available,String stratName) {
 	return chooseToGain(available,stratName, partie.theShop);
 }
 
-public Card chooseToGain(Vector<Card> available,String stratName, Shop theShop) {
+public AbstractCard chooseToGain(Vector<AbstractCard> available,String stratName, Shop theShop) {
 	double noteMax = 0;
-	Card res = null;
-	for (Card c: available) {
+	AbstractCard res = null;
+	for (AbstractCard c: available) {
 		int note = valueCard(c, stratName, theShop);
 		//System.out.println("Considering "+c+" note: "+note);
 		if (note > noteMax) {
@@ -498,34 +495,35 @@ public Card chooseToGain(Vector<Card> available,String stratName, Shop theShop) 
 //DISCARDING
 //STRATEGIES MATTERS HERE
 //Higher value means higher priority. Negative value means you prefer to discard nothing vs drawing a card
-public int valueToDiscard(Card c, String stratName) {
-	if(c.isA(Card.Type.VICTORY) && !c.isA(Card.Type.TREASURE) && !c.isA(Card.Type.ACTION)) return 1600;
-	if( ((this.hand.typeCount(Card.Type.TERMINAL_ACTION) - this.hand.typeCount(Card.Type.VILLAGE))>1) && c.isA(Card.Type.TERMINAL_ACTION)) return 1000-c.cost*100;
-	if(c.isA(Card.Type.TREASURE)) {
+public int valueToDiscard(AbstractCard c, String stratName) {
+	if(c.isA(AbstractCard.Type.VICTORY) && !c.isA(AbstractCard.Type.TREASURE) && !c.isA(AbstractCard.Type.ACTION)) return 1600;
+	if(c.getName().equals("Curse")) return 1200;
+	if( ((this.hand.typeCount(AbstractCard.Type.TERMINAL_ACTION) - this.hand.typeCount(AbstractCard.Type.VILLAGE))>1) && c.isA(AbstractCard.Type.TERMINAL_ACTION)) return 1000-c.getGoldCost(this)*100;
+	if(c.isA(AbstractCard.Type.TREASURE)) {
 		//Engine decks prefer to have actions in their hands
-		if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.8-c.plusGold)*100);
-		else return (int) ((this.decklist.goldDensity()-c.plusGold)*100);
+		if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.8-c.getPlusGold(this))*100);
+		else return (int) ((this.decklist.goldDensity()-c.getPlusGold(this))*100);
 	}
-	if(c.isA(Card.Type.ACTION)) {
+	if(c.isA(AbstractCard.Type.ACTION)) {
 		//Engine decks prefer to have actions in their hands
-		if(stratName.contains("Engine")) return (int) (-200*(1-this.decklist.typeDensity(Card.Type.ACTION)));
+		if(stratName.contains("Engine")) return (int) (-200*(1-this.decklist.typeDensity(AbstractCard.Type.ACTION)));
 		else return -80;
 	}
 	return -50;
 }
 
-public int valueToDiscard(Card c) {
+public int valueToDiscard(AbstractCard c) {
 	return valueToDiscard(c, stratName);
 }
 
 //return the preferred card to discard
-public Card chooseToDiscard() {
+public AbstractCard chooseToDiscard() {
 	return chooseToDiscard(this.stratName);
 }
 
-public Card chooseToDiscard(String stratName) {
+public AbstractCard chooseToDiscard(String stratName) {
 	double noteMax = -1000000;
-	Card res = null;
+	AbstractCard res = null;
 	for (int i = 0; i<this.hand.size(); i++) {
 		int note = valueToDiscard(this.hand.get(i), stratName);
 		if (note > noteMax) {
@@ -549,14 +547,14 @@ public boolean askToDiscard(int number) {
 	return res;
 }
 
-public Card decideToDiscard(String benefit) {
-	Card res=chooseToDiscard();
+public AbstractCard decideToDiscard(String benefit) {
+	AbstractCard res=chooseToDiscard();
 	if(decideToDiscard(res,benefit)) //not optimized
 		return res;
 	return null;
 }
 
-public boolean decideToDiscard(Card c,String benefit) {
+public boolean decideToDiscard(AbstractCard c,String benefit) {
 	switch (benefit.toLowerCase().replaceAll("\\s","")) {
 	case "+1card":
 		return valueToDiscard(c)>0;
@@ -576,34 +574,34 @@ public boolean decideToReshuffle() { //TO DO: put a non-trivial decision-maker
 //TRASHING
 //STRATEGIES MATTERS HERE
 //Higher value means higher priority. Negative value means you prefer to trash nothing without benefit
-public int valueToTrash(Card c, String stratName) {
-	if(c.isA(Card.Type.CURSE)) return 1600;
-	if(c.name.equals("Domaine")) return 400*(4-this.partie.theShop.remainingCards("Province"))-10;
-	if(c.isA(Card.Type.TREASURE)) {
+public int valueToTrash(AbstractCard c, String stratName) {
+	if(c.isA(AbstractCard.Type.CURSE)) return 1600;
+	if(c.getName().equals("Estate")) return 400*(4-this.partie.theShop.remainingCards("Province"))-10;
+	if(c.isA(AbstractCard.Type.TREASURE)) {
 		//Engine decks prefer to have actions in their hands
-		if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.6-c.plusGold)*100);
-		else return (int) ((this.decklist.goldDensity()-c.plusGold)*100);
+		if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.6-c.getPlusGold(this))*100);
+		else return (int) ((this.decklist.goldDensity()-c.getPlusGold(this))*100);
 	}
-	if(c.isA(Card.Type.ACTION)) {
+	if(c.isA(AbstractCard.Type.ACTION)) {
 		//Engine decks prefer to have actions in their hands
-		if(stratName.contains("Engine")) return (int) (-400*(1-this.decklist.typeDensity(Card.Type.ACTION)));
+		if(stratName.contains("Engine")) return (int) (-400*(1-this.decklist.typeDensity(AbstractCard.Type.ACTION)));
 		else return -80;
 	}
 	return -50;
 }
 
-public int valueToTrash(Card c) {
+public int valueToTrash(AbstractCard c) {
 	return valueToTrash(c, stratName);
 }
 
 //return the preferred card to trash
-Card chooseToTrash() {
+AbstractCard chooseToTrash() {
 	return chooseToTrash(this.stratName);
 }
 
-Card chooseToTrash(String stratName) {
+AbstractCard chooseToTrash(String stratName) {
 	double noteMax = -1000000;
-	Card res = null;
+	AbstractCard res = null;
 	for (int i = 0; i<this.hand.size(); i++) {
 		int note = valueToTrash(this.hand.get(i), stratName);
 		if (note > noteMax) {
@@ -627,14 +625,14 @@ public boolean askToTrash(int number) {
 	return res;
 }
 
-public Card decideToTrash(String benefit) {
-	Card res=chooseToTrash();
+public AbstractCard decideToTrash(String benefit) {
+	AbstractCard res=chooseToTrash();
 	if(decideToTrash(res,benefit)) //not optimized
 		return res;
 	return null;
 }
 
-public boolean decideToTrash(Card c,String benefit) {
+public boolean decideToTrash(AbstractCard c,String benefit) {
 	switch (benefit.toLowerCase().replaceAll("\\s","")) {
 	case "+1card":
 		return valueToTrash(c)>-25;
@@ -647,11 +645,11 @@ public boolean decideToTrash(Card c,String benefit) {
 	}
 }
 //OTHERS
-public Card askToReact(AbstractCard att) {
-	Card res=null;
-	for(Card c: hand) {
-		if(c.isA(Type.REACTION)) {
-			switch (c.name) {
+public AbstractCard askToReact(AbstractCard att) {
+	AbstractCard res=null;
+	for(AbstractCard c: hand) {
+		if(c.isA(AbstractCard.Type.REACTION)) {
+			switch (c.getName()) {
 			case "Moat":
 				res= c;
 				break;
@@ -667,22 +665,11 @@ public Card askToReact(AbstractCard att) {
 	return res;
 }
 
-public boolean decideSpy(Player pla,Card shown) {
+public boolean decideSpy(Player pla,AbstractCard shown) {
 	boolean res=true;
-	if(shown.isA(Card.Type.VICTORY) || (shown.isA(Card.Type.TREASURE)&&(shown.plusGold<=pla.decklist.goldDensity()))) res=false;
+	if(shown.isA(AbstractCard.Type.VICTORY) || (shown.isA(AbstractCard.Type.TREASURE)&&(shown.getPlusGold(pla)<=pla.decklist.goldDensity()))) res=false;
 	if(pla==this) res = !res;
 	return res;
-}
-
-public boolean[] decideEspion() {
-	Card [] revealed = partie.allRevealTopCard();
-	boolean [] discard  = new boolean[Partie.NJOUEURS];
-	for(int i=0;i<revealed.length;i++) {
-		if(revealed[i].isA(Card.Type.VICTORY) || (revealed[i].isA(Card.Type.TREASURE)&&(revealed[i].plusGold<=partie.joueurs[i].decklist.goldDensity()))) discard[i]=false;
-		else discard[i]=true;
-		if(partie.joueurs[i]==this) discard[i]= !discard[i];
-	}
-	return discard;
 }
 
 static private String pad(String s,int size) {
@@ -713,15 +700,15 @@ public String getStrategyTab(String stratName) {
 		res+=pad(Integer.toString(j)+" gold",12)+" | ";
 	}
 	res+="\n"+(new String(new char[res.length()-temp]).replace('\0', '-'))+"\n";
-	int NProvinces = fakeShop.remainingProvinces();
+	int NProvinces = fakeShop.remainingCards("Province");
 	for(int i=NProvinces;i>0;i--) {
-		res+=pad(fakeShop.remainingProvinces()+" provinces left | ",20);
+		res+=pad(fakeShop.remainingCards("Province")+" provinces left | ",20);
 		for(int j=8;j>=0;j--) {
 			leftGold=j;
 			leftBuys=1;
-			Card c = chooseToGain(buyables(),stratName,fakeShop);
+			AbstractCard c = chooseToGain(buyables(),stratName,fakeShop);
 			if(c==null) res+= pad("None",12) +" | ";
-			else res+= pad(c.name,12) +" | ";
+			else res+= pad(c.getName(),12) +" | ";
 		}
 		res+="\n";
 		fakeShop.getCard("Province");
@@ -730,10 +717,9 @@ public String getStrategyTab(String stratName) {
 }
 
 public static void main(String [] args) {
-	Card.initialise();
 	Partie p = new Partie(1);
-	p.joueurs[0].buy(Card.getCardByName("Or"));
-	p.joueurs[0].buy(Card.getCardByName("Forgeron"));
+	p.joueurs[0].buy(new Gold());
+	p.joueurs[0].buy(new Smithy());
 	System.out.println(p.joueurs[0].decklist);
 	System.out.println("No terminal prob: "+p.joueurs[0].decklist.noTerminalProb());
 	System.out.println("One terminal prob: "+p.joueurs[0].decklist.oneTerminalProb());
@@ -742,27 +728,27 @@ public static void main(String [] args) {
 }
 
 //ALL DEPRECATED
-Card laPlusChere() {
+AbstractCard laPlusChere() {
 	//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
-	Vector<Card> buyables = buyables();
+	Vector<AbstractCard> buyables = buyables();
 	int maxCost = 0;
 	buySomething = false;
-	Card reponse = Card.getCardByName("Cuivre");
+	AbstractCard reponse = null;
 	for (int i = 0; i<buyables.size(); i++) {
-		if (buyables.get(i).cost > maxCost) {
+		if (buyables.get(i).getGoldCost(this) > maxCost) {
 			buySomething = true;
 			reponse = buyables.get(i);
-			maxCost = reponse.cost;
+			maxCost = reponse.getGoldCost(this);
 		}
 	}
 	return reponse;
 }
 
-Card laMeilleureNote(boolean printDetails) {
-	Vector<Card> buyables = buyables();
+AbstractCard laMeilleureNote(boolean printDetails) {
+	Vector<AbstractCard> buyables = buyables();
 	double noteMax = 0;
 	buySomething = false;
-	Card reponse = Card.getCardByName("Cuivre");
+	AbstractCard reponse = null;
 	for (int i = 0; i<buyables.size(); i++) {
 		double note = note(buyables.get(i), printDetails);
 		if (note > noteMax) {
@@ -783,18 +769,18 @@ private double incrementCardValue(Decklist nouv) {
 }
 
 private double incrementEnAction(Decklist nouv) {
-	return (nouv.givenActionDensity() - decklist.givenActionDensity())*(1 + decklist.typeDensity(Card.Type.ACTION));
+	return (nouv.givenActionDensity() - decklist.givenActionDensity())*(1 + decklist.typeDensity(AbstractCard.Type.ACTION));
 }
 
 private double incrementEnAchat(Decklist nouv) {
 	return nouv.givenAchatDensity() - decklist.givenAchatDensity();
 }
 
-private double PdV(Card c) {
-	return c.VP;
+private double PdV(AbstractCard c) {
+	return c.getVP(this);
 }
 
-public double note(Card c, boolean printDetails) {
+public double note(AbstractCard c, boolean printDetails) {
 	Decklist nouv = decklist.simulatedAdd(c);
 	double noteGold  = incrementGoldDensity(nouv);
 	double noteCard = incrementCardValue(nouv);
@@ -815,44 +801,27 @@ public double note(Card c, boolean printDetails) {
 	return note;
 }
 
-public double noteCardStratGold(Card c, boolean printDetails){ 
+public double noteCardStratGold(AbstractCard c, boolean printDetails){ 
 
-if(c.name =="Province") {return 5;} 
+if(c.getName().equals("Province")) {return 5;} 
 
-if(c.name == "Or"){return 4;} 
+if(c.getName().equals("Gold")) {return 4;} 
 
-if(c.name == "Forgeron" && decklist.proportion(Card.getCardByName( c.name))< C.Seuil1){return 3;} 
+if(c.getName().equals("Smithy") && decklist.proportion(c.getName())< C.Seuil1){return 3;} 
 
-if (c.name == "Argent"){return 2;} 
-
-return 0; 
-
-} 
-
-public double noteCardStratCycling(Card c, boolean PrintDetails){ 
-
-if(c.name =="Marche"|| c.name == "Laboratoire") {return 5+Math.random();} 
-
-if(c.name == "Or" && decklist.proportion(Card.getCardByName(c.name))<C.Seuil2){return 6;} 
-
-if(c.name == "Province"){return 7;} 
-
-if(c.name == "Forgeron"){return 5;} 
-
-if (c.name == "Village"){return 2;} 
+if (c.getName() == "Silver"){return 2;} 
 
 return 0; 
-
 } 
 
 public String toString() {
 	String s = name;
 	s+= " | actions left: "+leftActions+" | buys left: "+leftBuys+" | gold left: "+leftGold + "\n";
 	s+=deck.toString()+"\n";
-	s+=hand.toString()+"\n";
-	s+=defausse.toString();
+	s+=defausse.toString()+"\n";
+	s+=hand.toString();
 	return s;
 }
 
-boolean nearEnd() {return partie.theShop.nombrePilesVides()>=C.N2 | partie.theShop.remainingProvinces()<= C.N1;}
+boolean nearEnd() {return partie.theShop.nombrePilesVides()>=C.N2 | partie.theShop.remainingCards("Province")<= C.N1;}
 }

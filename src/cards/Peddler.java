@@ -1,6 +1,5 @@
 package cards;
 
-import base.Card;
 import base.Player;
 
 public class Peddler extends AbstractAction {
@@ -13,7 +12,7 @@ public class Peddler extends AbstractAction {
 	}
 	
 	public int getGoldCost(Player p) {
-		return Math.max(goldCost-2*p.board.typeCount(Card.Type.ACTION)-p.board.cardCount("Pont"),0);
+		return Math.max(goldCost-2*p.board.typeCount(AbstractCard.Type.ACTION)-p.board.cardCount("Pont"),0);
 	}
 
 }

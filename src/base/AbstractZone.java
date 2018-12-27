@@ -1,7 +1,9 @@
 package base;
 import java.util.Vector;
 
-public abstract class AbstractZone  extends Vector<Card>{
+import cards.AbstractCard;
+
+public abstract class AbstractZone  extends Vector<AbstractCard>{
 	Player owner;
 
 	AbstractZone(Player p){
@@ -12,7 +14,7 @@ public abstract class AbstractZone  extends Vector<Card>{
 	public String toString() {
 		String s = "";
 		for (int i =0; i<size();i++) {
-			s += get(i).name + "  |  " ;
+			s += get(i).getName() + "  |  " ;
 			if (i%7 == 0 && i !=0) {
 				s+= "\n";
 			}
@@ -23,28 +25,28 @@ public abstract class AbstractZone  extends Vector<Card>{
 	//you CAN count cards that doesn't exist...
 	public int cardCount(String name) {
 		int total = 0;
-		for (Card c:this) {
-			if (c.name.equals(name)) total ++;
+		for (AbstractCard c: this) {
+			if (c.getName().equals(name)) total ++;
 		}
 		return total;
 	}
 
-	public int typeCount(Card.Type t) {
+	public int typeCount(AbstractCard.Type t) {
 		int total = 0;
-		for (Card c: this) {
+		for (AbstractCard c: this) {
 			if (c.isA(t)) total ++;
 		}
 		return total;
 	}
 	
-	public Card findA(String name) {
-		for (Card c:this) {
-			if (c.name.equals(name)) return c;
+	public AbstractCard findA(String name) {
+		for (AbstractCard c : this) {
+			if (c.getName().equals(name)) return c;
 		}
 		return null;
 	}
 	
-	public Card retire(Card c) {
+	public AbstractCard retire(AbstractCard c) {
 		//CARE c must be precisely one of the cards (i.e. must not be a copy)
 		return remove(indexOf(c));
 	}

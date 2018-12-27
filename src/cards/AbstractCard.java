@@ -29,6 +29,29 @@ public class AbstractCard {
 		this.plusCards = 0;
 	}
 	
+	public boolean generateAdditionalTypes() {
+		int previousTypesNb = types.size();
+		//a gainer is a card that gives you a card without using buy or trashing card
+		
+		//a terminal action is an action that costs you an action
+		if(plusActions==0 && isA(Type.ACTION)) types.add(Type.TERMINAL_ACTION);
+		//a non-terminal action is an action that replace its action
+		if(plusActions>0 && isA(Type.ACTION)) types.add(Type.NON_TERMINAL_ACTION);
+		//a village is a card that increase your action count
+		if(plusActions>1) types.add(Type.VILLAGE);
+		//a drawer is a card that increases your hand size
+		if(plusCards>1) types.add(Type.DRAWER);
+		//a cantrip is a card that can be played "free" i.e. it replaces itself and its action
+		if((plusActions>0)&&(plusCards>0)) types.add(Type.CANTRIP);
+		
+		if(isA(Type.CANTRIP)&&(plusGold>0)) types.add(Type.PEDDLER);
+
+		//a terminal silver is a card that increase gives 2 gold but costs you an action
+		if((plusActions==0)&&(plusGold==2)) types.add(Type.TERMINAL_SILVER);
+		
+		return (types.size()>previousTypesNb);
+	}
+	
 	public boolean isA(AbstractCard.Type t) {return (types.contains(t));}
 	
 	public String toString() {return getName();}
@@ -36,7 +59,7 @@ public class AbstractCard {
 	public String getName() {
 		if(!name.equals(""))
 			return name;
-		return this.getClass().getName();
+		return this.getClass().getName().split("\\.")[1];
 	}
 	
 	public int getGoldCost(Player p) {
@@ -88,7 +111,7 @@ public class AbstractCard {
 	}
 	
 	public boolean onPlay(Player p) {
-		//p.board.add(p.hand.retire(this));
+		p.board.add(p.hand.retire(this));
 		p.leftActions+=getPlusActions(p);
 		p.leftGold+=getPlusGold(p);
 		p.leftBuys+=getPlusBuys(p);

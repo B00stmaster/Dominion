@@ -1,6 +1,5 @@
 package cards;
 
-import base.Card;
 import base.Player;
 
 public class Cellar extends AbstractAction {
@@ -17,7 +16,7 @@ public class Cellar extends AbstractAction {
 		boolean wantToDiscard=true;
 		do {
 			wantToDiscard=false;
-			Card c = p.decideToDiscard("+1 card");
+			AbstractCard c = p.decideToDiscard("+1 card");
 			if(c!=null) {
 				wantToDiscard=true;
 				p.discard(c);

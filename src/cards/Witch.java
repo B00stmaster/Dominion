@@ -16,13 +16,20 @@ public class Witch extends AbstractAttack {
 		Shop s = p.partie.theShop;
 		for (Player pla: p.partie.joueurs) {
 			if (!pla.equals(p)) {
-				switch (pla.askToReact(this).name) {
-				case "Moat":
-					break;
-				default:
+				AbstractCard reaction = pla.askToReact(this);
+				if(reaction!=null) {
+					switch (reaction.getName()) {
+					case "Moat":
+						break;
+					default:
+						if(s.remainingCards("Curse")>0)
+							pla.gainToDiscard(s.getCard("Curse"));
+						break;
+					}
+				}
+				else {
 					if(s.remainingCards("Curse")>0)
-						//pla.gain(s.getCard("Curse"));
-					break;
+						pla.gainToDiscard(s.getCard("Curse"));
 				}
 			}
 		}

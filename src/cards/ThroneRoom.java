@@ -1,6 +1,5 @@
 package cards;
 
-import base.Card;
 import base.Player;
 
 public class ThroneRoom extends AbstractAction {
@@ -13,9 +12,9 @@ public class ThroneRoom extends AbstractAction {
 	
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
-		Card playedTwice = p.chooseToPlay();
-		//playedTwice.onPlay(p);
-		//playedTwice.onPlay(p);
+		AbstractCard playedTwice = p.chooseToPlay();
+		playedTwice.onPlay(p);
+		playedTwice.onPlay(p);
 		return true;
 	}
 

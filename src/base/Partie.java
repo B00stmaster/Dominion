@@ -1,4 +1,7 @@
 package base;
+
+import java.util.Vector;
+
 public class Partie {
 public Player [] joueurs;
 public Shop theShop;
@@ -34,7 +37,7 @@ Partie(int players){
 Partie(String[] strats){	
 	Shop s = new Shop(strats.length);
 	theShop = s;
-	joueurs = new Player [strats.length];
+	joueurs = new Player[strats.length];
 	for (int i = 0; i<joueurs.length; i++) joueurs[i] = new Player(this,strats[i]);
 	for (int i = 0; i<joueurs.length; i++) joueurs[i].newHand();
 }
@@ -59,21 +62,6 @@ void joueUnTourComplet(boolean printDetails, int first) {
 	}
 }
 
-//DEPRECATED
-Player partie(int NTours, boolean printDetails) {
-	int first = (int) (Math.random()*4);
-	for (int i = 0; i<NTours; i++) {
-		joueUnTourComplet(printDetails, first);
-	}
-	for (int i = 0; i<NJOUEURS; i++) {
-		//int points = joueurs[i].countVictoryPoints();
-		//System.out.println("joueur " + i + " : " + points);
-	}
-	Player gagnant = gagnant();
-	//System.out.println(gagnant.id);
-	return gagnant;
-}
-
 Player partie(boolean printDetails) {
 	int first = (int) (Math.random()*this.joueurs.length);
 	int turn=0;
@@ -87,31 +75,42 @@ Player partie(boolean printDetails) {
 		int points = joueurs[i].countVictoryPoints();
 		System.out.println(joueurs[i].name+" a " + points + " PV");
 	}
-	Player gagnant = gagnant();
-	return gagnant;
+	
+	int maxVP = -1;
+	Vector<Integer> maxPlayers = new Vector<Integer>();
+	for (int i = 0; i<this.joueurs.length; i++) {
+		int tempVP = joueurs[i].countVictoryPoints();
+		if (tempVP>maxVP){
+			maxVP = tempVP;
+			maxPlayers.clear();
+			maxPlayers.add(i);
+			}
+		else if(tempVP==maxVP)
+			maxPlayers.add(i);
+	}
+	if(maxPlayers.size()==1)
+		return joueurs[maxPlayers.get(0)];
+	
+	int leastTurn = -1;
+	Vector<Integer> leastTurnPlayers = new Vector<Integer>();
+	for (int j = 0; j<maxPlayers.size(); j++) {
+		int tempTurn = (turn-((maxPlayers.get(j)-first)%joueurs.length))/joueurs.length;
+		if (tempTurn<leastTurn){
+			leastTurn = tempTurn;
+			leastTurnPlayers.clear();
+			leastTurnPlayers.add(maxPlayers.get(j));
+			}
+		else if(tempTurn==leastTurn)
+			leastTurnPlayers.add(maxPlayers.get(j));
+	}
+	
+	return joueurs[leastTurnPlayers.get((int)(Math.random()*leastTurnPlayers.size()))]; //also works if only one player is in vector (rounds to 0)
 }
 
 boolean hasEnded() {
 	return theShop.nombrePilesVides()>=3 || (theShop.remainingCards("Province")==0);
 }
 
-Player gagnant() {
-	int max = 0;
-	for (int i = 0; i<this.joueurs.length; i++) {
-		if (joueurs[i].PointsDeVictoire>max) {max = joueurs[i].PointsDeVictoire;}
-	}
-	int p = 0; 
-	for (int i = 0; i<this.joueurs.length; i++) {
-		if (joueurs[i].PointsDeVictoire == max) {p++;}
-	}
-	Player [] gagnants = new Player[p];
-	p=0;
-	for (int i=0; i<this.joueurs.length; i++) {
-		if (joueurs[i].PointsDeVictoire == max) {gagnants[p] = joueurs[i];p++; }
-	}
-	int g = (int)(Math.random()*p);
-	return gagnants[g];
-}
 
 Partie reinitialise() {
 	Partie nouv = new Partie();
@@ -119,15 +118,6 @@ Partie reinitialise() {
 		nouv.joueurs[i].C = joueurs[i].C;
 	}
 	return nouv;
-}
-
-//utile pour l'espion
-public Card [] allRevealTopCard() {
-	Card [] liste = new Card[Partie.NJOUEURS];
-	for (int i = 0; i<NJOUEURS; i++) {
-		liste[i] = joueurs[i].deck.peek();
-	}
-	return liste;
 }
 
 public String toString() {
@@ -140,8 +130,7 @@ public String toString() {
 }
 
 public static void main(String[] args) {
-	Card.initialise();
-	Partie p = new Partie(new String[] {"OptimizedBM","WitchBasicEngine"});
+	Partie p = new Partie(new String[] {"BM","OptimizedBM","WitchBasicEngine"});
 	p.partie(false);
 }
 

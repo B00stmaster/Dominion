@@ -14,8 +14,19 @@ public class Militia extends AbstractAttack {
 		super.onPlay(p);
 		for (Player pla: p.partie.joueurs) {
 			if (!pla.equals(p)) {
-				if(!pla.askToReact(this).name.equals("Moat"))
+				AbstractCard reaction = pla.askToReact(this);
+				if(reaction!=null) {
+					switch (reaction.getName()) {
+					case "Moat":
+						break;
+					default:
+						pla.askToDiscard(pla.hand.size()-3);
+						break;
+					}
+				}
+				else {
 					pla.askToDiscard(pla.hand.size()-3);
+				}
 			}
 		}
 		return true;
