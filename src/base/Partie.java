@@ -53,9 +53,6 @@ Partie(Constantes Co){
 	}
 }
 
-
-
-
 void joueUnTourComplet(boolean printDetails, int first) {
 	for (int i = first; i<4+first; i++) {
 		joueurs[i%4].tourDeJeu(printDetails);
@@ -87,7 +84,7 @@ Player partie(boolean printDetails) {
 	System.out.println("===================== PARTIE TERMINEE ===============================");
 	for (int i = 0; i<this.joueurs.length; i++) {
 		System.out.println("decklist de "+joueurs[i].name+":\n"+joueurs[i].decklist);
-		int points = joueurs[i].updateVictoryPoints();
+		int points = joueurs[i].countVictoryPoints();
 		System.out.println(joueurs[i].name+" a " + points + " PV");
 	}
 	Player gagnant = gagnant();

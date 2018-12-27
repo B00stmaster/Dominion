@@ -23,18 +23,25 @@ public abstract class AbstractZone  extends Vector<Card>{
 	//you CAN count cards that doesn't exist...
 	public int cardCount(String name) {
 		int total = 0;
-		for (int i = 0; i<size(); i++) {
-			if (get(i).name.equals(name)) total ++;
+		for (Card c:this) {
+			if (c.name.equals(name)) total ++;
 		}
 		return total;
 	}
 
 	public int typeCount(Card.Type t) {
 		int total = 0;
-		for (int i = 0; i<size(); i++) {
-			if (get(i).isA(t)) total ++;
+		for (Card c: this) {
+			if (c.isA(t)) total ++;
 		}
 		return total;
+	}
+	
+	public Card findA(String name) {
+		for (Card c:this) {
+			if (c.name.equals(name)) return c;
+		}
+		return null;
 	}
 	
 	public Card retire(Card c) {

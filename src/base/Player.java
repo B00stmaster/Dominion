@@ -1,6 +1,9 @@
 package base;
 import java.util.Vector;
 
+import base.Card.Type;
+import cards.*;
+
 public class Player {
 	static int idGenerator = 0;
 final public int id;
@@ -48,7 +51,13 @@ Player(Partie p,Constantes CS, boolean alter){
 }
 
 void play(Card c) {
+	if(c.isA(Type.ACTION)) leftActions--;
 	c.playedBy(this);
+}
+
+void play(AbstractCard c) {
+	if(c.isA(AbstractCard.Type.ACTION)) leftActions--;
+	c.onPlay(this);
 }
 
 void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo pour le faire
@@ -60,29 +69,25 @@ void buy(Card c) {//on suppose que le joueur a deja les achats et l'argent dispo
 	System.out.println(partie.theShop.remainingCards(c)+" "+c+" remaining");
 }
 
-
 Card [] playables() {
-	int n = 0;
 	int p = 0;
 	if (leftActions == 0) {return new Card[0];}
-	for (int i = 0; i<hand.size(); i++) {
-		if (hand.get(i).isA(Card.Type.ACTION)) {n++;}
-	};
-	Card [] reponse = new Card[n];
+	Card [] reponse = new Card[hand.typeCount(Type.ACTION)];
 	for (int i = 0; i<hand.size(); i++) {
 		if (hand.get(i).isA(Card.Type.ACTION)) {
-			reponse[p] = hand.get(i);
-			p++;}
-	};
+			reponse[p++] = hand.get(i);
+			}
+	}
 	return reponse;	
 }
 
 Vector<Card> buyables() {
 	Vector<Card> result = new Vector<Card>(10);
 	if (leftBuys == 0) {return result;}
-	for (int i = 0; i< partie.theShop.avalaible.size(); i++) {
-		if (partie.theShop.avalaible.get(i).size()>1 && partie.theShop.avalaible.get(i).peek().cost <= leftGold) {
-			result.add(partie.theShop.avalaible.get(i).peek());
+	Vector<Card> shopAvailable = partie.theShop.buyables();
+	for (Card c: shopAvailable) {
+		if (c.cost <= leftGold) {
+			result.add(c);
 		}
 	}
 	return result;	
@@ -99,9 +104,7 @@ public boolean draw(int number) {
 public boolean draw() {
 	boolean shuffle=false;
 	if (deck.isEmpty()) {
-		defausseDansLaBibli();
-		System.out.println(name+" melange son deck");
-		deck.shuffle();
+		shuffleDiscardToDeck();
 		shuffle=true;
 	}
 	if (deck.size() != 0) {
@@ -115,21 +118,66 @@ public void mill() {
 	defausse.add(deck.pop());
 }
 
-void discard(Card c) {
+public void discard(Card c) {
 	System.out.println(name+" discards "+c);
 	defausse.add(hand.retire(c));
 }
 
-void trash(Card c) {
+public void trash(Card c) {
 	System.out.println(name+" trashes "+c);
 	hand.retire(c);
 }
 
-public void defausseDansLaBibli() {
+public boolean gainToDiscard(AbstractCard c) {
+	boolean res=false;
+	res|=c.onGain(this);
+	//defausse.add(c);
+	return res;
+}
+
+public boolean gainToHand(AbstractCard c) {
+	boolean res=false;
+	res|=c.onGain(this);
+	//hand.add(c);
+	return res;
+}
+
+//useful for Spy
+public Card reveal() {
+	if(!deck.isEmpty()) {
+		Card res=deck.peek();
+		System.out.println(name+" reveals "+res);
+		return res;
+	}
+	else {
+		System.out.println(name+" cannot reveal: (s)he has no more card in deck...");
+		return null;
+	}
+}
+
+public Card[] reveal(int number) {
+	Card[] res=new Card[number];
+	for(int i=1;i<number+1;i++) {
+		if(deck.size()>=i) {
+			Card temp = deck.peek(i);
+			System.out.println(name+" reveals "+temp);
+			res[i]=temp;
+		}
+		else {
+			System.out.println(name+" cannot reveal: (s)he has no more card in deck...");
+			return null;
+		}
+	}
+	return res;
+}
+
+public void shuffleDiscardToDeck() {
 	int imax = defausse.size();
 	for (int i = 0; i<imax; i++) {
 		deck.add(defausse.pop());
 	}
+	deck.shuffle();
+	System.out.println(name+" mélange sa défausse et son deck");
 }
 
 void discardBoard() {
@@ -149,18 +197,18 @@ void playTreasures() {
 	int NCartes = hand.size();
 	for(int i = 0; i< NCartes;i++) {
 		if (hand.get(0).isA(Card.Type.TREASURE)){
-			hand.get(0).playedBy(this);
+			play(hand.get(0));
 		}
 		else defausse.add(hand.retire(hand.get(0)));
 	}
 }
 
-int updateVictoryPoints() {
+int countVictoryPoints() {
 	int total = 0;
-	for (int i = 0; i<decklist.size(); i++) {
-		total+=decklist.get(i).VP;
+	for (Card c:decklist) {
+		total+=c.VP;
 	}
-	PointsDeVictoire = total;
+	PointsDeVictoire=total;
 	return total;
 }
 
@@ -178,7 +226,7 @@ public void tourDeJeu(boolean printDetails) {
 	System.out.println("===================== TOUR DU JOUEUR " +name+" ===============================");
 	System.out.println(this);
 	while(leftActions>0 && playSomething) {
-		Card c = chooseAction();
+		Card c = chooseToPlay();
 		if (playSomething) {
 			play(c);
 		}
@@ -186,11 +234,11 @@ public void tourDeJeu(boolean printDetails) {
 	System.out.println("FIN ACTIONS");
 	playTreasures();
 	while(leftBuys>0 && buySomething) {
-		Card c = chooseCard();
-		if (c!=null){
+		Card c = chooseToGain(buyables());
+		if (c!=null)
 			buy(c);
-		}
-		else buySomething=false;
+		else 
+			buySomething=false;
 	}
 	System.out.println("FIN ACHATS");
 	discardBoard();
@@ -199,9 +247,40 @@ public void tourDeJeu(boolean printDetails) {
 	System.out.println("FIN DU TOUR DE "+name+"\n"); 
 }
 
+public Card chooseToPlay() {
+//tries to play +actions and then most expensive actions, except if has throne room
+	if(hand.cardCount("Throne room")>0)
+		return hand.findA("Throne room");
+	Card [] playables = playables();
+	for (int i = 0; i<playables.length; i++) {
+		if (playables[i].plusActions>0) {
+			playSomething = true;
+			return playables[i];
+		}
+	}
+
+	if (playables.length > 0){
+		playSomething = true;
+		int maxCost=0;
+		int maxIndex=-1;
+		for (int i = 0; i<playables.length; i++) {
+			if(playables[i].cost>maxCost) {
+				maxCost=playables[i].cost;
+				maxIndex=i;
+			}
+		}
+		return playables[maxIndex];
+	}
+	playSomething = false;
+	return null;
+}
+
 //BUYING/RECEIVING CARDS
-private int valueCard(Card c, String stratName) {
-	System.out.println("card "+c);
+public int valueCard(Card c) {
+	return valueCard(c, stratName);
+}
+
+public int valueCard(Card c, String stratName) {
 	return valueCard(c.name, stratName,this.partie.theShop);
 }
 
@@ -394,23 +473,22 @@ private int valueCard(String cardName, String stratName, Shop theShop) {
 	}
 }
 
-public Card chooseCard() {
-	return chooseCard(this.stratName);
+public Card chooseToGain(Vector<Card> available) {
+	return chooseToGain(available,this.stratName);
 }
 
-public Card chooseCard(String stratName) {
-	return chooseCard(stratName, partie.theShop);
+public Card chooseToGain(Vector<Card> available,String stratName) {
+	return chooseToGain(available,stratName, partie.theShop);
 }
 
-public Card chooseCard(String stratName, Shop theShop) {
-	Vector<Card> buyables = buyables();
+public Card chooseToGain(Vector<Card> available,String stratName, Shop theShop) {
 	double noteMax = 0;
 	Card res = null;
-	for (int i = 0; i<buyables.size(); i++) {
-		int note = valueCard(buyables.get(i), stratName, theShop);
-		//System.out.println("Considering "+buyables.get(i)+" note: "+note);
+	for (Card c: available) {
+		int note = valueCard(c, stratName, theShop);
+		//System.out.println("Considering "+c+" note: "+note);
 		if (note > noteMax) {
-			res = buyables.get(i);
+			res = c;
 			noteMax = note;
 		}
 	}
@@ -436,12 +514,16 @@ public int valueToDiscard(Card c, String stratName) {
 	return -50;
 }
 
+public int valueToDiscard(Card c) {
+	return valueToDiscard(c, stratName);
+}
+
 //return the preferred card to discard
-Card chooseToDiscard() {
+public Card chooseToDiscard() {
 	return chooseToDiscard(this.stratName);
 }
 
-Card chooseToDiscard(String stratName) {
+public Card chooseToDiscard(String stratName) {
 	double noteMax = -1000000;
 	Card res = null;
 	for (int i = 0; i<this.hand.size(); i++) {
@@ -467,13 +549,36 @@ public boolean askToDiscard(int number) {
 	return res;
 }
 
+public Card decideToDiscard(String benefit) {
+	Card res=chooseToDiscard();
+	if(decideToDiscard(res,benefit)) //not optimized
+		return res;
+	return null;
+}
+
+public boolean decideToDiscard(Card c,String benefit) {
+	switch (benefit.toLowerCase().replaceAll("\\s","")) {
+	case "+1card":
+		return valueToDiscard(c)>0;
+	case "+1gold":
+		return valueToDiscard(c)>50;
+	case "+2gold":
+		return valueToDiscard(c)>0;
+	default:
+		return valueToDiscard(c)>0;
+	}
+}
+
+public boolean decideToReshuffle() { //TO DO: put a non-trivial decision-maker
+	return true;
+}
 
 //TRASHING
 //STRATEGIES MATTERS HERE
-//Higher value means higher priority. Negative value means you prefer to trash nothing vs gaining +2g
+//Higher value means higher priority. Negative value means you prefer to trash nothing without benefit
 public int valueToTrash(Card c, String stratName) {
 	if(c.isA(Card.Type.CURSE)) return 1600;
-	if(c.name.equals("Domaine")) return 100*(4-this.partie.theShop.remainingCards("Province"))-10;
+	if(c.name.equals("Domaine")) return 400*(4-this.partie.theShop.remainingCards("Province"))-10;
 	if(c.isA(Card.Type.TREASURE)) {
 		//Engine decks prefer to have actions in their hands
 		if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.6-c.plusGold)*100);
@@ -481,15 +586,19 @@ public int valueToTrash(Card c, String stratName) {
 	}
 	if(c.isA(Card.Type.ACTION)) {
 		//Engine decks prefer to have actions in their hands
-		if(stratName.contains("Engine")) return (int) (-200*(1-this.decklist.typeDensity(Card.Type.ACTION)));
+		if(stratName.contains("Engine")) return (int) (-400*(1-this.decklist.typeDensity(Card.Type.ACTION)));
 		else return -80;
 	}
 	return -50;
 }
 
-//return the preferred card to discard
+public int valueToTrash(Card c) {
+	return valueToTrash(c, stratName);
+}
+
+//return the preferred card to trash
 Card chooseToTrash() {
-	return chooseToDiscard(this.stratName);
+	return chooseToTrash(this.stratName);
 }
 
 Card chooseToTrash(String stratName) {
@@ -517,7 +626,54 @@ public boolean askToTrash(int number) {
 	}
 	return res;
 }
+
+public Card decideToTrash(String benefit) {
+	Card res=chooseToTrash();
+	if(decideToTrash(res,benefit)) //not optimized
+		return res;
+	return null;
+}
+
+public boolean decideToTrash(Card c,String benefit) {
+	switch (benefit.toLowerCase().replaceAll("\\s","")) {
+	case "+1card":
+		return valueToTrash(c)>-25;
+	case "+3gold":
+		return valueToTrash(c)>-50;
+	case "none":
+		return valueToTrash(c)>0;
+	default:
+		return valueToTrash(c)>0;
+	}
+}
 //OTHERS
+public Card askToReact(AbstractCard att) {
+	Card res=null;
+	for(Card c: hand) {
+		if(c.isA(Type.REACTION)) {
+			switch (c.name) {
+			case "Moat":
+				res= c;
+				break;
+			default:
+				res=c;
+				break;
+			}
+		}
+	}
+	if(res!=null) {
+		//res.onReactToAttack(this);
+	}
+	return res;
+}
+
+public boolean decideSpy(Player pla,Card shown) {
+	boolean res=true;
+	if(shown.isA(Card.Type.VICTORY) || (shown.isA(Card.Type.TREASURE)&&(shown.plusGold<=pla.decklist.goldDensity()))) res=false;
+	if(pla==this) res = !res;
+	return res;
+}
+
 public boolean[] decideEspion() {
 	Card [] revealed = partie.allRevealTopCard();
 	boolean [] discard  = new boolean[Partie.NJOUEURS];
@@ -563,7 +719,7 @@ public String getStrategyTab(String stratName) {
 		for(int j=8;j>=0;j--) {
 			leftGold=j;
 			leftBuys=1;
-			Card c = chooseCard(stratName,fakeShop);
+			Card c = chooseToGain(buyables(),stratName,fakeShop);
 			if(c==null) res+= pad("None",12) +" | ";
 			else res+= pad(c.name,12) +" | ";
 		}
@@ -573,7 +729,19 @@ public String getStrategyTab(String stratName) {
 	return res;
 }
 
-//DEPRECATED
+public static void main(String [] args) {
+	Card.initialise();
+	Partie p = new Partie(1);
+	p.joueurs[0].buy(Card.getCardByName("Or"));
+	p.joueurs[0].buy(Card.getCardByName("Forgeron"));
+	System.out.println(p.joueurs[0].decklist);
+	System.out.println("No terminal prob: "+p.joueurs[0].decklist.noTerminalProb());
+	System.out.println("One terminal prob: "+p.joueurs[0].decklist.oneTerminalProb());
+	System.out.println("Terminal coll prob: "+p.joueurs[0].decklist.terminalCollisionProb());
+	System.out.println(p.joueurs[0].getStrategyTab("SmithyBM"));
+}
+
+//ALL DEPRECATED
 Card laPlusChere() {
 	//un debut de fonction pour decider quoi faire, c'est debile, mais c'est juste pour tester
 	Vector<Card> buyables = buyables();
@@ -604,34 +772,6 @@ Card laMeilleureNote(boolean printDetails) {
 		}
 	}
 	return reponse;
-}
-
-Card chooseAction() {
-	//fonction toute conne, si il a une carte qui donne des actions il la choisit
-	//s'il a pas de carte donnant des actions, il joue son action la plus chere
-	//si il n'a pas d'action il renvoie null et change le boolean playSomething to false
-	Card [] playables = playables();
-	for (int i = 0; i<playables.length; i++) {
-		if (playables[i].plusActions>0) {
-			playSomething = true;
-			return playables[i];
-		}
-	}
-
-	if (playables.length > 0){
-		playSomething = true;
-		int maxCost=0;
-		int maxIndex=-1;
-		for (int i = 0; i<playables.length; i++) {
-			if(playables[i].cost>maxCost) {
-				maxCost=playables[i].cost;
-				maxIndex=i;
-			}
-		}
-		return playables[maxIndex];
-	}
-	playSomething = false;
-	return null;
 }
 
 private double incrementGoldDensity(Decklist nouv) {
@@ -715,18 +855,4 @@ public String toString() {
 }
 
 boolean nearEnd() {return partie.theShop.nombrePilesVides()>=C.N2 | partie.theShop.remainingProvinces()<= C.N1;}
-
-public static void main(String [] args) {
-	Card.initialise();
-	Partie p = new Partie(1);
-	p.joueurs[0].buy(Card.getCardByName("Or"));
-	p.joueurs[0].buy(Card.getCardByName("Forgeron"));
-	System.out.println(p.joueurs[0].decklist);
-	System.out.println("No terminal prob: "+p.joueurs[0].decklist.noTerminalProb());
-	System.out.println("One terminal prob: "+p.joueurs[0].decklist.oneTerminalProb());
-	System.out.println("Terminal coll prob: "+p.joueurs[0].decklist.terminalCollisionProb());
-	System.out.println(p.joueurs[0].getStrategyTab("SmithyBM"));
-}
-
-	
 }

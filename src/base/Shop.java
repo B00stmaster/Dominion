@@ -2,7 +2,7 @@ package base;
 import java.util.Vector;
 
 public class Shop {
-Vector<Stack> avalaible;
+public Vector<Stack> avalaible;
 
 Shop(int players){ 
 	avalaible = new Vector<Stack>();
@@ -29,6 +29,26 @@ private Stack findStack(String name) {
 			return avalaible.get(i);
 	}
 	return null;
+}
+
+public Vector<Card> buyables() {
+	Vector<Card> result = new Vector<Card>(10);
+	for (int i = 0; i< avalaible.size(); i++) {
+		if (avalaible.get(i).size()>1) { //TO ADD: check isBuyable
+			result.add(avalaible.get(i).peek());
+		}
+	}
+	return result;
+}
+
+public Vector<Card> buyables(int maxPrice) {
+	Vector<Card> result = new Vector<Card>(10);
+	for (int i = 0; i< avalaible.size(); i++) {
+		if (avalaible.get(i).size()>1 && avalaible.get(i).peek().cost<=maxPrice) { //TO ADD: check isBuyable
+			result.add(avalaible.get(i).peek());
+		}
+	}
+	return result;
 }
 
 public Card getCard(String name) {
@@ -66,7 +86,6 @@ int remainingProvinces() {
 boolean provincesRemain() {	
 	return remainingProvinces()>0 ;
 }
-
 
 public String toString() {
 	String s = "contenu du Shop : " + "\n";

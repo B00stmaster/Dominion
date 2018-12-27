@@ -16,8 +16,6 @@ public int plusBuys;
 public int plusCards;
 public static Vector<Card> cards = new Vector<Card>();
 
-//BULLSHIT TEST
-
 public Card() {
 
 }
@@ -115,7 +113,6 @@ public boolean equals(Object o) {
 
 public void playedBy(Player p) {
 	p.board.add(p.hand.retire(this));
-	if(this.isA(Type.ACTION)) p.leftActions--;
 	p.leftActions+=this.plusActions;
 	p.leftBuys+=this.plusBuys;
 	p.leftGold+=this.plusGold;

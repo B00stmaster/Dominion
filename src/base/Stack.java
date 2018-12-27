@@ -23,26 +23,30 @@ Stack(Stack cop){
 	}
 }
 
-Stack add(Card c){
+public Stack add(Card c){
 	data.add(c);
 	return this;
 }
 
-Stack simulatedAdd(Card c){
+public Stack simulatedAdd(Card c){
 	return (new Stack(this)).add(c);
 }
 
-Card pop(){
+public Card pop(){
 	return data.remove(data.size()-1);
 }
 
-Card peek(){
+public Card peek(){
 	return data.get(data.size()-1);
 }
 
-int size() {return data.size();}
+public Card peek(int deepness){
+	return data.get(data.size()-deepness);
+}
 
-boolean isEmpty() {return data.isEmpty();}
+public int size() {return data.size();}
+
+public boolean isEmpty() {return data.isEmpty();}
 
 public Card retire(Card c) {
 	return data.remove(data.indexOf(c));

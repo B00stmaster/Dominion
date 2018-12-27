@@ -1,10 +1,8 @@
 package cards;
 
 import java.util.EnumSet;
-import java.util.Set;
 
-import base.*;
-import base.Card.Type;
+import base.Player;
 
 public class AbstractCard {
 	protected String name;
@@ -31,16 +29,18 @@ public class AbstractCard {
 		this.plusCards = 0;
 	}
 	
-	public boolean isA(AbstractCard.Type t) {return (types.contains(t));} 
-	public String toString() {return name;}
+	public boolean isA(AbstractCard.Type t) {return (types.contains(t));}
+	
+	public String toString() {return getName();}
 
 	public String getName() {
 		if(!name.equals(""))
 			return name;
 		return this.getClass().getName();
 	}
+	
 	public int getGoldCost(Player p) {
-		return Math.max(goldCost-p.board.cardCount("Pont"),0);
+		return Math.max(goldCost-p.board.cardCount("Bridge"),0);
 	}
 	
 	public int[] getCost(Player p) {
@@ -67,6 +67,10 @@ public class AbstractCard {
 		return 0;
 	}
 	
+	public int getVP(Player p) {
+		return VP;
+	}
+	
 	public boolean canBeBought(Player p) {
 		return true;
 	}
@@ -85,7 +89,6 @@ public class AbstractCard {
 	
 	public boolean onPlay(Player p) {
 		//p.board.add(p.hand.retire(this));
-		if(this.isA(Type.ACTION)) p.leftActions--;
 		p.leftActions+=getPlusActions(p);
 		p.leftGold+=getPlusGold(p);
 		p.leftBuys+=getPlusBuys(p);
@@ -116,7 +119,7 @@ public class AbstractCard {
 	}
 	
 	public boolean onReactToAttack(Player p) {
+		System.out.println(p+" shows "+this);
 		return false;
 	}
-	
 }
