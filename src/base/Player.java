@@ -55,12 +55,24 @@ void play(AbstractCard c) {
 }
 
 void buy(AbstractCard c) {//on suppose que le joueur a deja les achats et l'argent dispo pour le faire
-	defausse.add(partie.theShop.getCard(c.getName()));
-	decklist.add(c);
 	leftGold -= c.getGoldCost(this);
 	leftBuys -= 1;
 	System.out.println(name+" buys "+c+" | buys left: "+leftBuys+" | gold left: "+leftGold);
-	System.out.println(partie.theShop.remainingCards(c)+" "+c+" remaining");
+	gainToDiscard(partie.theShop.getCard(c));
+}
+
+public AbstractCard gainToDiscard(AbstractCard c) {
+	defausse.add(c);
+	System.out.println(name+" gains "+c+" on his discard pile");
+	c.onGain(this);
+	return c;
+}
+
+public AbstractCard gainToHand(AbstractCard c) {
+	hand.add(c);
+	System.out.println(name+" gains "+c+" to his hand");
+	c.onGain(this);
+	return c;
 }
 
 AbstractCard [] playables() {
@@ -120,22 +132,6 @@ public void discard(AbstractCard c) {
 public void trash(AbstractCard c) {
 	System.out.println(name+" trashes "+c);
 	hand.retire(c);
-}
-
-public boolean gainToDiscard(AbstractCard c) {
-	boolean res=false;
-	res|=c.onGain(this);
-	defausse.add(c);
-	System.out.println(name+" gains "+c+" on his discard pile");
-	return res;
-}
-
-public boolean gainToHand(AbstractCard c) {
-	boolean res=false;
-	res|=c.onGain(this);
-	hand.add(c);
-	System.out.println(name+" gains "+c+" to his hand");
-	return res;
 }
 
 //useful for Spy
@@ -219,7 +215,7 @@ public void reset() {
 
 public void tourDeJeu(boolean printDetails) {
 	reset();
-	System.out.println("===================== TOUR DU JOUEUR " +name+" ===============================");
+	System.out.println("===================== " +name+"'s TURN ===============================");
 	System.out.println(this);
 	while(leftActions>0 && playSomething) {
 		AbstractCard c = chooseToPlay();
@@ -227,7 +223,7 @@ public void tourDeJeu(boolean printDetails) {
 			play(c);
 		}
 	}
-	System.out.println("FIN ACTIONS");
+	System.out.println("END OF ACTION PHASE");
 	playTreasures();
 	while(leftBuys>0 && buySomething) {
 		AbstractCard c = chooseToGain(buyables());
@@ -236,11 +232,11 @@ public void tourDeJeu(boolean printDetails) {
 		else 
 			buySomething=false;
 	}
-	System.out.println("FIN ACHATS");
+	System.out.println("END OF BUYING PHASE");
 	discardBoard();
 	newHand();
 	if(printDetails) System.out.println(this);
-	System.out.println("FIN DU TOUR DE "+name+"\n"); 
+	System.out.println("END OF "+name+"'s TURN\n"); 
 }
 
 public AbstractCard chooseToPlay() {
@@ -718,8 +714,8 @@ public String getStrategyTab(String stratName) {
 
 public static void main(String [] args) {
 	Partie p = new Partie(1);
-	p.joueurs[0].buy(new Gold());
-	p.joueurs[0].buy(new Smithy());
+	p.joueurs[0].buy(p.theShop.getCard("Gold"));
+	p.joueurs[0].buy(p.theShop.getCard("Smithy"));
 	System.out.println(p.joueurs[0].decklist);
 	System.out.println("No terminal prob: "+p.joueurs[0].decklist.noTerminalProb());
 	System.out.println("One terminal prob: "+p.joueurs[0].decklist.oneTerminalProb());

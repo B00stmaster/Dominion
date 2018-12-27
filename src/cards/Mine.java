@@ -37,7 +37,7 @@ public class Mine extends Remodel {
 		}
 		if(upgradeValue>0) {
 			p.trash(oldChoice);
-			p.gainToHand(newChoice);
+			p.gainToHand(p.partie.theShop.getCard(newChoice));
 		}
 		return true;
 	}

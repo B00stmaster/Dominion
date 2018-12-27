@@ -13,7 +13,7 @@ Deck(Player p) {
 }
 
 public String toString() {
-	String s = "Contenu du deck "+ getClass().getName() + "@" + Integer.toHexString(hashCode()) + ":\n";
+	String s = owner.name+"'s deck content :\n";
 	for(int i = 0; i < data.size();i++) {
 		s += data.get(data.size()-i-1).getName() + "  <  " ;
 		if (i%8 == 0 && i !=0) {

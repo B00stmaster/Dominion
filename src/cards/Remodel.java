@@ -43,7 +43,7 @@ public class Remodel extends AbstractAction {
 		}
 		if(upgradeValue>0) {
 			p.trash(oldChoice);
-			p.gainToDiscard(newChoice);
+			p.gainToDiscard(p.partie.theShop.getCard(newChoice));
 		}
 		return true;
 	}

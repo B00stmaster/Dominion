@@ -88,6 +88,8 @@ public AbstractCard getCard(String name) {
 	return null;
 }
 
+public AbstractCard getCard(AbstractCard c) {return getCard(c.getName());}
+
 int nombrePilesVides() {
 	int reponse = 0;
 	for (int i = 0; i<avalaible.size(); i++) {

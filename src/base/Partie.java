@@ -69,11 +69,11 @@ Player partie(boolean printDetails) {
 		joueurs[(turn+first)%this.joueurs.length].tourDeJeu(printDetails);
 		turn++;
 	}
-	System.out.println("===================== PARTIE TERMINEE ===============================");
+	System.out.println("===================== GAME ENDED ===============================");
 	for (int i = 0; i<this.joueurs.length; i++) {
-		System.out.println("decklist de "+joueurs[i].name+":\n"+joueurs[i].decklist);
+		System.out.println(joueurs[i].name+"'s decklist:\n"+joueurs[i].decklist);
 		int points = joueurs[i].countVictoryPoints();
-		System.out.println(joueurs[i].name+" a " + points + " PV");
+		System.out.println(joueurs[i].name+" has " + points + " VP");
 	}
 	
 	int maxVP = -1;

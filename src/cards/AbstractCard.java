@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import base.Player;
 
-public class AbstractCard {
+public abstract class AbstractCard {
 	protected String name;
 	public enum Type {TREASURE, VICTORY, ACTION, REACTION, CURSE, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_ACTION, TERMINAL_ACTION, TERMINAL_SILVER, TRASHER, GAINER, DRAWER};
 	protected EnumSet<Type> types;
@@ -107,7 +107,8 @@ public class AbstractCard {
 	}
 	
 	public boolean onGain(Player p) {
-		return false;
+		System.out.println(p.partie.theShop.remainingCards(this)+" "+this+" remaining");
+		return p.decklist.add(this);
 	}
 	
 	public boolean onPlay(Player p) {
@@ -122,7 +123,7 @@ public class AbstractCard {
 	}
 	
 	public boolean onTrash(Player p) {
-		return false;
+		return p.decklist.remove(this);
 	}
 	
 	public boolean onDiscard(Player p) {

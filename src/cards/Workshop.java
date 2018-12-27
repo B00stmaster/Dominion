@@ -16,7 +16,7 @@ public class Workshop extends AbstractAction {
 		Vector<AbstractCard> choices = p.partie.theShop.buyables(p,4);
 		AbstractCard choice = p.chooseToGain(choices);
 		if(choice!=null) {
-			p.gainToDiscard(choice);	
+			p.gainToDiscard(p.partie.theShop.getCard(choice));	
 		}
 		return true;
 	}
