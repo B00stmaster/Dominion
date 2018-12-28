@@ -190,16 +190,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="22" language="java" name="cards.Mine" project="Dominion" file="/Dominion/src/cards/Mine.java" 
-    binary="false" corner="BOTTOM_RIGHT">    
-    <position height="142" width="348" x="744" y="1412"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="23" language="java" name="cards.Curse" project="Dominion" file="/Dominion/src/cards/Curse.java" 
+  <class id="22" language="java" name="cards.Curse" project="Dominion" file="/Dominion/src/cards/Curse.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="88" width="104" x="202" y="814"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -208,16 +199,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="24" language="java" name="cards.Remodel" project="Dominion" file="/Dominion/src/cards/Remodel.java" 
-    binary="false" corner="BOTTOM_RIGHT">    
-    <position height="160" width="348" x="744" y="1212"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="25" language="java" name="cards.MoneyLender" project="Dominion" file="/Dominion/src/cards/MoneyLender.java" 
+  <class id="23" language="java" name="cards.MoneyLender" project="Dominion" file="/Dominion/src/cards/MoneyLender.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="106" width="160" x="3222" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -226,7 +208,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="26" language="java" name="cards.Peddler" project="Dominion" file="/Dominion/src/cards/Peddler.java" 
+  <class id="24" language="java" name="cards.Peddler" project="Dominion" file="/Dominion/src/cards/Peddler.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="106" width="161" x="3422" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -235,7 +217,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="27" language="java" name="cards.AbstractAction" project="Dominion" 
+  <class id="25" language="java" name="cards.AbstractAction" project="Dominion" 
     file="/Dominion/src/cards/AbstractAction.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="88" width="126" x="2417" y="814"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -244,7 +226,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="28" language="java" name="cards.Spy" project="Dominion" file="/Dominion/src/cards/Spy.java" binary="false" 
+  <class id="26" language="java" name="cards.Spy" project="Dominion" file="/Dominion/src/cards/Spy.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="106" width="160" x="1620" y="1412"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -253,7 +235,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="29" language="java" name="cards.Cellar" project="Dominion" file="/Dominion/src/cards/Cellar.java" 
+  <class id="27" language="java" name="cards.Cellar" project="Dominion" file="/Dominion/src/cards/Cellar.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="106" width="160" x="3623" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -262,7 +244,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="30" language="java" name="cards.AbstractAttack" project="Dominion" 
+  <class id="28" language="java" name="cards.AbstractAttack" project="Dominion" 
     file="/Dominion/src/cards/AbstractAttack.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="88" width="125" x="1420" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -271,7 +253,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="31" language="java" name="cards.Workshop" project="Dominion" file="/Dominion/src/cards/Workshop.java" 
+  <class id="29" language="java" name="cards.Workshop" project="Dominion" file="/Dominion/src/cards/Workshop.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="106" width="160" x="3823" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -280,7 +262,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="32" language="java" name="cards.AbstractCard.Type" project="Dominion" 
+  <enumeration id="30" language="java" name="cards.AbstractCard.Type" project="Dominion" 
     file="/Dominion/src/cards/AbstractCard.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="143" y="305"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -289,7 +271,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="33" language="java" name="cards.Chancellor" project="Dominion" file="/Dominion/src/cards/Chancellor.java" 
+  <class id="31" language="java" name="cards.Chancellor" project="Dominion" file="/Dominion/src/cards/Chancellor.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="106" width="160" x="4023" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -298,7 +280,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="34" language="java" name="cards.ThroneRoom" project="Dominion" file="/Dominion/src/cards/ThroneRoom.java" 
+  <class id="32" language="java" name="cards.ThroneRoom" project="Dominion" file="/Dominion/src/cards/ThroneRoom.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="106" width="160" x="4223" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -307,145 +289,180 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <generalization id="35">    
-    <end type="SOURCE" refId="28"/>    
-    <end type="TARGET" refId="30"/>  
-  </generalization>  
+  <class id="33" language="java" name="cards.AbstractRemodeler" project="Dominion" 
+    file="/Dominion/src/cards/AbstractRemodeler.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1196" y="814"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="34" language="java" name="cards.Mine" project="Dominion" file="/Dominion/src/cards/Mine.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1007" y="1032"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="35" language="java" name="cards.Remodel" project="Dominion" file="/Dominion/src/cards/Remodel.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1301" y="1023"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
   <generalization id="36">    
     <end type="SOURCE" refId="1"/>    
-    <end type="TARGET" refId="27"/>  
+    <end type="TARGET" refId="25"/>  
   </generalization>  
   <generalization id="37">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="30"/>  
-  </generalization>  
-  <generalization id="38">    
-    <end type="SOURCE" refId="23"/>    
-    <end type="TARGET" refId="19"/>  
-  </generalization>  
-  <generalization id="39">    
-    <end type="SOURCE" refId="22"/>    
-    <end type="TARGET" refId="24"/>  
-  </generalization>  
-  <generalization id="40">    
-    <end type="SOURCE" refId="24"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="41">    
-    <end type="SOURCE" refId="30"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="42">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="43">    
-    <end type="SOURCE" refId="16"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="44">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="45">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="7"/>  
-  </generalization>  
-  <generalization id="46">    
-    <end type="SOURCE" refId="27"/>    
-    <end type="TARGET" refId="19"/>  
-  </generalization>  
-  <generalization id="47">    
-    <end type="SOURCE" refId="31"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="48">    
     <end type="SOURCE" refId="15"/>    
     <end type="TARGET" refId="21"/>  
   </generalization>  
-  <generalization id="49">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="21"/>  
-  </generalization>  
-  <generalization id="50">    
+  <generalization id="38">    
     <end type="SOURCE" refId="34"/>    
-    <end type="TARGET" refId="27"/>  
+    <end type="TARGET" refId="33"/>  
   </generalization>  
-  <generalization id="51">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="27"/>  
+  <generalization id="39">    
+    <end type="SOURCE" refId="29"/>    
+    <end type="TARGET" refId="25"/>  
   </generalization>  
-  <generalization id="52">    
+  <nesting id="40">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="30"/>  
+  </nesting>  
+  <generalization id="41">    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="42">    
+    <end type="SOURCE" refId="18"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="43">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="44">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="45">    
+    <end type="SOURCE" refId="25"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <generalization id="46">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="28"/>  
+  </generalization>  
+  <generalization id="47">    
+    <end type="SOURCE" refId="32"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="48">    
     <end type="SOURCE" refId="13"/>    
     <end type="TARGET" refId="7"/>  
   </generalization>  
-  <association id="53">    
-    <end type="SOURCE" refId="19" navigable="false">      
-      <attribute id="54" name="types"/>      
-      <multiplicity id="55" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="32" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <nesting id="56">    
-    <end type="SOURCE" refId="19"/>    
-    <end type="TARGET" refId="32"/>  
-  </nesting>  
-  <generalization id="57">    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="58">    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="59">    
-    <end type="SOURCE" refId="17"/>    
-    <end type="TARGET" refId="30"/>  
-  </generalization>  
-  <generalization id="60">    
-    <end type="SOURCE" refId="21"/>    
-    <end type="TARGET" refId="19"/>  
-  </generalization>  
-  <generalization id="61">    
-    <end type="SOURCE" refId="20"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="62">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="19"/>  
-  </generalization>  
-  <generalization id="63">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="64">    
-    <end type="SOURCE" refId="25"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="65">    
-    <end type="SOURCE" refId="29"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="66">    
-    <end type="SOURCE" refId="18"/>    
-    <end type="TARGET" refId="27"/>  
-  </generalization>  
-  <generalization id="67">    
+  <generalization id="49">    
     <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="7"/>  
   </generalization>  
-  <generalization id="68">    
+  <generalization id="50">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="51">    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="52">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="28"/>  
+  </generalization>  
+  <generalization id="53">    
+    <end type="SOURCE" refId="21"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <generalization id="54">    
+    <end type="SOURCE" refId="31"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="55">    
     <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="27"/>  
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="56">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <generalization id="57">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <generalization id="58">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <association id="59">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="60" name="types">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="61" minimum="0" maximum="2147483647">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="30" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="62">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="63">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <generalization id="64">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="65">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="66">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <generalization id="67">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="68">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="25"/>  
   </generalization>  
   <generalization id="69">    
-    <end type="SOURCE" refId="26"/>    
-    <end type="TARGET" refId="27"/>  
+    <end type="SOURCE" refId="35"/>    
+    <end type="TARGET" refId="33"/>  
   </generalization>  
   <generalization id="70">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="71">    
     <end type="SOURCE" refId="33"/>    
-    <end type="TARGET" refId="27"/>  
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <generalization id="72">    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="28"/>  
   </generalization>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    

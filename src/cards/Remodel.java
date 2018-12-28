@@ -1,51 +1,35 @@
 package cards;
 
 import java.util.Vector;
-
 import base.Player;
 
-public class Remodel extends AbstractAction {
-
-	boolean needExactCost;
+public class Remodel extends AbstractRemodeler {
 	
 	public Remodel() {
 		this.goldCost=4;
 		needExactCost=false;
+		isMandatory=true;
 	}
 	
-	private int newCost(int oldCost) {
-		return oldCost + 2;
-	}
-	
-	boolean canUpgrade(Player p, AbstractCard oldCard, AbstractCard newCard) {
-		if(needExactCost)
-			return newCard.getGoldCost(p)==newCost(oldCard.getGoldCost(p));
-		return newCard.getGoldCost(p)<=newCost(oldCard.getGoldCost(p));
-	}
+	protected int newCost(int oldCost) {return oldCost + 2;}
 
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
-		AbstractCard oldChoice = null;
-		AbstractCard newChoice = null;
-		Vector<AbstractCard> shopAvailable = p.partie.theShop.buyables();
-		int upgradeValue= -100000;
-		for(AbstractCard c : p.hand) {
-			for(AbstractCard a : shopAvailable) {
-				if(canUpgrade(p, c, a)) {
-					int score = p.valueToTrash(c) + p.valueCard(a);
-					if(score>upgradeValue) {
-						upgradeValue=score;
-						oldChoice=c;
-						newChoice=a; 
-					}
-				}
+	
+		AbstractCard trashedCard=null;
+		AbstractCard gainedCard=null;
+		Vector<AbstractCard> availableToTrash = availableToTrash(p);
+		if(availableToTrash!=null) {
+			trashedCard=p.chooseToTrash(availableToTrash);
+			Vector<AbstractCard> availableToGain = selectAvailable(p, trashedCard);
+			gainedCard = p.chooseToGain(availableToGain);
+			if(gainedCard!=null) {
+				p.trash(trashedCard);
+				p.gainToDiscard(p.partie.theShop.getCard(gainedCard));
 			}
+			return true;
 		}
-		if(upgradeValue>0) {
-			p.trash(oldChoice);
-			p.gainToDiscard(p.partie.theShop.getCard(newChoice));
-		}
-		return true;
+		return false;
 	}
 
 }

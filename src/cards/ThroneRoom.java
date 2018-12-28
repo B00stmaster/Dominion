@@ -13,8 +13,13 @@ public class ThroneRoom extends AbstractAction {
 	public boolean onPlay(Player p) {
 		super.onPlay(p);
 		AbstractCard playedTwice = p.chooseToPlay();
-		playedTwice.onPlay(p);
-		playedTwice.onPlay(p);
+		if(playedTwice!=null) {
+			p.hand.retire(playedTwice);
+			playedTwice.onPlay(p);
+			playedTwice.onPlay(p);
+		}
+		else
+			System.out.println("...but doesn't play an action with it");
 		return true;
 	}
 

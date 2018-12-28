@@ -9,6 +9,7 @@ public class Peddler extends AbstractAction {
 		this.goldCost=8;
 		this.plusActions=1;
 		this.plusCards=1;
+		this.plusGold=1;
 	}
 	
 	public int getGoldCost(Player p) {

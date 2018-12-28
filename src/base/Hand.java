@@ -6,7 +6,7 @@ public class Hand extends AbstractZone{
 	}
 
 	public String toString() {
-		String s = "Contenu de la main "+ getClass().getName() + "@" + Integer.toHexString(hashCode()) + ":\n";
+		String s = owner.name+"'s hand content :\n";
 		return s+=super.toString();
 	}
 }

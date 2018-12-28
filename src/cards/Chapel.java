@@ -6,6 +6,7 @@ public class Chapel extends AbstractAction {
 
 	public Chapel() {
 		super();
+		types.add(Type.TRASHER);
 		this.goldCost=2;
 	}
 	

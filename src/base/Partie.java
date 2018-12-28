@@ -11,48 +11,33 @@ public static final int NJOUEURS = 4;
 public static final int NOMBRE_DE_PARTIES = 1000;
 public static final int NOMBRE_DE_TOURS = 17;
 
-
-Partie(){	
-	Shop s = new Shop(NJOUEURS);
-	theShop = s;
-	joueurs = new Player [NJOUEURS];
-	joueurs[0] = new Player(this);
-	joueurs[0].number = 0;
-	for (int i = 1; i<NJOUEURS; i++) {
-	joueurs[i] = new Player(this,joueurs[0].C, true);
-	joueurs[i].number = i;}
-	for (int i = 0; i<NJOUEURS; i++) {
-		joueurs[i].newHand();
-	}
-}
-
 Partie(int players){	
 	Shop s = new Shop(players);
 	theShop = s;
 	joueurs = new Player [players];
-	for (int i = 0; i<players; i++) joueurs[i] = new Player(this);
-	for (int i = 0; i<players; i++) joueurs[i].newHand();
+	for (int i = 0; i<joueurs.length; i++) {
+		joueurs[i] = new AIPlayer();
+		joueurs[i].partie=this;
+		joueurs[i].newHand();
+	}
 }
 
 Partie(String[] strats){	
 	Shop s = new Shop(strats.length);
 	theShop = s;
 	joueurs = new Player[strats.length];
-	for (int i = 0; i<joueurs.length; i++) joueurs[i] = new Player(this,strats[i]);
-	for (int i = 0; i<joueurs.length; i++) joueurs[i].newHand();
+	for (int i = 0; i<joueurs.length; i++) {
+		joueurs[i] = new AIPlayer(strats[i]);
+		joueurs[i].beginGame(this);
+	}
 }
 
-Partie(Constantes Co){
-	Shop s = new Shop(NJOUEURS);
+Partie(Player[] players){	
+	Shop s = new Shop(players.length);
 	theShop = s;
-	joueurs = new Player [NJOUEURS];
-	joueurs[0] = new Player(this,Co, false);
-	joueurs[0].number = 0;
-	for (int i = 1; i<NJOUEURS; i++) {
-	joueurs[i] = new Player(this,joueurs[0].C, true);
-	joueurs[i].number = i;}
-	for (int i = 0; i<NJOUEURS; i++) {
-		joueurs[i].newHand();
+	joueurs = players;
+	for (int i = 0; i<joueurs.length; i++) {
+		joueurs[i].beginGame(this);
 	}
 }
 
@@ -111,15 +96,6 @@ boolean hasEnded() {
 	return theShop.nombrePilesVides()>=3 || (theShop.remainingCards("Province")==0);
 }
 
-
-Partie reinitialise() {
-	Partie nouv = new Partie();
-	for (int i = 0; i<this.joueurs.length; i++) {
-		nouv.joueurs[i].C = joueurs[i].C;
-	}
-	return nouv;
-}
-
 public String toString() {
 	String s = "appercu de la partie : "+ "\n";
 	s+= "j0 : "+ "\n" +  joueurs[0].decklist.toString();
@@ -130,7 +106,10 @@ public String toString() {
 }
 
 public static void main(String[] args) {
-	Partie p = new Partie(new String[] {"BM","OptimizedBM","WitchBasicEngine"});
+	AIPlayer pedro = new AIPlayer("OptimizedBM");
+	HumanPlayer me = new HumanPlayer("Come");
+	
+	Partie p = new Partie(new Player[] {pedro,me});
 	p.partie(false);
 }
 

@@ -13,8 +13,11 @@ public abstract class AbstractZone  extends Vector<AbstractCard>{
 
 	public String toString() {
 		String s = "";
-		for (int i =0; i<size();i++) {
-			s += get(i).getName() + "  |  " ;
+		for (int i = 0; i<size();i++) {
+			if(get(i)!=null)
+				s += get(i).getName() + "  |  " ;
+			else
+				s += "null  |  " ;
 			if (i%7 == 0 && i !=0) {
 				s+= "\n";
 			}
@@ -48,6 +51,7 @@ public abstract class AbstractZone  extends Vector<AbstractCard>{
 	
 	public AbstractCard retire(AbstractCard c) {
 		//CARE c must be precisely one of the cards (i.e. must not be a copy)
-		return remove(indexOf(c));
+		remove(c);
+		return c;
 	}
 }

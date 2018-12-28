@@ -6,7 +6,7 @@ import base.Player;
 
 public abstract class AbstractCard {
 	protected String name;
-	public enum Type {TREASURE, VICTORY, ACTION, REACTION, CURSE, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_ACTION, TERMINAL_ACTION, TERMINAL_SILVER, TRASHER, GAINER, DRAWER};
+	public enum Type {TREASURE, VICTORY, ACTION, REACTION, CURSE, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_ACTION, TERMINAL_ACTION, TERMINAL_SILVER, TRASHER, GAINER, DRAWER, REMODELER};
 	protected EnumSet<Type> types;
 	protected int goldCost;
 	protected int potionCost;
@@ -111,14 +111,21 @@ public abstract class AbstractCard {
 		return p.decklist.add(this);
 	}
 	
-	public boolean onPlay(Player p) {
+	public boolean playedBy(Player p) {
+		if(this.isA(AbstractCard.Type.ACTION)) p.leftActions--;
 		p.board.add(p.hand.retire(this));
+		return this.onPlay(p);
+	}
+	
+	public boolean onPlay(Player p) {
 		p.leftActions+=getPlusActions(p);
 		p.leftGold+=getPlusGold(p);
 		p.leftBuys+=getPlusBuys(p);
 		p.leftPotions+=getPlusPotion(p);
 		p.draw(getPlusCards(p));
 		System.out.println(p.name+" plays "+this+ " | actions left: "+p.leftActions+" | buys left: "+p.leftBuys+" | gold left: "+p.leftGold);
+		if(getPlusCards(p)>0)
+			System.out.println(p.hand);
 		return true;
 	}
 	
