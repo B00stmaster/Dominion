@@ -7,10 +7,9 @@ import cards.AbstractCard;
 public class AIPlayer extends Player {
 	
 	public String stratName;
-	public AIPlayer() {
-		super();
-	}
-
+	
+	public AIPlayer() {super();}
+	
 	public AIPlayer(String strat) {
 		super();
 		stratName=strat;
@@ -46,13 +45,9 @@ public class AIPlayer extends Player {
 		}
 	
 	//BUYING/RECEIVING CARDS
-	public int valueCard(AbstractCard c) {
-		return valueCard(c, stratName);
-	}
+	protected int valueCard(AbstractCard c) {return valueCard(c, stratName);}
 
-	public int valueCard(AbstractCard c, String stratName) {
-		return valueCard(c.getName(), stratName,this.partie.theShop);
-	}
+	protected int valueCard(AbstractCard c, String stratName) {return valueCard(c.getName(), stratName,this.partie.theShop);}
 
 	private int valueCard(AbstractCard c, String stratName, Shop theShop) {
 		if(c==null)
@@ -62,24 +57,25 @@ public class AIPlayer extends Player {
 	
 	//STRATEGIES CODED HERE. default is BM
 	//Higher value means higher priority. Negative value means you prefer to buy nothing
-	private int valueCard(String cardName, String stratName, Shop theShop) {
+	protected int valueCard(String cardName, String stratName, Shop theShop) {
 		switch (stratName) {
-		case "BM":
+		case "Test":
 			switch (cardName) {
-			case "Province":
-				return 1000;
 			case "Gold":
-				return 200;
+				return (int)(300*(3-decklist.goldDensity()));
 			case "Silver":
-				if(this.decklist.goldDensity()<2) return 100;
+				if(this.decklist.goldDensity()<2) return (int)(300*(2-decklist.goldDensity()));
 				else return -50;
 			default:
-				return -100;
+				if(decklist.cardCount(cardName)==0)
+					return 500+100*partie.theShop.findCard(cardName).getGoldCost(this);
+				else
+					return -50;
 			}
 		case "OptimizedBM":
 			switch (cardName) {
 			case "Province":
-				if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 150;
+				if(this.decklist.cardCount("Gold")==0 && this.decklist.cardCount("Silver")<5) return 160;
 				else return 1600;
 			case "Gold":
 				return 200;
@@ -231,6 +227,7 @@ public class AIPlayer extends Player {
 			}
 		default:
 			System.out.println("Unknown stategy. Defaulting to BM...");
+		case "BM":
 			switch (cardName) {
 			case "Province":
 				return 1000;
@@ -245,16 +242,14 @@ public class AIPlayer extends Player {
 		}
 	}
 
-	public AbstractCard chooseToGain(Vector<AbstractCard> available) {
-		return chooseToGain(available,this.stratName);
-	}
+	public AbstractCard chooseToGain(Vector<AbstractCard> available) {return chooseToGain(available,this.stratName);}
 
-	public AbstractCard chooseToGain(Vector<AbstractCard> available,String stratName) {
+	protected AbstractCard chooseToGain(Vector<AbstractCard> available,String stratName) {
 		return chooseToGain(available,stratName, partie.theShop);
 	}
 
-	public AbstractCard chooseToGain(Vector<AbstractCard> available,String stratName, Shop theShop) {
-		double noteMax = 0;
+	protected AbstractCard chooseToGain(Vector<AbstractCard> available,String stratName, Shop theShop) {
+		double noteMax = -1000000;
 		AbstractCard res = null;
 		for (AbstractCard c: available) {
 			int note = valueCard(c, stratName, theShop);
@@ -270,7 +265,8 @@ public class AIPlayer extends Player {
 	//DISCARDING
 	//STRATEGIES MATTERS HERE
 	//Higher value means higher priority. Negative value means you prefer to discard nothing vs drawing a card
-	public int valueToDiscard(AbstractCard c, String stratName) {
+	protected int valueToDiscard(AbstractCard c, String stratName) {
+		if(c==null) return 0;
 		if(c.isA(AbstractCard.Type.VICTORY) && !c.isA(AbstractCard.Type.TREASURE) && !c.isA(AbstractCard.Type.ACTION)) return 1600;
 		if(c.getName().equals("Curse")) return 1200;
 		if( ((this.hand.typeCount(AbstractCard.Type.TERMINAL_ACTION) - this.hand.typeCount(AbstractCard.Type.VILLAGE))>1) && c.isA(AbstractCard.Type.TERMINAL_ACTION)) return 1000-c.getGoldCost(this)*100;
@@ -287,16 +283,12 @@ public class AIPlayer extends Player {
 		return -50;
 	}
 
-	public int valueToDiscard(AbstractCard c) {
-		return valueToDiscard(c, stratName);
-	}
+	protected int valueToDiscard(AbstractCard c) {return valueToDiscard(c, stratName);}
 
 	//return the preferred card to discard
-	public AbstractCard chooseToDiscard(Vector<AbstractCard> available) {
-		return chooseToDiscard(available,this.stratName);
-	}
+	public AbstractCard chooseToDiscard(Vector<AbstractCard> available) {return chooseToDiscard(available,this.stratName);}
 
-	public AbstractCard chooseToDiscard(Vector<AbstractCard> available, String stratName) {
+	protected AbstractCard chooseToDiscard(Vector<AbstractCard> available, String stratName) {
 		double noteMax = -1000000;
 		AbstractCard res = null;
 		for (int i = 0; i<available.size(); i++) {
@@ -309,11 +301,10 @@ public class AIPlayer extends Player {
 		return res;
 	}
 	
-	public AbstractCard decideToDiscard(Vector<AbstractCard> available, String benefit) {
-		AbstractCard res=chooseToDiscard(available);
-		if(decideToDiscard(res,benefit)) //not optimized
-			return res;
-		return null;
+	public AbstractCard decideToDiscard(Vector<AbstractCard> availablen, String benefit) {
+		Vector<AbstractCard> available = new Vector<AbstractCard>(availablen);
+		available.add(null);
+		return chooseToDiscard(available);
 	}
 	
 	public boolean decideToDiscard(AbstractCard c,String benefit) {
@@ -332,9 +323,10 @@ public class AIPlayer extends Player {
 	//TRASHING
 	//STRATEGIES MATTERS HERE
 	//Higher value means higher priority. Negative value means you prefer to trash nothing without benefit
-	public int valueToTrash(AbstractCard c, String stratName) {
-		if(c.isA(AbstractCard.Type.CURSE)) return 1600;
-		if(c.getName().equals("Estate")) return 400*(4-this.partie.theShop.remainingCards("Province"))-10;
+	protected int valueToTrash(AbstractCard c, String stratName) {
+		if(c==null) return 0;
+		if(c.getName().equals("Curse")) return 1600;
+		if(c.getName().equals("Estate")) return 400*(this.partie.theShop.remainingCards("Province")-4)-10;
 		if(c.isA(AbstractCard.Type.TREASURE)) {
 			//Engine decks prefer to have actions in their hands
 			if(stratName.contains("Engine")) return (int) ((this.decklist.goldDensity()+0.6-c.getPlusGold(this))*100);
@@ -348,15 +340,11 @@ public class AIPlayer extends Player {
 		return -50;
 	}
 
-	public int valueToTrash(AbstractCard c) {
-		return valueToTrash(c, stratName);
-	}
+	protected int valueToTrash(AbstractCard c) {return valueToTrash(c, stratName);}
 	
-	public AbstractCard chooseToTrash(Vector<AbstractCard> available) {
-		return chooseToTrash(this.hand,this.stratName);
-	}
+	public AbstractCard chooseToTrash(Vector<AbstractCard> available) {return chooseToTrash(this.hand,this.stratName);}
 
-	AbstractCard chooseToTrash(Vector<AbstractCard> available, String stratName) {
+	protected AbstractCard chooseToTrash(Vector<AbstractCard> available, String stratName) {
 		double noteMax = -1000000;
 		AbstractCard res = null;
 		for (AbstractCard c : available) {
@@ -369,11 +357,10 @@ public class AIPlayer extends Player {
 		return res;
 	}
 	
-	public AbstractCard decideToTrash(Vector<AbstractCard> available, String benefit) {
-		AbstractCard res=chooseToTrash(available);
-		if(decideToTrash(res,benefit)) //not optimized
-			return res;
-		return null;
+	public AbstractCard decideToTrash(Vector<AbstractCard> availablen, String benefit) {
+		Vector<AbstractCard> available = new Vector<AbstractCard>(availablen);
+		available.add(null);
+		return chooseToTrash(available);
 	}
 	
 	public boolean decideToTrash(AbstractCard c,String benefit) {
@@ -389,9 +376,8 @@ public class AIPlayer extends Player {
 		}
 	}
 	
-	public boolean decideToReshuffle() { //TO DO: put a non-trivial decision-maker
-		return true;
-	}
+	 //TO DO: put a non-trivial decision-maker
+	public boolean decideToReshuffle() {return true;}
 
 	//OTHERS
 	public AbstractCard askToReact(AbstractCard att) {
@@ -423,7 +409,7 @@ public class AIPlayer extends Player {
 
 	public String toString() {return "AI "+super.toString();}
 	
-	static private String pad(String s,int size) {
+	protected static String pad(String s,int size) {
 		if(s.length()>size) {
 			System.out.println("ERROR: String too big for padding");
 			return s;
@@ -442,8 +428,8 @@ public class AIPlayer extends Player {
 		}
 	}
 
-	public String getStrategyTab(String stratName) {
-		Shop fakeShop = new Shop(2);
+	protected String getStrategyTab(String stratName) {
+		Shop fakeShop = new Shop(2,false);
 		String res= "Tab for strategy "+stratName+":\n";
 		int temp = res.length();
 		res+="                  | ";

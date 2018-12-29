@@ -40,10 +40,8 @@ public abstract class AbstractRemodeler extends AbstractAction {
 				res.add(c);
 		}
 		if(isMandatory) {
-			if(res.isEmpty()) {
-				System.out.println("ERROR: nothing in your hand is suitable for trashing. Canceling action");
-				return null;
-			}
+			if(res.isEmpty() && p.partie.visible)
+				System.out.println("ERROR: nothing in your hand is suitable for trashing. Cancelling action");
 		}
 		else
 			res.addElement(null);

@@ -6,13 +6,15 @@ public class Partie {
 public Player [] joueurs;
 public Shop theShop;
 public int iCurrentPlayer;
-public boolean hasEnded = false;
-public static final int NJOUEURS = 4;
-public static final int NOMBRE_DE_PARTIES = 1000;
-public static final int NOMBRE_DE_TOURS = 17;
+public boolean visible;
 
-Partie(int players){	
-	Shop s = new Shop(players);
+Partie(int players){
+	this(players,true);
+}
+
+Partie(int players,boolean visible){
+	this.visible=visible;
+	Shop s = new Shop(players,visible);
 	theShop = s;
 	joueurs = new Player [players];
 	for (int i = 0; i<joueurs.length; i++) {
@@ -22,8 +24,13 @@ Partie(int players){
 	}
 }
 
-Partie(String[] strats){	
-	Shop s = new Shop(strats.length);
+Partie(String[] strats){
+	this(strats,true);
+}
+
+Partie(String[] strats,boolean visible){
+	this.visible=visible;
+	Shop s = new Shop(strats.length,visible);
 	theShop = s;
 	joueurs = new Player[strats.length];
 	for (int i = 0; i<joueurs.length; i++) {
@@ -32,8 +39,13 @@ Partie(String[] strats){
 	}
 }
 
-Partie(Player[] players){	
-	Shop s = new Shop(players.length);
+Partie(Player[] players){
+	this(players,true);
+}
+
+Partie(Player[] players,boolean visible){
+	this.visible=visible;
+	Shop s = new Shop(players.length,visible);
 	theShop = s;
 	joueurs = players;
 	for (int i = 0; i<joueurs.length; i++) {
@@ -41,25 +53,28 @@ Partie(Player[] players){
 	}
 }
 
-void joueUnTourComplet(boolean printDetails, int first) {
+void joueUnTourComplet(int first) {
 	for (int i = first; i<4+first; i++) {
-		joueurs[i%4].tourDeJeu(printDetails);
+		joueurs[i%4].tourDeJeu();
 	}
 }
 
-Player partie(boolean printDetails) {
+Player partie() {
 	int first = (int) (Math.random()*this.joueurs.length);
 	int turn=0;
 	while(!hasEnded()) {
-		joueurs[(turn+first)%this.joueurs.length].tourDeJeu(printDetails);
+		joueurs[(turn+first)%this.joueurs.length].tourDeJeu();
 		turn++;
 	}
-	System.out.println("===================== GAME ENDED ===============================");
-	for (int i = 0; i<this.joueurs.length; i++) {
-		System.out.println(joueurs[i].name+"'s decklist:\n"+joueurs[i].decklist);
-		int points = joueurs[i].countVictoryPoints();
-		System.out.println(joueurs[i].name+" has " + points + " VP");
+	if(visible) {
+		System.out.println("===================== GAME ENDED ===============================");
+		for (int i = 0; i<this.joueurs.length; i++) {
+			System.out.println(joueurs[i].name+"'s decklist:\n"+joueurs[i].decklist);
+			int points = joueurs[i].countVictoryPoints();
+			System.out.println(joueurs[i].name+" has " + points + " VP");
+		}
 	}
+
 	
 	int maxVP = -1;
 	Vector<Integer> maxPlayers = new Vector<Integer>();
@@ -76,7 +91,7 @@ Player partie(boolean printDetails) {
 	if(maxPlayers.size()==1)
 		return joueurs[maxPlayers.get(0)];
 	
-	int leastTurn = -1;
+	int leastTurn = 10000;
 	Vector<Integer> leastTurnPlayers = new Vector<Integer>();
 	for (int j = 0; j<maxPlayers.size(); j++) {
 		int tempTurn = (turn-((maxPlayers.get(j)-first)%joueurs.length))/joueurs.length;
@@ -106,11 +121,12 @@ public String toString() {
 }
 
 public static void main(String[] args) {
-	AIPlayer pedro = new AIPlayer("OptimizedBM");
-	HumanPlayer me = new HumanPlayer("Come");
+	AIPlayer pedro = new AIPlayer("Test");
+	AIPlayer pedro2 = new AIPlayer("Test");
+	//HumanPlayer me = new HumanPlayer("Come");
 	
-	Partie p = new Partie(new Player[] {pedro,me});
-	p.partie(false);
+	Partie p = new Partie(new Player[] {pedro,pedro2},false);
+	p.partie();
 }
 
 }

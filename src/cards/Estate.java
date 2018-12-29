@@ -7,4 +7,10 @@ public class Estate extends AbstractCard {
 		this.goldCost=2;
 		this.VP=1;
 	}
+	
+	public int getStartingNumber(int players) {
+		if(players<=2)
+			return 8;
+		return 12;
+	}
 }

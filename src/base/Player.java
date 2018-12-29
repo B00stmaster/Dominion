@@ -20,7 +20,6 @@ public abstract class Player {
 	public int leftPotions = 0;
 	public boolean playSomething;
 	public boolean buySomething;
-	public Constantes C;
 	int PointsDeVictoire = 0;
 
 	Player(){
@@ -29,13 +28,6 @@ public abstract class Player {
 		hand = new Hand(this);
 		defausse = new DiscardPile(this);
 		board = new Board(this);
-		C = new Constantes();
-	}
-
-	Player(Partie p,Constantes CS, boolean alter){
-		this();
-		if (alter) {C = CS.alter();}
-		else C = CS;
 	}
 
 	void beginGame(Partie par) {
@@ -52,20 +44,23 @@ public abstract class Player {
 	void buy(AbstractCard c) {//on suppose que le joueur a deja les achats et l'argent dispo pour le faire
 		leftGold -= c.getGoldCost(this);
 		leftBuys -= 1;
-		System.out.println(name+" buys "+c+" | buys left: "+leftBuys+" | gold left: "+leftGold);
+		if(partie.visible)
+			System.out.println(name+" buys "+c+" | buys left: "+leftBuys+" | gold left: "+leftGold);
 		gainToDiscard(partie.theShop.getCard(c));
 	}
 
 	public AbstractCard gainToDiscard(AbstractCard c) {
 		defausse.add(c);
-		System.out.println(name+" gains "+c+" on his discard pile");
+		if(partie.visible)
+			System.out.println(name+" gains "+c+" on his discard pile");
 		c.onGain(this);
 		return c;
 	}
 
 	public AbstractCard gainToHand(AbstractCard c) {
 		hand.add(c);
-		System.out.println(name+" gains "+c+" to his hand");
+		if(partie.visible)
+			System.out.println(name+" gains "+c+" to his hand");
 		c.onGain(this);
 		return c;
 	}
@@ -99,7 +94,7 @@ public abstract class Player {
 			shuffle|=draw();
 		return shuffle;
 	}
-
+	
 	public boolean draw() {
 		boolean shuffle=false;
 		if (deck.isEmpty()) {
@@ -111,19 +106,26 @@ public abstract class Player {
 		}
 		return shuffle;
 	}
+	
+	boolean newHand() {
+		return draw(5);
+	}
 
 	public void mill() {
-		System.out.println(name+" mills "+deck.peek());
+		if(partie.visible)
+			System.out.println(name+" mills "+deck.peek());
 		defausse.add(deck.pop());
 	}
 
 	public void discard(AbstractCard c) {
-		System.out.println(name+" discards "+c);
+		if(partie.visible)
+			System.out.println(name+" discards "+c);
 		defausse.add(hand.retire(c));
 	}
 
 	public boolean trash(AbstractCard c) {
-		System.out.println(name+" trashes "+c);
+		if(partie.visible)
+			System.out.println(name+" trashes "+c);
 		return(hand.retire(c)!=null);
 	}
 
@@ -131,11 +133,13 @@ public abstract class Player {
 	public AbstractCard reveal() {
 		if(!deck.isEmpty()) {
 			AbstractCard res=deck.peek();
-			System.out.println(name+" reveals "+res);
+			if(partie.visible)
+				System.out.println(name+" reveals "+res);
 			return res;
 		}
 		else {
-			System.out.println(name+" cannot reveal: (s)he has no more card in deck...");
+			if(partie.visible)
+				System.out.println(name+" cannot reveal: (s)he has no more card in deck...");
 			return null;
 		}
 	}
@@ -145,11 +149,13 @@ public abstract class Player {
 		for(int i=1;i<number+1;i++) {
 			if(deck.size()>=i) {
 				AbstractCard temp = deck.peek(i);
-				System.out.println(name+" reveals "+temp);
+				if(partie.visible)
+					System.out.println(name+" reveals "+temp);
 				res[i]=temp;
 			}
 			else {
-				System.out.println(name+" cannot reveal: (s)he has no more card in deck...");
+				if(partie.visible)
+					System.out.println(name+" cannot reveal: (s)he has no more card in deck...");
 				return null;
 			}
 		}
@@ -162,7 +168,8 @@ public abstract class Player {
 			deck.add(defausse.pop());
 		}
 		deck.shuffle();
-		System.out.println(name+" shuffles his discard pile and his deck");
+		if(partie.visible)
+			System.out.println(name+" shuffles his discard pile and his deck");
 	}
 
 	void discardBoard() {
@@ -170,10 +177,6 @@ public abstract class Player {
 		for (int i = 0; i<imax; i++) {
 			defausse.add(board.popACard());
 		}
-	}
-
-	boolean newHand() {
-		return draw(5);
 	}
 
 	//on défausse chaque carte de la main en comptant sa valeur si c'est un tresor, puis on ajoute le total
@@ -206,10 +209,12 @@ public abstract class Player {
 		leftGold = 0;
 	}
 
-	public void tourDeJeu(boolean printDetails) {
+	public void tourDeJeu() {
 		reset();
-		System.out.println("===================== " +name+"'s TURN ===============================");
-		System.out.println(this);
+		if(partie.visible) {
+			System.out.println("===================== " +name+"'s TURN ===============================");
+			System.out.println(this);
+		}
 		while(leftActions>0 && playSomething) {
 			AbstractCard c = chooseToPlay();
 			if (c!=null) {
@@ -218,7 +223,9 @@ public abstract class Player {
 			else
 				playSomething=false;
 		}
-		System.out.println("END OF ACTION PHASE");
+		
+		if(partie.visible)
+			System.out.println("END OF ACTION PHASE");
 		playTreasures();
 		while(leftBuys>0 && buySomething) {
 			AbstractCard c = chooseToGain(buyables());
@@ -227,11 +234,14 @@ public abstract class Player {
 			else 
 				buySomething=false;
 		}
-		System.out.println("END OF BUYING PHASE");
+		if(partie.visible)
+			System.out.println("END OF BUYING PHASE");
 		discardBoard();
 		newHand();
-		if(printDetails) System.out.println(this);
-		System.out.println("END OF "+name+"'s TURN\n"); 
+		if(partie.visible) {
+			System.out.println(this);
+			System.out.println("END OF "+name+"'s TURN\n"); 
+		}
 	}
 
 	public abstract AbstractCard chooseToPlay();
@@ -250,6 +260,8 @@ public abstract class Player {
 	}
 
 	public AbstractCard[] askToDiscard(int number) {
+		if(number<=0)
+			return null;
 		AbstractCard[] res = new AbstractCard[number];
 		for(int i=0;i<number;i++) {
 			res[i]=askToDiscard();

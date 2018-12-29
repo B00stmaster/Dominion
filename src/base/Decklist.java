@@ -57,11 +57,11 @@ public class Decklist extends Vector<AbstractCard>{
 	public double goldDensity() {
 		//gold density + gold-adding actions weighted by the approximated probability of playing it
 		int total = 0;
-		for(int i = 0; i<size(); i++) {
-			if (get(i).isA(AbstractCard.Type.TREASURE)) {
-				total += get(i).getPlusGold(owner);}
-			else if (get(i).isA(AbstractCard.Type.ACTION)) {
-				total += get(i).getPlusGold(owner)*playActionProbability();} //TO DO: change this bullshit
+		for(AbstractCard c : this) {
+			if (c.isA(AbstractCard.Type.TREASURE))
+				total += c.getPlusGold(); //do NOT call getPlusGold(Player) that would take player's board into account (e.g. coppersmithes)
+//			else if (get(i).isA(AbstractCard.Type.ACTION)) {
+//				total += get(i).getPlusGold(owner)*playActionProbability();} //TO DO: change this bullshit
 		}
 		return (double) total/size();
 	}

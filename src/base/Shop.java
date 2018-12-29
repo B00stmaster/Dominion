@@ -6,8 +6,10 @@ import cards.AbstractCard.Type;
 
 public class Shop {
 public Vector<Stack> avalaible;
+int players;
 
-Shop(int players){ 
+Shop(int players, boolean print){ 
+	this.players=players;
 	avalaible = new Vector<Stack>();
 	avalaible.add(new Stack(new Copper(), 61));
 	avalaible.add(new Stack(new Silver(), 51));
@@ -18,37 +20,33 @@ Shop(int players){
 	avalaible.add(new Stack(new Village(), 11));
 	avalaible.add(new Stack(new Smithy(), 11));
 	avalaible.add(new Stack(new Market(), 11));
-	avalaible.add(new Stack(new Woodcutter(), 11));
+	//avalaible.add(new Stack(new Woodcutter(), 11));
 	avalaible.add(new Stack(new Laboratory(),11));
 	avalaible.add(new Stack(new Festival(), 11));
 	avalaible.add(new Stack(new Witch(), 11));
 	avalaible.add(new Stack(new Militia(), 11));
-	avalaible.add(new Stack(new Garden(), 11));
+	//avalaible.add(new Stack(new Garden(), 11));
 	avalaible.add(new Stack(new Mine(), 11));
-	avalaible.add(new Stack(new Cellar(), 11));
-	avalaible.add(new Stack(new Chancellor(), 11));
+	//avalaible.add(new Stack(new Cellar(), 11));
+	//avalaible.add(new Stack(new Chancellor(), 11));
 	avalaible.add(new Stack(new Chapel(), 11));
 	avalaible.add(new Stack(new CouncilRoom(), 11));
-	avalaible.add(new Stack(new Library(), 11));
+	//avalaible.add(new Stack(new Library(), 11));
 	avalaible.add(new Stack(new Moat(), 11));
-	avalaible.add(new Stack(new MoneyLender(), 11));
-	avalaible.add(new Stack(new Peddler(), 11));
+	//avalaible.add(new Stack(new MoneyLender(), 11));
+	//avalaible.add(new Stack(new Peddler(), 11));
 	avalaible.add(new Stack(new Remodel(), 11));
-	avalaible.add(new Stack(new Spy(), 11));
-	avalaible.add(new Stack(new ThroneRoom(), 11));
-	avalaible.add(new Stack(new Woodcutter(), 11));
+	//avalaible.add(new Stack(new Spy(), 11));
+	//avalaible.add(new Stack(new ThroneRoom(), 11));
 	avalaible.add(new Stack(new Workshop(), 11));
 	avalaible.add(new Stack(new Curse(), 10*(players-1)+1));
-	System.out.println("Contenu du Shop:");
+	if(print)
+		System.out.println("Contenu du Shop:");
 	for(Stack st : avalaible) {
 		st.peek().generateAdditionalTypes();
-		if(st.peek().isA(Type.VICTORY)) {
-			if(players<=2)
-				st.resize(9);
-			else
-				st.resize(13);
-		}
-		System.out.println("- "+st.peek()+" : "+remainingCards(st.peek()));
+		st.resize(st.peek().getStartingNumber(players)+1);
+		if(print)
+			System.out.println("- "+st.peek()+" : "+remainingCards(st.peek()));
 	}
 }
 
@@ -90,6 +88,16 @@ public AbstractCard getCard(String name) {
 
 public AbstractCard getCard(AbstractCard c) {return getCard(c.getName());}
 
+public AbstractCard findCard(String name) {
+	Stack s = findStack(name);
+	if(s != null && s.size()>1) {
+		return s.peek();
+	}
+	return null;
+}
+
+public AbstractCard findCard(AbstractCard c) {return findCard(c.getName());}
+
 int nombrePilesVides() {
 	int reponse = 0;
 	for (int i = 0; i<avalaible.size(); i++) {
@@ -100,13 +108,21 @@ int nombrePilesVides() {
 	return reponse;
 }
 
-public int remainingCards(AbstractCard c) {
-	return remainingCards(c.getName());
-}
+public int remainingCards(AbstractCard c) {return remainingCards(c.getName());}
+
 public int remainingCards(String cardName) {
 	Stack res=findStack(cardName);
 	if(res!=null)
 		return res.size()-1;
+	return 0;
+}
+
+public int getStartingNumber(AbstractCard c) {return c.getStartingNumber(players);}
+
+public int getStartingNumber(String cardName) {
+	Stack res=findStack(cardName);
+	if(res!=null)
+		return res.peek().getStartingNumber(players);
 	return 0;
 }
 

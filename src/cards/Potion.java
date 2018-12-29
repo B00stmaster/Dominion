@@ -8,7 +8,7 @@ public class Potion extends Silver {
 		this.plusGold=0;
 	}
 
-	public int getPlusPotion(Player p) {
-		return 1;
-	} 
+	public int getPlusPotion(Player p) {return 1;}
+	
+	public int getStartingNumber(int players) {return 16;}
 }

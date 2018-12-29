@@ -13,7 +13,8 @@ public class Moat extends AbstractAction {
 	
 	public boolean onReactToAttack(Player p) {
 		super.onReactToAttack(p);
-		System.out.println(p+" is protected from the attack");
+		if(p.partie.visible)
+			System.out.println(p.name+" is protected from the attack");
 		return true;
 	}
 }

@@ -26,13 +26,15 @@ public class Mine extends AbstractRemodeler {
 		Vector<AbstractCard> availableToTrash = availableToTrash(p);
 		if(availableToTrash!=null) {
 			trashedCard=p.chooseToTrash(availableToTrash);
-			Vector<AbstractCard> availableToGain = selectAvailable(p, trashedCard);
-			gainedCard = p.chooseToGain(availableToGain);
-			if(gainedCard!=null) {
-				p.trash(trashedCard);
-				p.gainToHand(p.partie.theShop.getCard(gainedCard));
+			if(trashedCard!=null) {
+				Vector<AbstractCard> availableToGain = selectAvailable(p, trashedCard);
+				gainedCard = p.chooseToGain(availableToGain);
+				if(gainedCard!=null) {
+					p.trash(trashedCard);
+					p.gainToHand(p.partie.theShop.getCard(gainedCard));
+				}
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}

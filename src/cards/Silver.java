@@ -7,5 +7,7 @@ public class Silver extends AbstractCard {
 		this.plusGold=2;
 		this.types.add(Type.TREASURE);
 	}
+	
+	public int getStartingNumber(int players) {return 40;}
 
 }

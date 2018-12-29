@@ -12,4 +12,6 @@ public class Copper extends Silver {
 	public int getPlusGold(Player p) {
 		return plusGold+p.board.cardCount("Coppersmith");
 	}
+	
+	public int getStartingNumber(int players) {return 60;}
 }

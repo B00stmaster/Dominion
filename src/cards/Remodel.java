@@ -19,7 +19,7 @@ public class Remodel extends AbstractRemodeler {
 		AbstractCard trashedCard=null;
 		AbstractCard gainedCard=null;
 		Vector<AbstractCard> availableToTrash = availableToTrash(p);
-		if(availableToTrash!=null) {
+		if(!availableToTrash.isEmpty()) {
 			trashedCard=p.chooseToTrash(availableToTrash);
 			Vector<AbstractCard> availableToGain = selectAvailable(p, trashedCard);
 			gainedCard = p.chooseToGain(availableToGain);

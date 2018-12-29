@@ -5,4 +5,6 @@ public class Curse extends AbstractCard {
 		this.VP=-1;
 		this.goldCost=0;
 	}
+	
+	public int getStartingNumber(int players) {return 10*(players-1);}
 }

@@ -6,7 +6,7 @@ import base.Player;
 
 public abstract class AbstractCard {
 	protected String name;
-	public enum Type {TREASURE, VICTORY, ACTION, REACTION, CURSE, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_ACTION, TERMINAL_ACTION, TERMINAL_SILVER, TRASHER, GAINER, DRAWER, REMODELER};
+	public enum Type {TREASURE, VICTORY, ACTION, REACTION, ATTACK, VILLAGE, CANTRIP, PEDDLER, NON_TERMINAL_ACTION, TERMINAL_ACTION, TERMINAL_SILVER, TRASHER, GAINER, DRAWER, REMODELER};
 	protected EnumSet<Type> types;
 	protected int goldCost;
 	protected int potionCost;
@@ -62,52 +62,35 @@ public abstract class AbstractCard {
 		return this.getClass().getName().split("\\.")[1];
 	}
 	
-	public int getGoldCost(Player p) {
-		return Math.max(goldCost-p.board.cardCount("Bridge"),0);
-	}
+	public int getStartingNumber(int players) {return 10;}
 	
-	public int[] getCost(Player p) {
-		return (new int[] {getGoldCost(p),potionCost});
-	}
+	public int getGoldCost(Player p) {return Math.max(goldCost-p.board.cardCount("Bridge"),0);}
 	
-	public int getPlusGold(Player p) {
-		return plusGold;
-	}
+	public int[] getCost(Player p) {return (new int[] {getGoldCost(p),potionCost});}
 	
-	public int getPlusActions(Player p) {
-		return plusActions;
-	}
+	public int getPlusGold() {return plusGold;}
 	
-	public int getPlusBuys(Player p) {
-		return plusBuys;
-	}
+	public int getPlusGold(Player p) {return plusGold;}
 	
-	public int getPlusCards(Player p) {
-		return plusCards;
-	}
+	public int getPlusActions(Player p) {return plusActions;}
 	
-	public int getPlusPotion(Player p) {
-		return 0;
-	}
+	public int getPlusBuys(Player p) {return plusBuys;}
+
+	public int getPlusCards(Player p) {return plusCards;}
 	
-	public int getVP(Player p) {
-		return VP;
-	}
+	public int getPlusPotion(Player p) {return 0;}
 	
-	public boolean canBeBought(Player p) {
-		return true;
-	}
+	public int getVP(Player p) {return VP;}
 	
-	public boolean onStartOfGame(Player p) {
-		return false;
-	}
+	public boolean canBeBought(Player p) {return true;}
 	
-	public boolean onBuy(Player p) {
-		return false;
-	}
+	public boolean onStartOfGame(Player p) {return false;}
+	
+	public boolean onBuy(Player p) {return false;}
 	
 	public boolean onGain(Player p) {
-		System.out.println(p.partie.theShop.remainingCards(this)+" "+this+" remaining");
+		if(p.partie.visible)
+			System.out.println(p.partie.theShop.remainingCards(this)+" "+this+" remaining");
 		return p.decklist.add(this);
 	}
 	
@@ -123,34 +106,27 @@ public abstract class AbstractCard {
 		p.leftBuys+=getPlusBuys(p);
 		p.leftPotions+=getPlusPotion(p);
 		p.draw(getPlusCards(p));
-		System.out.println(p.name+" plays "+this+ " | actions left: "+p.leftActions+" | buys left: "+p.leftBuys+" | gold left: "+p.leftGold);
-		if(getPlusCards(p)>0)
-			System.out.println(p.hand);
+		if(p.partie.visible) {
+			System.out.println(p.name+" plays "+this+ " | actions left: "+p.leftActions+" | buys left: "+p.leftBuys+" | gold left: "+p.leftGold);
+			if(getPlusCards(p)>0)
+				System.out.println(p.hand);
+		}
 		return true;
 	}
 	
-	public boolean onTrash(Player p) {
-		return p.decklist.remove(this);
-	}
+	public boolean onTrash(Player p) {return p.decklist.remove(this);}
 	
-	public boolean onDiscard(Player p) {
-		return false;
-	}
+	public boolean onDiscard(Player p) {return false;}
 	
-	public boolean onCleanup(Player p) {
-		return false;
-	}
+	public boolean onCleanup(Player p) {return false;}
 	
-	public boolean onDuration(Player p) {
-		return false;
-	}
+	public boolean onDuration(Player p) {return false;}
 	
-	public boolean onShuffle(Player p) {
-		return false;
-	}
+	public boolean onShuffle(Player p) {return false;}
 	
 	public boolean onReactToAttack(Player p) {
-		System.out.println(p+" shows "+this);
+		if(p.partie.visible)
+			System.out.println(p.name+" shows "+this);
 		return false;
 	}
 }
